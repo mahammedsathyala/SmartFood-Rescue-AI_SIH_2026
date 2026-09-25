@@ -109,10 +109,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ? 'bg-linear-to-r from-emerald-600 to-teal-600 text-white border-emerald-500 shadow-emerald-600/20'
                 : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
             }`}
-            title="Start SIH Evaluator Guided Tour"
+            title="Start Evaluator Guided Tour"
           >
             <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
-            <span className="hidden sm:inline">SIH Tour</span>
+            <span className="hidden sm:inline">Guided Tour</span>
           </button>
         )}
 

@@ -90,7 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <div className="font-display font-extrabold text-slate-900 text-base flex items-center gap-1.5">
                     SmartFood <span className="text-emerald-600">Rescue</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 font-semibold tracking-wide uppercase truncate max-w-[140px]">
+                  <div className="text-[10px] text-slate-400 font-semibold tracking-wide uppercase truncate">
                     AI Ecosystem • {locationCity || 'AP Vijayawada'}
                   </div>
                 </div>

@@ -209,26 +209,35 @@ export const GoogleRouteMap: React.FC<GoogleRouteMapProps> = ({
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
       {/* Top Header / Status Banner */}
-      <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/50">
-        <div className="flex items-center gap-2">
-          <Navigation className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span className="font-bold text-xs sm:text-sm text-slate-900 truncate">
-            Transit Corridor: {originName} → {destinationName}
-          </span>
+      <div className="p-3.5 sm:p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50/50">
+        <div className="flex items-start sm:items-center gap-2.5 min-w-0">
+          <Navigation className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5 sm:mt-0" />
+          <div className="text-xs sm:text-sm font-bold text-slate-900 leading-relaxed flex items-center flex-wrap gap-1.5">
+            <span className="text-slate-500 font-semibold text-[11px] uppercase tracking-wide">Transit Corridor:</span>
+            <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200/80 font-bold whitespace-normal">
+              {originName}
+            </span>
+            <span className="text-slate-400 font-black px-0.5">→</span>
+            <span className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-200/80 font-bold whitespace-normal">
+              {destinationName}
+            </span>
+          </div>
         </div>
 
         {/* Integration Mode Badge */}
-        {mapState === 'ready' ? (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            Google Maps Demo Integration — testing/prototyping only.
-          </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-            <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
-            Map Simulation Mode — Google Maps demo key is unavailable.
-          </span>
-        )}
+        <div className="shrink-0 self-start md:self-center">
+          {mapState === 'ready' ? (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+              Google Maps Demo
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
+              <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+              Map Simulation Mode
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Map Display Container */}

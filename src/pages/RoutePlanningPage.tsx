@@ -166,12 +166,12 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
         </div>
 
         {/* Route Selector */}
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold text-slate-600">Select Dispatch Route:</label>
+        <div className="flex items-center gap-2 shrink-0">
+          <label className="text-xs font-semibold text-slate-600 whitespace-nowrap">Select Dispatch Route:</label>
           <select
             value={selectedRouteId}
             onChange={(e) => setSelectedRouteId(e.target.value)}
-            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-hidden"
+            className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-hidden max-w-[240px] truncate"
           >
             {routes.map(r => (
               <option key={r.id} value={r.id}>
@@ -186,17 +186,6 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column: Route Details, Mock Map & Metrics (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Google Map & Transit Corridor View (Interactive Google Maps when Demo Key is configured, Simulation Mode fallback) */}
-            <GoogleRouteMap
-              originName={currentRoute.origin}
-              destinationName={currentRoute.destination}
-              distanceKm={distanceKm}
-              vehicleType={vehicle}
-              travelTimeMinutes={timeCalc.travelTimeMinutes}
-              handlingTimeMinutes={timeCalc.handlingTimeMinutes}
-              totalTimeMinutes={timeCalc.totalTimeMinutes}
-            />
-
             {/* Manual Origin & Destination Location Configurator */}
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
@@ -298,6 +287,17 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
                 </button>
               </div>
             </div>
+
+            {/* Google Map & Transit Corridor View (Interactive Google Maps when Demo Key is configured, Simulation Mode fallback) */}
+            <GoogleRouteMap
+              originName={currentRoute.origin}
+              destinationName={currentRoute.destination}
+              distanceKm={distanceKm}
+              vehicleType={vehicle}
+              travelTimeMinutes={timeCalc.travelTimeMinutes}
+              handlingTimeMinutes={timeCalc.handlingTimeMinutes}
+              totalTimeMinutes={timeCalc.totalTimeMinutes}
+            />
 
             {/* Vehicle Selection & Specs */}
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs">
