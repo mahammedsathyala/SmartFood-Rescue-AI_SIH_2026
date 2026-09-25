@@ -184,7 +184,16 @@ export function saveIoTData(data: VirtualIoTSensorData): void {
 
 // Settings
 export function getSettings(): AppSettings {
-  return safeGet<AppSettings>(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
+  const loaded = safeGet<AppSettings>(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
+  return {
+    ...DEFAULT_SETTINGS,
+    ...loaded,
+    kitchenName: loaded?.kitchenName || DEFAULT_SETTINGS.kitchenName,
+    kitchenAddress: loaded?.kitchenAddress || DEFAULT_SETTINGS.kitchenAddress,
+    city: loaded?.city || DEFAULT_SETTINGS.city,
+    contactPerson: loaded?.contactPerson || DEFAULT_SETTINGS.contactPerson,
+    phoneNumber: loaded?.phoneNumber || DEFAULT_SETTINGS.phoneNumber
+  };
 }
 
 export function saveSettings(settings: AppSettings): void {

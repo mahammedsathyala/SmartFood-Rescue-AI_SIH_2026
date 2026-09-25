@@ -46,7 +46,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   const handleResetDefaults = () => {
     setForm(DEFAULT_SETTINGS);
     onSaveSettings(DEFAULT_SETTINGS);
-    showToast('Defaults Restored', 'Configuration restored to default Vijayawada canteen parameters.', 'info');
+    showToast('Vijayawada Demo Configured', 'Facility parameters restored to Smart College Canteen, Vijayawada (MG Road).', 'success');
   };
 
   return (
@@ -72,10 +72,10 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
           <button
             type="button"
             onClick={handleResetDefaults}
-            className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Settings</span>
+            <RotateCcw className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Load Vijayawada Demo Preset</span>
           </button>
         </div>
       </div>
