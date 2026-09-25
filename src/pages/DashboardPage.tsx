@@ -45,7 +45,8 @@ import {
   DeliveryRoute, 
   VirtualIoTSensorData, 
   NavigationTab, 
-  UserRole 
+  UserRole,
+  AppSettings
 } from '../types';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
 import { PipelineStepper } from '../components/PipelineStepper';
@@ -62,6 +63,7 @@ interface DashboardPageProps {
   onOpenAddBatch: () => void;
   onSelectBatchForQuality: (batchId: string) => void;
   onSelectBatchForNgo: (batchId: string) => void;
+  settings?: AppSettings | null;
 }
 
 export const DashboardPage: React.FC<DashboardPageProps> = ({
@@ -75,7 +77,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onNavigate,
   onOpenAddBatch,
   onSelectBatchForQuality,
-  onSelectBatchForNgo
+  onSelectBatchForNgo,
+  settings
 }) => {
   // Chart 1: Food Waste Trend for Last 7 Days (kg)
   const wasteTrendData = [
@@ -139,10 +142,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full">
               Canonical Live Scenario Active
             </span>
-            <span className="text-xs text-slate-400">Vijayawada, AP</span>
+            <span className="text-xs text-slate-400">{settings?.city ? `${settings.city}, AP` : 'Demonstration Hub'}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
-            Smart College Canteen Overview
+            {settings?.kitchenName || 'Smart College Canteen'} Overview
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Real-time synchronization across AI Demand Forecast, IoT Quality Telemetry, and NGO Logistics.
@@ -181,6 +184,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         donations={donations}
         iotData={iotData}
         onNavigate={onNavigate}
+        locationCity={settings?.city}
       />
 
       {/* 8 Primary KPI Cards Required by Prompt */}

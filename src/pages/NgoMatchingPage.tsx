@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   HeartHandshake, 
   MapPin, 
@@ -25,7 +25,8 @@ import {
   DonationRequest, 
   DonationStatus, 
   DeliveryRoute, 
-  UserRole 
+  UserRole,
+  AppSettings
 } from '../types';
 import { matchNGOsForBatch } from '../services/storage';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
@@ -41,6 +42,7 @@ interface NgoMatchingPageProps {
   onUpdateBatch: (batch: FoodBatch) => void;
   onProceedToRoutePlanning: (donationId: string) => void;
   showToast: (title: string, message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
+  settings?: AppSettings | null;
 }
 
 export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
@@ -53,7 +55,8 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
   onUpdateDonationRequest,
   onUpdateBatch,
   onProceedToRoutePlanning,
-  showToast
+  showToast,
+  settings
 }) => {
   // Find suitable batch
   const eligibleBatches = batches.filter(b => b.remainingKg > 0 && b.donationStatus !== 'Do Not Redistribute');
@@ -72,6 +75,15 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
   const [requestModalNgo, setRequestModalNgo] = useState<NGOPartner | null>(null);
   const [pickupWindow, setPickupWindow] = useState('02:30 PM - 03:30 PM');
   const [notes, setNotes] = useState('Ground floor pantry loading ramp, insulated hot transport vessels.');
+  const [customPickupAddress, setCustomPickupAddress] = useState<string>(
+    settings?.kitchenAddress || 'Smart College Canteen, MG Road'
+  );
+
+  useEffect(() => {
+    if (settings?.kitchenAddress) {
+      setCustomPickupAddress(settings.kitchenAddress);
+    }
+  }, [settings?.kitchenAddress]);
 
   // Run matching logic
   const rankedNGOs = selectedBatch ? matchNGOsForBatch(selectedBatch, ngos) : [];
@@ -108,7 +120,7 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
       quantityKg: selectedBatch.remainingKg,
       preparationTime: selectedBatch.prepDateTime,
       deadline: selectedBatch.deadlineDateTime,
-      pickupAddress: 'Smart College Canteen, MG Road, Vijayawada, AP',
+      pickupAddress: customPickupAddress || settings?.kitchenAddress || 'Smart College Canteen Hub',
       pickupWindow,
       qualityStatus: selectedBatch.qualityStatus,
       status: 'Offered',
@@ -178,7 +190,7 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-100/80 px-2.5 py-0.5 rounded-full">
               Automated Redistribution Radar
             </span>
-            <span className="text-xs text-slate-400">Vijayawada NGO Grid</span>
+            <span className="text-xs text-slate-400">{settings?.city ? `${settings.city} NGO Grid` : 'Local NGO Grid'}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
             Surplus Food & NGO Partner Matching
@@ -490,14 +502,19 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
-                  Pickup Address (Kitchen Hub)
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs sm:text-sm font-semibold text-slate-700">
+                    Pickup Address (Kitchen Hub)
+                  </label>
+                  <span className="text-[11px] text-emerald-600 font-semibold">Editable (Type custom location)</span>
+                </div>
                 <input
                   type="text"
-                  readOnly
-                  value="Smart College Canteen, Near Kanaka Durga Varadhi, MG Road, Vijayawada"
-                  className="w-full px-3 py-2 bg-slate-100 border border-slate-200 rounded-xl font-medium text-slate-600"
+                  value={customPickupAddress}
+                  onChange={(e) => setCustomPickupAddress(e.target.value)}
+                  placeholder="Enter custom pickup address / campus gate..."
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-medium text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  required
                 />
               </div>
 

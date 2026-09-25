@@ -26,6 +26,7 @@ interface SidebarProps {
   onCloseMobile: () => void;
   activeRole: UserRole;
   surplusCount?: number;
+  locationCity?: string;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -36,7 +37,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isMobileOpen,
   onCloseMobile,
   activeRole,
-  surplusCount = 2
+  surplusCount = 2,
+  locationCity
 }) => {
   const navItems: { id: NavigationTab; label: string; icon: React.ReactNode; badge?: string | number }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5 shrink-0" /> },
@@ -84,8 +86,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <div className="font-display font-extrabold text-slate-900 text-base flex items-center gap-1.5">
                     SmartFood <span className="text-emerald-600">Rescue</span>
                   </div>
-                  <div className="text-[10px] text-slate-400 font-semibold tracking-wide uppercase">
-                    AI Ecosystem • AP Vijayawada
+                  <div className="text-[10px] text-slate-400 font-semibold tracking-wide uppercase truncate max-w-[140px]">
+                    AI Ecosystem • {locationCity || 'AP Vijayawada'}
                   </div>
                 </div>
               </div>

@@ -4,7 +4,8 @@ import {
   Bike, 
   Car, 
   Camera, 
-  Check 
+  Check,
+  MapPin
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { 
@@ -13,7 +14,8 @@ import {
   DonationRequest, 
   NGOPartner, 
   RouteStep, 
-  UserRole 
+  UserRole,
+  AppSettings
 } from '../types';
 import { calculateRouteTime } from '../services/storage';
 import { GoogleRouteMap } from '../components/GoogleRouteMap';
@@ -29,6 +31,7 @@ interface RoutePlanningPageProps {
   onUpdateBatch: (batch: FoodBatch) => void;
   onUpdateDonation: (donation: DonationRequest) => void;
   showToast: (title: string, message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
+  settings?: AppSettings | null;
 }
 
 export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
@@ -42,6 +45,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
   onUpdateBatch,
   onUpdateDonation,
   showToast,
+  settings
 }) => {
   // Select active route or default canonical route
   const [selectedRouteId, setSelectedRouteId] = useState<string>(
@@ -150,7 +154,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-100/80 px-2.5 py-0.5 rounded-full">
               Time-Critical Redistribution
             </span>
-            <span className="text-xs text-slate-400">Vijayawada Safe Corridor</span>
+            <span className="text-xs text-slate-400">{settings?.city ? `${settings.city} Safe Corridor` : 'Safe Transit Corridor'}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
             Time-Aware Route Planning & Dispatch
@@ -191,6 +195,45 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
               handlingTimeMinutes={timeCalc.handlingTimeMinutes}
               totalTimeMinutes={timeCalc.totalTimeMinutes}
             />
+
+            {/* Manual Origin & Destination Location Configurator */}
+            <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-rose-500" />
+                  <span>Transit Corridor Endpoints (Manual Entry)</span>
+                </h3>
+                <span className="text-[11px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Custom Location Mode
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Pickup Origin (Kitchen Hub)
+                  </label>
+                  <input
+                    type="text"
+                    value={currentRoute.origin}
+                    onChange={(e) => onUpdateRoute({ ...currentRoute, origin: e.target.value })}
+                    placeholder="Enter pickup address..."
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Drop-off Destination (NGO Shelter)
+                  </label>
+                  <input
+                    type="text"
+                    value={currentRoute.destination}
+                    onChange={(e) => onUpdateRoute({ ...currentRoute, destination: e.target.value })}
+                    placeholder="Enter destination address..."
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Vehicle Selection & Specs */}
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs">

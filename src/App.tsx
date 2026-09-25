@@ -298,6 +298,7 @@ export function App() {
           onCloseMobile={() => setIsMobileSidebarOpen(false)}
           activeRole={activeRole}
           surplusCount={activeSurplusCount}
+          locationCity={settings?.city}
         />
 
         {/* Main Content Area */}
@@ -319,6 +320,8 @@ export function App() {
             onNavigateLanding={() => setViewMode('landing')}
             onStartDemoTour={() => setIsDemoTourOpen(!isDemoTourOpen)}
             isDemoTourActive={isDemoTourOpen}
+            locationCity={settings?.city}
+            kitchenName={settings?.kitchenName}
           />
 
           <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
@@ -336,6 +339,7 @@ export function App() {
                 onOpenAddBatch={handleOpenAddBatchQuick}
                 onSelectBatchForQuality={handleNavigateToQuality}
                 onSelectBatchForNgo={handleNavigateToNgo}
+                settings={settings}
               />
             )}
 
@@ -394,6 +398,7 @@ export function App() {
                 onUpdateBatch={handleUpdateBatch}
                 onProceedToRoutePlanning={handleNavigateToRoute}
                 showToast={showToast}
+                settings={settings}
               />
             )}
 
@@ -409,6 +414,7 @@ export function App() {
                 onUpdateBatch={handleUpdateBatch}
                 onUpdateDonation={handleUpdateDonation}
                 showToast={showToast}
+                settings={settings}
               />
             )}
 

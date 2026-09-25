@@ -15,13 +15,15 @@ interface PipelineStepperProps {
   donations: DonationRequest[];
   iotData: VirtualIoTSensorData | null;
   onNavigate: (tab: NavigationTab) => void;
+  locationCity?: string;
 }
 
 export const PipelineStepper: React.FC<PipelineStepperProps> = ({
   batches,
   donations,
   iotData,
-  onNavigate
+  onNavigate,
+  locationCity
 }) => {
   const activeBatchesCount = batches.filter(b => b.remainingKg > 0).length;
   const pendingDonation = donations.find(d => d.status === 'Offered' || d.status === 'Pending NGO Response' || d.status === 'Accepted');
@@ -68,7 +70,7 @@ export const PipelineStepper: React.FC<PipelineStepperProps> = ({
       num: 5,
       tab: 'route-planning' as NavigationTab,
       label: 'Route Dispatch',
-      sub: 'Vijayawada Hub Transit',
+      sub: `${locationCity || 'Hub'} Transit`,
       status: 'In Transit',
       icon: <Navigation className="w-4 h-4 text-blue-600" />,
       color: 'border-blue-500 bg-blue-50/50 text-blue-800'

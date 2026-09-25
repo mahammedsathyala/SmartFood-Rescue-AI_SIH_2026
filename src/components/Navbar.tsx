@@ -25,6 +25,8 @@ interface NavbarProps {
   onNavigateLanding: () => void;
   onStartDemoTour?: () => void;
   isDemoTourActive?: boolean;
+  locationCity?: string;
+  kitchenName?: string;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -37,7 +39,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onToggleSidebar,
   onNavigateLanding,
   onStartDemoTour,
-  isDemoTourActive = false
+  isDemoTourActive = false,
+  locationCity,
+  kitchenName
 }) => {
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -83,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </h1>
           <span className="hidden md:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
             <MapPin className="w-3 h-3 text-emerald-600" />
-            Vijayawada Canteen Hub
+            {locationCity ? `${locationCity} Canteen Hub` : 'Central Canteen Hub'}
           </span>
         </div>
       </div>
@@ -237,7 +241,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-50 animate-in fade-in">
               <div className="p-3 bg-slate-50 rounded-xl mb-2">
                 <p className="text-xs font-bold text-slate-800">{userName}</p>
-                <p className="text-[11px] text-slate-500">Smart College Canteen, Vijayawada</p>
+                <p className="text-[11px] text-slate-500">
+                  {kitchenName || 'Smart College Canteen'}{locationCity ? `, ${locationCity}` : ''}
+                </p>
                 <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 bg-white border border-slate-200 rounded-md text-[10px] font-semibold text-slate-700">
                   <User className="w-3 h-3 text-emerald-600" />
                   Role: {activeRole}
