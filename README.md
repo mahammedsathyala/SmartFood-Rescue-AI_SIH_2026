@@ -40,16 +40,19 @@ SmartFood Rescue AI is a software-first decision-support platform for institutio
 3. [Technology Stack & Core Dependencies](#-technology-stack--core-dependencies)
 4. [Mathematical Models & Decision Formulas](#-mathematical-models--decision-formulas)
 5. [Key Features & Application Pages](#-key-features--application-pages)
-6. [Role-Based Access Control](#-role-based-access-control)
-7. [Virtual IoT Simulator (Hardware-Free Implementation)](#-virtual-iot-monitoring-simulator)
-8. [Canonical Hackathon Demo Scenario (Vijayawada)](#-canonical-hackathon-demo-scenario-vijayawada)
-9. [Application Screenshots](#-application-screenshots)
-10. [Quick Start & Comprehensive Installation Guide](#-quick-start--comprehensive-installation-guide)
-11. [Project Directory Structure](#-project-directory-structure)
-12. [Judge / Evaluator Walkthrough Script](#-judge--evaluator-walkthrough-script)
-13. [Compliance & Ethical Disclaimers](#-compliance--ethical-disclaimers)
-14. [Future Production Roadmap](#-future-production-roadmap)
-15. [Team & Attribution](#-team--attribution)
+6. [Interactive Evaluator Tour & UI/UX Features](#-interactive-evaluator-tour--uiux-features)
+7. [Role-Based Access Control](#-role-based-access-control)
+8. [Virtual IoT Simulator (Hardware-Free Implementation)](#-virtual-iot-monitoring-simulator)
+9. [Canonical Hackathon Demo Scenario (Vijayawada)](#-canonical-hackathon-demo-scenario-vijayawada)
+10. [Kaggle Synthetic Dataset Integration & Ingestion Pipeline](#-kaggle-synthetic-dataset-integration--ingestion-pipeline)
+11. [SIH 2026 Presentation Deck & Visual Assets](#-sih-2026-presentation-deck--visual-assets)
+12. [Application Screenshots](#-application-screenshots)
+13. [Quick Start & Comprehensive Installation Guide](#-quick-start--comprehensive-installation-guide)
+14. [Project Directory Structure](#-project-directory-structure)
+15. [Judge / Evaluator Walkthrough Script](#-judge--evaluator-walkthrough-script)
+16. [Compliance & Ethical Disclaimers](#-compliance--ethical-disclaimers)
+17. [Future Production Roadmap](#-future-production-roadmap)
+18. [Team & Attribution](#-team--attribution)
 
 ---
 
@@ -292,18 +295,42 @@ $$\text{Travel Time (minutes)} = \left(\frac{\text{Distance (km)}}{\text{Vehicle
 
 | Page / Module | Purpose & Core Capabilities |
 | :--- | :--- |
-| **1. Landing Page** | Public front page with problem workflow, 6-pillar solution, impact cards, and institutional problem context. |
+| **1. Landing Page** | Public front page with problem workflow, 6-pillar solution, impact cards, institutional problem context, and interactive ROI savings calculator. |
 | **2. Role Selection** | Quick entry point to login as **Demo User** under 4 operational roles: *Kitchen Staff*, *NGO Partner*, *Delivery Partner*, *Administrator*. |
-| **3. Operational Dashboard** | 8 primary KPI cards, 4 Recharts graphs (7-day waste trend, prep vs served, batch status pie, weekly volume), recent alerts, pending NGO requests, delivery timeline. |
+| **3. Operational Dashboard** | 8 primary KPI cards, 5-stage live pipeline stepper, 4 Recharts graphs (7-day waste trend, prep vs served, batch status pie, weekly volume), recent alerts, and quick actions. |
 | **4. Demand Forecast** | Interactive calculator with attendance slider, meal category pickers, baseline rule checkboxes, risk badge, recommendation message, history table, and CSV export. |
 | **5. Food Batches & Surplus** | Batch registration modal, automatic surplus calculation, deadline countdown, status badges, and quick links to quality checks and donation dispatch. |
 | **6. Virtual IoT Simulator** | Software emulator with real-time temperature, humidity, weight, duration, 5 manual sliders, and 6 instant preset scenarios. |
 | **7. Quality Check** | Circular score gauge (0–100), factor penalty breakdown, reviewer notes, human sign-off authorization gate, and mandatory food safety disclaimer. |
 | **8. NGO Matching** | Ranked radar of 4 Vijayawada partners (Hope Food Bank, Seva Shelter, Helping Hands, Community Kitchen) with simulation of NGO accept/reject and fallback. |
-| **9. Route Planning** | Map corridor interface, vehicle selector (Auto/Bike/Van), travel time calculator, 6-step dispatch timeline, and delivery photo proof. |
+| **9. Route Planning** | Map corridor interface, vehicle selector (Auto/Bike/Van), travel time calculator, manual corridor endpoints & distance entry with presets, 6-step dispatch timeline, and delivery photo proof. |
 | **10. Sustainability Analytics** | 10 impact KPIs, 8 Recharts trend charts, UN SDG 12.3 alignment, and 1-click ESG CSV download. |
 | **11. Audit Reports** | Executive printable compliance certificate with print stylesheet (Save as PDF) and itemized batch logs. |
-| **12. Platform Settings** | Configurable canteen profile, thresholds, cost per kg, carbon factors, and reset demo data button. |
+| **12. Platform Settings** | Configurable canteen profile, thresholds, cost per kg, carbon factors, and 1-click **Load Vijayawada Demo Preset** button. |
+| **13. Dataset Management** | Admin-exclusive ingestion console supporting CSV drag-and-drop, schema validation, duplicate audit, and synthetic benchmark warnings. |
+
+---
+
+## 🎨 Interactive Evaluator Tour & UI/UX Features
+
+To deliver an exceptional evaluator experience during live demonstrations, SmartFood Rescue AI incorporates three interactive UI components:
+
+1. **Guided Evaluator Demo Tour (`GuidedDemoTour.tsx`):**
+   - Click the **"Guided Tour"** button in the navigation header or landing page to launch an automated 6-step walkthrough.
+   - Progresses through: *Demand Forecasting $\rightarrow$ Surplus Batches $\rightarrow$ IoT Telemetry $\rightarrow$ Quality Decision Support $\rightarrow$ NGO Radar $\rightarrow$ Time-Aware Dispatch*.
+   - Evaluators can step forward/backward or jump directly to any operational phase.
+
+2. **Interactive ROI & Carbon Savings Calculator (`WasteSavingsCalculator.tsx`):**
+   - Embedded directly on the public landing page.
+   - Evaluators can drag daily meals cooked (100–3,000) and waste percentage (5%–35%) to instantly compute:
+     - Estimated kilograms of food salvaged annually.
+     - Expected financial recovery in Rupees (₹).
+     - Metric tons of Greenhouse Gas ($\text{CO}_2\text{e}$) emissions prevented from reaching landfills.
+
+3. **Live 5-Stage Pipeline Stepper (`PipelineStepper.tsx`):**
+   - Prominently featured on the Operational Dashboard.
+   - Dynamically tracks the active status of the 5-stage lifecycle (*1. Forecast $\rightarrow$ 2. Batch Logging $\rightarrow$ 3. IoT Quality Gate $\rightarrow$ 4. NGO Matching $\rightarrow$ 5. Time-Aware Dispatch*).
+   - Allows instant navigation to any stage with real-time batch counts and alerts.
 
 ---
 
@@ -359,6 +386,54 @@ The simulator provides:
 | **Rescued Social Impact** | **56 meals saved** | $14.0\text{ kg} \div 0.25\text{ kg/meal}$ |
 | **Estimated Financial Savings** | **₹2,800** | $14.0\text{ kg} \times ₹200/\text{kg}$ (Prototype estimate) |
 | **Estimated Carbon Avoidance** | **35.0 kg CO₂e** | $14.0\text{ kg} \times 2.5\text{ kg CO}_2\text{e/kg}$ (Prototype estimate) |
+
+---
+
+## 📦 Kaggle Synthetic Dataset Integration & Ingestion Pipeline
+
+To validate predictive models and decision formulas against large-scale operational benchmarks, SmartFood Rescue AI includes a safe, structured ingestion architecture for external datasets:
+
+### Provenance & Benchmark Dataset
+* **Dataset Name:** *AI-Powered Food Waste Management Dataset*
+* **Source:** Kaggle
+* **Data Nature:** Synthetic, business-logic-driven operational benchmark (~8,000 daily inventory records).
+* **Provenance Record:** [`datasets/sources.md`](datasets/sources.md)
+* **Standard Data Dictionary:** [`docs/DATA_DICTIONARY_TEMPLATE.md`](docs/DATA_DICTIONARY_TEMPLATE.md) (16 standardized operational fields mapped from raw columns).
+
+### Downloadable CSV Templates
+Pre-formatted CSV templates are located in `public/data/` for institutional import and testing:
+1. `public/data/demand_forecast_template.csv` — Historical attendance and demand logs.
+2. `public/data/food_batches_template.csv` — Kitchen production, residual weight, and use-by deadlines.
+3. `public/data/quality_checks_template.csv` — Storage temperature, sensory inspection, and safety status.
+4. `public/data/ngo_partners_template.csv` — Recipient shelter directory, capacity, and refrigeration availability.
+5. `public/data/delivery_routes_template.csv` — Transit corridor distance, vehicle speeds, and handover timestamps.
+
+### Dataset Management Admin Console
+Accessible exclusively to users in the **Administrator** role (`/dataset-management`):
+* **Drag-and-Drop Ingestion:** Supports instant upload of CSV files directly in the browser.
+* **Automated Audit:** Scans for missing required fields, negative quantities, duplicate record IDs, and invalid categories.
+* **Synthetic Benchmark Notice:** Clearly labels synthetic data to ensure scientific transparency.
+* **Staged Preview Modal:** Allows administrators to preview valid rows and error records before committing changes to localStorage.
+
+---
+
+## 📑 SIH 2026 Presentation Deck & Visual Assets
+
+SmartFood Rescue AI includes a comprehensive, ready-to-present pitch deck modeled after official Smart India Hackathon guidelines:
+
+* **Complete 6-Slide Presentation Contract:** [`docs/SIH_2026_PRESENTATION_DECK.md`](docs/SIH_2026_PRESENTATION_DECK.md)
+  * *Slide 1:* Basic Details & Team Annadata AI Identity.
+  * *Slide 2:* Problem, 5-Stage Solution Pipeline & Unique Value Proposition (UVP).
+  * *Slide 3:* Technical Architecture, Intelligence Layer & 8-Step Process Flow.
+  * *Slide 4:* 4-Pillar Feasibility, Risk Mitigation Matrix & 4-Phase Roadmap.
+  * *Slide 5:* Quantifiable Impact (65% waste drop, 3.5x speedup), ESG & SDG Alignment.
+  * *Slide 6:* Research References, FSSAI Legal Compliance & Live Prototype Links.
+
+* **High-Resolution Generated Graphics:** Available in [`docs/images/`](docs/images/) and [`public/images/`](public/images/):
+  1. `system_ecosystem_3d.jpg` — 3D isometric ecosystem infographic (Slide 2/3).
+  2. `batch_iot_monitor.jpg` — IoT insulated thermal batch monitor at 65°C (Slide 2/4).
+  3. `handover_proof_ngo.jpg` — Verified delivery handover to Vijayawada community shelter (Slide 4/5).
+  4. Visual Asset Placement Guide: [`docs/PPT_VISUAL_ASSETS.md`](docs/PPT_VISUAL_ASSETS.md).
 
 ---
 
