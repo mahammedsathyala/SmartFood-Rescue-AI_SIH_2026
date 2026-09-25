@@ -166,10 +166,10 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
             <span className="text-xs text-slate-400">Vijayawada Safe Corridor</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
-            Pickup & Delivery Route Planning
+            Time-Aware Route Planning & Dispatch
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Optimize travel and handling time to ensure wholesome hot food arrives well before redistribution deadlines.
+            Time-Aware Route Planning estimates delivery feasibility before the configured redistribution deadline.
           </p>
         </div>
 
@@ -314,7 +314,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
               </div>
 
               <div className="mt-3 text-[11px] text-slate-500 italic">
-                Formula: <code className="font-mono text-emerald-700">travelTimeMinutes = (distanceKm / 20) × 60 + 10</code>
+                Formula: <code className="font-mono text-emerald-700">travelTimeMinutes = (distanceKm / vehicleSpeedKmPerHour) × 60 + handlingBufferMinutes</code> (Default Auto: 3.2km @ 20 km/h + 10m buffer = 19.6m ≈ 20 mins)
               </div>
             </div>
           </div>

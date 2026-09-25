@@ -64,7 +64,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             Kitchen & Platform Parameters
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            Configure institutional details, cold chain safety limits, financial rate benchmarks, and notification protocols.
+            Configure institutional details, storage temperature safety limits, financial rate benchmarks, and notification protocols.
           </p>
         </div>
 

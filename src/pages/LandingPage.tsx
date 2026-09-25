@@ -67,7 +67,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const solutions = [
     {
       title: 'Demand Prediction',
-      desc: 'AI algorithms predict daily meal quantities from historical attendance and event patterns.',
+      desc: 'AI-assisted, data-informed demand forecasting models predict daily meal requirements from attendance and event history.',
       icon: <TrendingUp className="w-6 h-6 text-emerald-600" />,
       color: 'from-emerald-500/10 to-teal-500/10 border-emerald-200'
     },
@@ -79,7 +79,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     },
     {
       title: 'Quality Check',
-      desc: 'Virtual IoT telemetry evaluates cold-chain temperature, storage duration, and use-by limits.',
+      desc: 'Virtual IoT telemetry evaluates storage temperature thresholds, storage duration, and use-by limits for human approval.',
       icon: <ShieldCheck className="w-6 h-6 text-cyan-600" />,
       color: 'from-cyan-500/10 to-blue-500/10 border-cyan-200'
     },
@@ -91,7 +91,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     },
     {
       title: 'Route Optimization',
-      desc: 'Calculates travel time and pickup windows to guarantee food arrives before quality degrades.',
+      desc: 'Time-Aware Route Planning with vehicle-specific speed models to estimate delivery feasibility before the redistribution deadline.',
       icon: <Navigation className="w-6 h-6 text-emerald-600" />,
       color: 'from-emerald-500/10 to-green-500/10 border-emerald-200'
     },
@@ -220,7 +220,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <span className="text-sm font-bold text-teal-700">Hope Food Bank (3.2 km)</span>
               </div>
               <div>
-                <span className="text-xs text-slate-500 block font-medium">Delivered Savings</span>
+                <span className="text-xs text-slate-500 block font-medium">Estimated Delivered Savings</span>
                 <span className="text-sm font-bold text-slate-900">₹2,800 • 35 kg CO2e</span>
               </div>
             </div>
@@ -285,7 +285,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               A Complete Closed-Loop Food Rescue Pipeline
             </h2>
             <p className="mt-2 text-sm text-slate-600">
-              Transforming overproduction into guaranteed social welfare through automated decision support.
+              Transforming overproduction into verified social welfare through automated decision support.
             </p>
           </div>
 

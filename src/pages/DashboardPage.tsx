@@ -222,16 +222,16 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
         {/* KPI 7 */}
         <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs hover:border-emerald-300 transition-all">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-tight truncate">Cost Saved</div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-tight truncate">Cost Saved (Est.)</div>
           <div className="text-xl sm:text-2xl font-extrabold text-emerald-700 mt-1 font-display">₹2,800</div>
-          <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">₹200/kg rate</div>
+          <div className="text-[10px] text-emerald-600 font-semibold mt-0.5">Prototype estimate</div>
         </div>
 
         {/* KPI 8 */}
         <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-2xs hover:border-cyan-300 transition-all">
-          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-tight truncate">CO2 Avoided</div>
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-tight truncate">CO2 Avoided (Est.)</div>
           <div className="text-xl sm:text-2xl font-extrabold text-cyan-700 mt-1 font-display">35 kg</div>
-          <div className="text-[10px] text-cyan-600 font-semibold mt-0.5">CO2e mitigated</div>
+          <div className="text-[10px] text-cyan-600 font-semibold mt-0.5">Prototype estimate</div>
         </div>
       </div>
 
@@ -536,7 +536,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <div className="p-3 bg-teal-50/70 rounded-xl border border-teal-100">
               <span className="text-slate-500 text-[11px] block font-medium">Temperature</span>
               <span className="text-lg font-bold text-teal-900 font-display">{iotData.temperature.toFixed(1)}°C</span>
-              <span className="text-[10px] text-teal-700 block mt-0.5">Cold Chain Safe</span>
+              <span className="text-[10px] text-teal-700 block mt-0.5">Within Safe Threshold (≤8°C)</span>
             </div>
             <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-100">
               <span className="text-slate-500 text-[11px] block font-medium">Humidity</span>

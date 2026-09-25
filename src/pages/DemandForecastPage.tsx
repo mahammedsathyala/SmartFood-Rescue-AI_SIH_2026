@@ -44,8 +44,8 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
   const [dayOfWeek, setDayOfWeek] = useState<string>('Friday');
   const [isHolidayOrEvent, setIsHolidayOrEvent] = useState<boolean>(false);
   const [isSpecialMenu, setIsSpecialMenu] = useState<boolean>(false);
-  const [prevDayDemand, setPrevDayDemand] = useState<number>(290);
-  const [avg7DayDemand, setAvg7DayDemand] = useState<number>(294);
+  const [prevDayDemand, setPrevDayDemand] = useState<number>(295);
+  const [avg7DayDemand, setAvg7DayDemand] = useState<number>(295);
 
   // Table Filters & Search
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -108,8 +108,8 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
     setDayOfWeek('Thursday');
     setIsHolidayOrEvent(false);
     setIsSpecialMenu(false);
-    setPrevDayDemand(290);
-    setAvg7DayDemand(294);
+    setPrevDayDemand(295);
+    setAvg7DayDemand(295);
     showToast('Demo Preset Loaded', 'Loaded canonical Vijayawada Smart College Canteen scenario (320 attendance -> 295 predicted).', 'info');
   };
 
@@ -162,12 +162,12 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-100/80 px-2.5 py-0.5 rounded-full">
-              Pre-Cooking Optimization
+              Demand Forecasting Baseline
             </span>
-            <span className="text-xs text-slate-400">SIH26234 AI Engine</span>
+            <span className="text-xs text-slate-400">SIH26234 Decision Support</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
-            AI Demand Forecasting
+            AI-Assisted, Data-Informed Demand Forecasting
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Predict next-day meal requirements using attendance patterns, event calendars, and historical demand to eliminate overproduction.
@@ -192,6 +192,19 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
             <Download className="w-3.5 h-3.5" />
             <span>Export CSV</span>
           </button>
+        </div>
+      </div>
+
+      {/* Prototype Transparent Engineering Note */}
+      <div className="bg-teal-50/80 border border-teal-200 rounded-2xl p-4 text-xs sm:text-sm text-teal-950 flex items-start gap-3 shadow-xs">
+        <div className="p-2 bg-teal-100 rounded-xl shrink-0 mt-0.5 text-teal-700">
+          <Info className="w-4 h-4" />
+        </div>
+        <div className="leading-relaxed">
+          <span className="font-bold text-teal-900 block sm:inline mr-1">
+            Prototype note:
+          </span>
+          The current release uses an explainable, configurable forecasting baseline based on expected attendance, event flags, previous-day demand, and seven-day average demand. In production, the same input pipeline can support a trained machine-learning model using institution-specific historical consumption data.
         </div>
       </div>
 
@@ -431,8 +444,9 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
 
             {/* Formula Reference */}
             <div className="mt-6 pt-3 border-t border-emerald-800/60 text-[11px] text-slate-400 space-y-1">
-              <div>Formula: <code className="text-emerald-300 font-mono">predicted = expectedAttendance × 0.92</code></div>
-              <div>Buffer: <code className="text-emerald-300 font-mono">prep = predicted × 1.05</code></div>
+              <div>Base Formula: <code className="text-emerald-300 font-mono">rawDemand = expectedAttendance × 0.92</code></div>
+              <div>Smoothing: <code className="text-emerald-300 font-mono">predicted = round(0.90×raw + 0.05×prev + 0.05×avg7)</code></div>
+              <div>Buffer: <code className="text-emerald-300 font-mono">recommendedPrep = round(predicted × 1.05)</code></div>
             </div>
           </div>
         </div>

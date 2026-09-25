@@ -328,6 +328,13 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
                 </div>
               )}
 
+              {selectedBatch && ngo.capacityKg < selectedBatch.remainingKg && (
+                <div className="mb-3 px-3 py-1.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] font-semibold text-amber-800 flex items-center gap-1.5">
+                  <AlertCircle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                  <span>Partial Capacity Available ({ngo.capacityKg} kg of {selectedBatch.remainingKg} kg) — suggest splitting batch between two NGOs.</span>
+                </div>
+              )}
+
               <div>
                 <div className="flex items-start justify-between mb-3">
                   <div>
@@ -387,7 +394,7 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
                 {/* Contact & Hours */}
                 <div className="p-3 bg-slate-50 rounded-xl text-xs text-slate-600 space-y-1">
                   <div className="flex items-center justify-between">
-                    <span>Contact: <strong>{ngo.contactPerson}</strong></span>
+                    <span>Contact: <strong>{ngo.contactPerson}</strong> <span className="text-[10px] text-slate-400 font-normal">(Demo / Simulated Contact)</span></span>
                     <span className="text-[11px] text-slate-400">★ {ngo.rating} Rating</span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -407,12 +414,12 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
                   href={`tel:${ngo.phone}`}
                   onClick={(e) => {
                     e.preventDefault();
-                    showToast('Mock NGO Call', `Initiating call with ${ngo.contactPerson} at ${ngo.phone}`, 'info');
+                    showToast('Demo / Simulated Contact', `Simulated contact for ${ngo.contactPerson} at ${ngo.phone} (mock test only)`, 'info');
                   }}
                   className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <PhoneCall className="w-3.5 h-3.5" />
-                  <span>Call NGO</span>
+                  <span>Call NGO (Demo)</span>
                 </a>
 
                 <button

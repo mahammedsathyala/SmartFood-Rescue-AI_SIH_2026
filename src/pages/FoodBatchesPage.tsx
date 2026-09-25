@@ -205,7 +205,7 @@ export const FoodBatchesPage: React.FC<FoodBatchesPageProps> = ({
         appearance,
         notes,
         imageUrl: imageUrl || undefined,
-        qualityScore: surplusKg > 0 ? 92 : undefined,
+        qualityScore: surplusKg > 0 ? 100 : undefined,
         qualityStatus,
         donationStatus
       };
@@ -672,8 +672,8 @@ export const FoodBatchesPage: React.FC<FoodBatchesPageProps> = ({
                     onChange={(e) => setAppearance(e.target.value as AppearanceStatus)}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                   >
-                    <option value="Normal">Normal (Fresh texture, natural aroma)</option>
-                    <option value="Suspicious">Suspicious (Sour odor, discoloration)</option>
+                    <option value="Normal">Normal (Fresh texture, natural appearance)</option>
+                    <option value="Suspicious">Suspicious (Staff-reported odor concern, abnormal texture, or discoloration)</option>
                   </select>
                 </div>
               </div>

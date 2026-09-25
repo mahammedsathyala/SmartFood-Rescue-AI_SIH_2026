@@ -50,7 +50,7 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
   // Run evaluation formula
   const evaluation = selectedBatch 
     ? evaluateFoodQuality(selectedBatch, iotData, 8) 
-    : { score: 92, status: 'Safe for Human Review' as QualityStatus, deductions: [], positives: [] };
+    : { score: 100, status: 'Safe for Human Review' as QualityStatus, deductions: [], positives: [] };
 
   const isAuthorized = activeRole === 'Kitchen Staff' || activeRole === 'Administrator';
 

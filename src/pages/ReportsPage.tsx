@@ -299,15 +299,15 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
             </div>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-              <span className="text-slate-500 text-[11px] block font-medium">Cost Savings (₹)</span>
+              <span className="text-slate-500 text-[11px] block font-medium">Estimated Cost Savings (₹)</span>
               <span className="text-2xl font-extrabold text-slate-900 font-display mt-0.5 block">₹{reportCostSaved.toLocaleString('en-IN')}</span>
-              <span className="text-[10px] text-slate-500 font-medium">Raw material saved</span>
+              <span className="text-[10px] text-slate-500 font-medium">Prototype estimate (@ ₹200/kg)</span>
             </div>
 
             <div className="p-4 bg-cyan-50/70 rounded-2xl border border-cyan-200">
-              <span className="text-cyan-800 text-[11px] block font-bold">CO2e Avoided</span>
+              <span className="text-cyan-800 text-[11px] block font-bold">Estimated CO2e Avoided</span>
               <span className="text-2xl font-extrabold text-cyan-700 font-display mt-0.5 block">{reportCarbonAvoided} kg</span>
-              <span className="text-[10px] text-cyan-700 font-semibold">Methane prevented</span>
+              <span className="text-[10px] text-cyan-700 font-semibold">Prototype estimate (2.5 factor)</span>
             </div>
 
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">

@@ -66,12 +66,12 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
       return { level: 'red' as const, msg: `CRITICAL THERMAL ABUSE: Temperature (${temp.toFixed(1)}°C) exceeds danger zone!` };
     }
     if (temp > 8) {
-      return { level: 'yellow' as const, msg: `Warning: Cold chain marginal (${temp.toFixed(1)}°C). Immediate human inspection advised.` };
+      return { level: 'yellow' as const, msg: `Temperature exceeds the prototype-configured storage threshold (${temp.toFixed(1)}°C > 8.0°C). Immediate human inspection advised.` };
     }
     if (dur > 6) {
       return { level: 'yellow' as const, msg: `Storage duration elevated (${dur} hours). Consume rapidly.` };
     }
-    return { level: 'green' as const, msg: `Optimal Storage Condition (Cold Chain maintained at ${temp.toFixed(1)}°C).` };
+    return { level: 'green' as const, msg: `Optimal Storage Condition (Safe temperature maintained at ${temp.toFixed(1)}°C).` };
   };
 
   const currentAlert = computeAlert(temperature, deviceStatus === 'Online', storageDuration);
@@ -113,7 +113,7 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
     setStorageDuration(2.0);
     setDeviceStatus('Online');
     commitUpdate(5.0, 55, 14.0, 2.0, 'Online');
-    showToast('Scenario Applied', 'Simulating Normal Storage (Cold chain 5.0°C, 55% RH, Online).', 'success');
+    showToast('Scenario Applied', 'Simulating reading within the prototype-configured 8°C threshold (5.0°C, 55% RH, Online). Human approval remains mandatory.', 'success');
   };
 
   // Scenario 2: High Temperature

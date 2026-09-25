@@ -33,13 +33,13 @@ export const RoleSelectionPage: React.FC<RoleSelectionPageProps> = ({
     {
       role: 'Kitchen Staff',
       title: 'Kitchen & Canteen Staff',
-      description: 'Prepare meals, run AI demand forecast, record surplus batches, and approve food safety reviews.',
+      description: 'Records food batches, runs forecasts, monitors alerts, and submits batches for review. Can record an authorised approval decision according to institutional policy.',
       icon: <ChefHat className="w-8 h-8 text-emerald-600" />,
       features: [
-        'AI Demand Forecasting Calculator',
-        'Surplus Batch Registration & Tracking',
-        'Virtual IoT Cold-Chain Monitoring',
-        'Authorized Safety Inspection Approvals'
+        'AI-Assisted Demand Forecasting Baseline',
+        'Food Batch Registration & Surplus Tracking',
+        'Virtual Storage Telemetry Monitoring',
+        'Authorised Redistribution Review & Approval'
       ],
       gradient: 'from-emerald-500/10 to-teal-500/10 hover:border-emerald-500',
       badgeColor: 'bg-emerald-100 text-emerald-800'
@@ -75,13 +75,13 @@ export const RoleSelectionPage: React.FC<RoleSelectionPageProps> = ({
     {
       role: 'Administrator',
       title: 'Sustainability Administrator',
-      description: 'Supervise entire institution network, calibrate IoT sensors, tune cost/carbon factors, and export ESG reports.',
+      description: 'Supervisory access to configure policy thresholds, review compliance reports, and oversee the prototype approval workflow.',
       icon: <ShieldCheck className="w-8 h-8 text-purple-600" />,
       features: [
         'Executive Dashboard & 7-Day Analytics',
-        'Carbon Avoidance (kg CO2e) Accounting',
-        'Kitchen Configuration & Temperature Thresholds',
-        'Printable Audits & PDF/CSV Export'
+        'Estimated Economic & Carbon Impact Accounting',
+        'Policy Thresholds & Temperature Limits',
+        'Printable Compliance Audits & PDF/CSV Export'
       ],
       gradient: 'from-purple-500/10 to-pink-500/10 hover:border-purple-500',
       badgeColor: 'bg-purple-100 text-purple-800'

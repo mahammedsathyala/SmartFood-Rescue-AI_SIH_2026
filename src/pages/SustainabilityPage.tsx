@@ -210,20 +210,20 @@ export const SustainabilityPage: React.FC<SustainabilityPageProps> = ({ showToas
 
         {/* Card 5 */}
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs hover:border-emerald-300 transition-all">
-          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-tight truncate">Cost Savings</div>
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-tight truncate">Estimated Cost Savings</div>
           <div className="text-xl sm:text-2xl font-extrabold text-emerald-800 mt-1 font-display">
             ₹{impact.costSaved.toLocaleString('en-IN')}
           </div>
-          <span className="text-[10px] text-slate-400 block mt-0.5">@ ₹200 / kg avoid</span>
+          <span className="text-[10px] text-slate-400 block mt-0.5">Prototype estimate (@ ₹200/kg)</span>
         </div>
 
         {/* Card 6 */}
         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs hover:border-cyan-300 transition-all">
-          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-tight truncate">CO2e Avoided</div>
+          <div className="text-[10px] font-bold text-slate-500 uppercase tracking-tight truncate">Estimated CO2e Avoided</div>
           <div className="text-xl sm:text-2xl font-extrabold text-cyan-700 mt-1 font-display">
             {impact.carbonAvoided} kg
           </div>
-          <span className="text-[10px] text-slate-400 block mt-0.5">Factor: 2.5 kg CO2e</span>
+          <span className="text-[10px] text-slate-400 block mt-0.5">Prototype estimate (2.5 factor)</span>
         </div>
 
         {/* Card 7 */}

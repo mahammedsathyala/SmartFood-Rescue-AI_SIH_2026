@@ -185,7 +185,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span className="text-[10px] text-blue-600 font-normal">2 hrs ago</span>
                   </div>
                   <p className="mt-1 text-slate-600">
-                    Cold chain unit 1 maintained steady 5.2°C temperature in College Canteen pantry.
+                    Storage unit 1 maintained steady 5.2°C temperature in College Canteen pantry.
                   </p>
                 </div>
               </div>
