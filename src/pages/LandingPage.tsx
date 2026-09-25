@@ -55,7 +55,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     {
       num: '04',
       title: 'No Easy Redistribution',
-      desc: 'Lack of verified NGO network and logistical dispatch prevents rapid food rescue.',
+      desc: 'Lack of an organized NGO prototype directory and logistical dispatch prevents rapid food rescue.',
       icon: <HeartHandshake className="w-5 h-5 text-amber-600" />
     },
     {
@@ -87,7 +87,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
     },
     {
       title: 'NGO Matching',
-      desc: 'Multi-criteria matching algorithm pairs surplus with vetted Vijayawada shelters and food banks.',
+      desc: 'Multi-criteria matching algorithm pairs surplus with ranked NGO partners in the Vijayawada prototype directory.',
       icon: <HeartHandshake className="w-6 h-6 text-blue-600" />,
       color: 'from-blue-500/10 to-indigo-500/10 border-blue-200'
     },
@@ -107,33 +107,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
   const impactCards = [
     {
-      metric: '40%+',
-      title: 'Less Food Waste',
-      desc: 'Drastically cuts kitchen binning through proactive forecast adjustments.',
+      metric: '14 kg',
+      title: 'Food Rescued in Demo Scenario',
+      desc: 'Surplus batch prevented from going to waste in the canonical demo scenario.',
       icon: <Leaf className="w-5 h-5 text-emerald-600" />
     },
     {
-      metric: '500+ / wk',
-      title: 'More People Fed',
-      desc: 'Safe surplus reaches shelters, children homes, and community kitchens.',
+      metric: '56 meals',
+      title: 'Potential Meals Supported',
+      desc: 'Surplus meal portions redirected to community shelters in the demo scenario.',
       icon: <Users className="w-5 h-5 text-teal-600" />
     },
     {
-      metric: '2.5 kg / kg',
-      title: 'Lower Carbon Footprint',
-      desc: 'Reduces potent methane greenhouse gas emissions from landfills.',
+      metric: '35 kg CO2e',
+      submetric: '2.5 kg CO2e / kg',
+      title: 'Estimated Carbon Avoided',
+      desc: 'Prototype emission factor used for estimated impact reporting.',
       icon: <Sparkles className="w-5 h-5 text-cyan-600" />
     },
     {
-      metric: '₹200+ / kg',
-      title: 'Cost Savings',
-      desc: 'Direct reduction in institutional raw material budget and disposal costs.',
+      metric: '₹2,800',
+      title: 'Estimated Cost Savings',
+      desc: 'Estimated institutional raw material and food preparation value preserved.',
       icon: <Coins className="w-5 h-5 text-amber-600" />
     },
     {
-      metric: '100% ESG',
-      title: 'Sustainable Future',
-      desc: 'Empowers colleges to achieve Net Zero waste and SDG 12.3 compliance.',
+      metric: 'ESG Ready',
+      title: 'Supports sustainability reporting',
+      desc: 'Structured metrics aligned with institutional food-waste reduction efforts.',
       icon: <CheckCircle2 className="w-5 h-5 text-blue-600" />
     }
   ];
@@ -141,10 +142,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const workflowSteps = [
     { name: 'Kitchen Data', sub: 'Attendance & Menus' },
     { name: 'AI Forecast', sub: 'Optimal Prep Units' },
-    { name: 'Surplus Alert', sub: 'Weight & Meal Delta' },
+    { name: 'Surplus Alert', sub: 'Prepared vs Served Batch Data' },
     { name: 'Quality Assessment', sub: 'IoT Telemetry Score' },
-    { name: 'NGO Match', sub: 'Ranked Vetted Shelters' },
-    { name: 'Delivery Route', sub: 'Time-Safe Dispatch' },
+    { name: 'NGO Match', sub: 'Ranked Prototype Directory' },
+    { name: 'Delivery Route', sub: 'Deadline-Aware Route Planning' },
     { name: 'Impact Report', sub: 'CO2e & Rupee Metrics' }
   ];
 
@@ -287,7 +288,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               A Complete Closed-Loop Food Rescue Pipeline
             </h2>
             <p className="mt-2 text-sm text-slate-600">
-              Transforming overproduction into verified social welfare through automated decision support.
+              Transforming surplus food into community meal support aligned with food-waste reduction efforts.
             </p>
           </div>
 
@@ -376,12 +377,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   <div className="text-2xl font-extrabold text-slate-900 font-display">
                     {card.metric}
                   </div>
+                  {'submetric' in card && card.submetric && (
+                    <div className="text-[11px] font-mono text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded border border-cyan-200 mt-1 inline-block">
+                      {card.submetric}
+                    </div>
+                  )}
                   <h3 className="font-bold text-sm text-slate-800 mt-1">{card.title}</h3>
                   <p className="mt-2 text-xs text-slate-500 leading-relaxed">{card.desc}</p>
                 </div>
               </div>
             ))}
           </div>
+
+          <p className="mt-6 text-center text-xs text-slate-500 max-w-2xl mx-auto italic">
+            Illustrative prototype estimates based on configurable factors and demo data. Results must be validated during an institutional pilot.
+          </p>
         </div>
       </section>
 
@@ -429,7 +439,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             Demonstrating AI Demand Forecasting & Surplus Redistribution in Vijayawada, Andhra Pradesh.
           </p>
           <p className="text-slate-500 text-[11px]">
-            Software Simulation Mode • Virtual IoT Telemetry • Certified Human Food-Safety Verification Required
+            Software Simulation Mode • Virtual IoT Telemetry • Human-Reviewed Food Safety Inspection Required • Subject to Pilot Validation
           </p>
         </div>
       </footer>
