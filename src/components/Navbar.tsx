@@ -95,9 +95,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Right side: Date, Role Switcher, Notifications, User Profile */}
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Date Display */}
-        <div className="hidden lg:flex flex-col text-right pr-2 border-r border-slate-200">
+        <div className="hidden lg:flex items-center text-right pr-2 border-r border-slate-200">
           <span className="text-xs font-semibold text-slate-700">{formattedDate}</span>
-          <span className="text-[11px] text-slate-400">Live Prototype Hub</span>
         </div>
 
         {/* Guided Tour Trigger Button */}
