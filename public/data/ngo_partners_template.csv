@@ -1,0 +1,4 @@
+ngo_id,organization_name,area,street_address,distance_km,capacity_persons,availability_status,accepted_categories,operating_hours,contact_phone,has_refrigeration
+NGO-001,Hope Community Shelter,Benz Circle,Plot 42 Near Joyalukkas,3.2,120,Available,Rice;Curry;Breakfast,08:00 AM - 09:00 PM,+91 98499 11001,true
+NGO-002,Seva Food Bank & Trust,Patamata,Opp. High School Ground,4.8,80,Available,Rice;Curry;Snacks,07:00 AM - 08:30 PM,+91 98499 11002,false
+NGO-003,Helping Hands Children Home,Moghalrajpuram,Beside Siddhartha College,6.1,60,Busy,Rice;Breakfast;Dessert,09:00 AM - 07:00 PM,+91 98499 11003,true

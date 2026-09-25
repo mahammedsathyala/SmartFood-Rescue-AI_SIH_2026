@@ -14,7 +14,8 @@ export type NavigationTab =
   | 'route-planning' 
   | 'sustainability' 
   | 'reports' 
-  | 'settings';
+  | 'settings'
+  | 'dataset-management';
 
 export type FoodCategory = 'Rice' | 'Curry' | 'Snacks' | 'Breakfast' | 'Dessert' | 'Other';
 export type FoodType = 'Cooked Food' | 'Raw Material' | 'Packaged Food';

@@ -1,0 +1,4 @@
+date,day_of_week,target_headcount,weather_condition,is_special_menu,event_type,prev_day_consumption_kg,recommended_prep_units
+2026-09-26,Saturday,320,Sunny,false,None,124.5,295
+2026-09-27,Sunday,180,Cloudy,true,Weekend Brunch,72.0,165
+2026-09-28,Monday,350,Rainy,false,Semester Exams,138.0,330

@@ -87,7 +87,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
     { step: 2, label: 'NGO Accepted', desc: 'Shelter coordinator approved delivery slot' },
     { step: 3, label: 'Driver Assigned', desc: `${driverName} (${vehicle}) assigned` },
     { step: 4, label: 'Food Collected', desc: 'Insulated hot containers loaded at canteen' },
-    { step: 5, label: 'In Transit', desc: 'En route via Benz Circle corridor' },
+    { step: 5, label: 'In Transit', desc: `En route to ${currentRoute?.destination || 'Shelter'}` },
     { step: 6, label: 'Delivered', desc: 'Handover complete & receipt acknowledged' },
   ];
 
@@ -201,13 +201,13 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
                 <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-rose-500" />
-                  <span>Transit Corridor Endpoints (Manual Entry)</span>
+                  <span>Transit Corridor Endpoints & Distance (Manual Entry)</span>
                 </h3>
                 <span className="text-[11px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  Custom Location Mode
+                  Custom Location & Distance Mode
                 </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Pickup Origin (Kitchen Hub)
@@ -232,6 +232,52 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                   />
                 </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Corridor Distance (km)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0.5"
+                    max="100"
+                    value={currentRoute.distanceKm}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      onUpdateRoute({ ...currentRoute, distanceKm: isNaN(val) ? 0 : val });
+                    }}
+                    placeholder="e.g. 3.2"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-emerald-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                  />
+                </div>
+              </div>
+
+              {/* Quick Distance Presets */}
+              <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] font-semibold text-slate-500">Quick Distance Presets:</span>
+                {[
+                  { label: '2.0 km (Local)', val: 2.0 },
+                  { label: '3.2 km (Standard)', val: 3.2 },
+                  { label: '5.5 km (Cross-Town)', val: 5.5 },
+                  { label: '8.0 km (Suburban)', val: 8.0 },
+                  { label: '12.0 km (Express)', val: 12.0 },
+                ].map((p) => (
+                  <button
+                    key={p.val}
+                    type="button"
+                    onClick={() => {
+                      onUpdateRoute({ ...currentRoute, distanceKm: p.val });
+                      showToast('Distance Updated', `Transit distance set to ${p.val} km. ETA recalculated!`, 'info');
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer ${
+                      currentRoute.distanceKm === p.val
+                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -376,7 +422,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs text-xs space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-slate-900">Driver & Delivery Proof</span>
-                <span className="text-[10px] text-emerald-700 font-bold">Auto AP 16 TX 4920</span>
+                <span className="text-[10px] text-emerald-700 font-bold">{vehicle} • AP 16 TX 4920</span>
               </div>
 
               <div className="p-3 bg-slate-50 rounded-xl space-y-1">

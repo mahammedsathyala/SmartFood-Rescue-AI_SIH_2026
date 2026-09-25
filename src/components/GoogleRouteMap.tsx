@@ -91,11 +91,11 @@ export const GoogleRouteMap: React.FC<GoogleRouteMapProps> = ({
 
         mapInstanceRef.current = map;
 
-        // 1. Green Origin Marker (Smart College Canteen, Vijayawada)
+        // 1. Green Origin Marker
         const originMarker = new window.google.maps.Marker({
           position: CANONICAL_ORIGIN,
           map,
-          title: `Smart College Canteen, Vijayawada`,
+          title: originName,
           icon: {
             url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
             scaledSize: new window.google.maps.Size(40, 40)
@@ -106,8 +106,8 @@ export const GoogleRouteMap: React.FC<GoogleRouteMapProps> = ({
           content: `
             <div style="font-family: inherit; padding: 6px; color: #0f172a; max-width: 200px;">
               <span style="font-size: 10px; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.5px;">Origin (Kitchen Hub)</span>
-              <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">Smart College Canteen</div>
-              <div style="font-size: 11px; color: #64748b;">Vijayawada, Andhra Pradesh</div>
+              <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">${originName}</div>
+              <div style="font-size: 11px; color: #64748b;">Origin Kitchen Hub</div>
             </div>
           `
         });
@@ -116,11 +116,11 @@ export const GoogleRouteMap: React.FC<GoogleRouteMapProps> = ({
           originInfoWindow.open(map, originMarker);
         });
 
-        // 2. Red Destination Marker (Hope Food Bank, Benz Circle, Vijayawada)
+        // 2. Red Destination Marker
         const destinationMarker = new window.google.maps.Marker({
           position: CANONICAL_DESTINATION,
           map,
-          title: `Hope Food Bank, Benz Circle, Vijayawada`,
+          title: destinationName,
           icon: {
             url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
             scaledSize: new window.google.maps.Size(40, 40)
@@ -131,8 +131,8 @@ export const GoogleRouteMap: React.FC<GoogleRouteMapProps> = ({
           content: `
             <div style="font-family: inherit; padding: 6px; color: #0f172a; max-width: 200px;">
               <span style="font-size: 10px; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.5px;">Destination (Recipient NGO)</span>
-              <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">Hope Food Bank</div>
-              <div style="font-size: 11px; color: #64748b;">Benz Circle, Vijayawada</div>
+              <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">${destinationName}</div>
+              <div style="font-size: 11px; color: #64748b;">Recipient Partner Shelter</div>
             </div>
           `
         });
@@ -212,8 +212,8 @@ export const GoogleRouteMap: React.FC<GoogleRouteMapProps> = ({
       <div className="p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-50/50">
         <div className="flex items-center gap-2">
           <Navigation className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span className="font-bold text-xs sm:text-sm text-slate-900">
-            Vijayawada Transit Corridor: Smart College Canteen → Benz Circle
+          <span className="font-bold text-xs sm:text-sm text-slate-900 truncate">
+            Transit Corridor: {originName} → {destinationName}
           </span>
         </div>
 
@@ -328,8 +328,8 @@ export const GoogleRouteMap: React.FC<GoogleRouteMapProps> = ({
               totalMinutes = (distanceKm / vehicleSpeedKmPerHour) * 60 + 10
             </code>
           </div>
-          <div className="text-[10px] text-slate-400">
-            Canonical Scenario: 3.2 km @ 20 km/h + 10m buffer = 20 minutes
+          <div className="text-[10px] text-slate-500 font-medium">
+            Live Calculation: {distanceKm} km with {vehicleType} + {handlingTimeMinutes}m buffer = <strong className="text-emerald-700">{totalTimeMinutes} mins</strong>
           </div>
         </div>
       </div>

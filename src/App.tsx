@@ -54,6 +54,7 @@ import { RoutePlanningPage } from './pages/RoutePlanningPage';
 import { SustainabilityPage } from './pages/SustainabilityPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { DatasetManagementPage } from './pages/DatasetManagementPage';
 
 export function App() {
   // App view level: 'landing' | 'role-selection' | 'app'
@@ -243,7 +244,8 @@ export function App() {
     'route-planning': 'Pickup & Delivery Route Planning',
     'sustainability': 'Sustainability & ESG Analytics',
     'reports': 'Audit & Impact Reports',
-    'settings': 'Kitchen & System Settings'
+    'settings': 'Kitchen & System Settings',
+    'dataset-management': 'Dataset Governance & Ingestion'
   };
 
   // Render Landing Page
@@ -438,6 +440,16 @@ export function App() {
                 onSaveSettings={handleSaveSettings}
                 onResetAllData={() => setIsResetModalOpen(true)}
                 showToast={showToast}
+              />
+            )}
+
+            {currentTab === 'dataset-management' && (
+              <DatasetManagementPage
+                activeRole={activeRole}
+                onSwitchRole={handleRoleChange}
+                showToast={showToast}
+                onAddBatch={handleAddBatch}
+                onAddForecast={handleAddForecast}
               />
             )}
           </main>

@@ -1,0 +1,3 @@
+route_id,donation_request_id,batch_id,origin_address,destination_address,distance_km,vehicle_type,driver_name,driver_phone,travel_time_minutes,handling_buffer_minutes,total_eta_minutes,delivery_status
+ROUTE-001,REQ-100201,BATCH-2026-001,Smart College Canteen Hub,Hope Community Shelter,3.2,Auto,Suresh Kumar,+91 98499 12345,10,10,20,In Transit
+ROUTE-002,REQ-100202,BATCH-2026-002,Smart College Canteen Hub,Seva Food Bank & Trust,4.8,Van,Ramesh Varma,+91 98499 12346,12,10,22,Pickup Scheduled

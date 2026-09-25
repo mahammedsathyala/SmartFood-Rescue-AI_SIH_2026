@@ -1,0 +1,4 @@
+batch_id,food_item,category,food_type,meals_prepared,meals_served,prepared_kg,served_kg,prep_datetime,use_by_deadline,storage_condition,packaging_status,appearance
+BATCH-2026-001,Mixed Vegetable Pulao & Dal,Rice,Cooked Food,310,270,93.0,81.0,2026-09-25T13:00,2026-09-25T19:00,Proper,Intact,Normal
+BATCH-2026-002,Paneer Butter Masala,Curry,Cooked Food,120,105,36.0,31.5,2026-09-25T13:30,2026-09-25T18:30,Proper,Intact,Normal
+BATCH-2026-003,Whole Wheat Chapatis,Breakfast,Cooked Food,250,220,25.0,22.0,2026-09-25T12:45,2026-09-25T18:45,Proper,Intact,Normal

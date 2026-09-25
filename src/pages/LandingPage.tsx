@@ -13,7 +13,6 @@ import {
   CheckCircle2, 
   AlertCircle, 
   ChevronRight,
-  MapPin,
   Clock,
   Building2,
   CalendarCheck
@@ -171,12 +170,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-3xl leading-relaxed">
               AI-Powered Food Waste Reduction and Sustainable Redistribution for College Canteens, Hostels, and Institutional Kitchens.
             </p>
-
-            {/* City Demonstration Note */}
-            <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-slate-500 bg-white px-3 py-1.5 rounded-full border border-slate-200 shadow-2xs">
-              <MapPin className="w-3.5 h-3.5 text-rose-500" />
-              <span>Configured for Demonstration: Smart College Canteen, Vijayawada, Andhra Pradesh</span>
-            </div>
 
             {/* Call to Actions */}
             <div className="mt-8 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">

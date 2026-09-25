@@ -13,7 +13,8 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
-  ShieldAlert
+  ShieldAlert,
+  Database
 } from 'lucide-react';
 import { NavigationTab, UserRole } from '../types';
 
@@ -51,6 +52,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'sustainability', label: 'Sustainability Analytics', icon: <Leaf className="w-5 h-5 shrink-0" /> },
     { id: 'reports', label: 'Reports', icon: <FileText className="w-5 h-5 shrink-0" /> },
     { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5 shrink-0" /> },
+    ...(activeRole === 'Administrator' ? [
+      { id: 'dataset-management' as NavigationTab, label: 'Dataset Management', icon: <Database className="w-5 h-5 shrink-0" />, badge: 'Admin' }
+    ] : []),
   ];
 
   const handleTabClick = (tab: NavigationTab) => {
