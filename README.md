@@ -1,6 +1,6 @@
 # 🍲 SmartFood Rescue AI
 > **Tagline:** *“Predict. Rescue. Redistribute. Measure.”*  
-> **Smart India Hackathon Software Edition:** Problem Statement **SIH26234**  
+> **Smart India Hackathon Software Edition**  
 > **Team Name:** Annadata AI  
 > **Repository:** `SmartFood-Rescue-AI_SIH_2026`  
 > **Demonstration Pilot:** Vijayawada, Andhra Pradesh, India 🇮🇳  
@@ -292,7 +292,7 @@ $$\text{Travel Time (minutes)} = \left(\frac{\text{Distance (km)}}{\text{Vehicle
 
 | Page / Module | Purpose & Core Capabilities |
 | :--- | :--- |
-| **1. Landing Page** | Public front page with problem workflow, 6-pillar solution, impact cards, and SIH26234 problem context. |
+| **1. Landing Page** | Public front page with problem workflow, 6-pillar solution, impact cards, and institutional problem context. |
 | **2. Role Selection** | Quick entry point to login as **Demo User** under 4 operational roles: *Kitchen Staff*, *NGO Partner*, *Delivery Partner*, *Administrator*. |
 | **3. Operational Dashboard** | 8 primary KPI cards, 4 Recharts graphs (7-day waste trend, prep vs served, batch status pie, weekly volume), recent alerts, pending NGO requests, delivery timeline. |
 | **4. Demand Forecast** | Interactive calculator with attendance slider, meal category pickers, baseline rule checkboxes, risk badge, recommendation message, history table, and CSV export. |
@@ -668,7 +668,7 @@ Follow this 5-minute flow to demonstrate the entire ecosystem during evaluation:
 
 - **Team Name:** Annadata AI
 - **Project:** SmartFood Rescue AI
-- **Smart India Hackathon Problem Statement:** SIH26234
+- **Theme:** AI-Powered Food Waste Reduction & Sustainable Redistribution
 - **Lead Developer:** [Mahammed Sathyala](https://github.com/mahammedsathyala)
 - **Repository:** [https://github.com/mahammedsathyala/SmartFood-Rescue-AI_SIH_2026](https://github.com/mahammedsathyala/SmartFood-Rescue-AI_SIH_2026)
 

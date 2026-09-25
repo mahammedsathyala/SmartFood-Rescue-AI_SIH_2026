@@ -39,6 +39,7 @@ import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { ToastContainer } from './components/Toast';
 import { ConfirmationModal } from './components/ConfirmationModal';
+import { GuidedDemoTour } from './components/GuidedDemoTour';
 
 // Pages
 import { LandingPage } from './pages/LandingPage';
@@ -75,6 +76,7 @@ export function App() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isDemoTourOpen, setIsDemoTourOpen] = useState(false);
 
   // Cross-page parameters
   const [targetBatchIdForQuality, setTargetBatchIdForQuality] = useState<string | undefined>(undefined);
@@ -255,6 +257,11 @@ export function App() {
             setCurrentTab('dashboard');
           }}
           onSelectRole={(role) => handleSelectRoleFromLanding(role)}
+          onStartTour={() => {
+            setViewMode('app');
+            setCurrentTab('demand-forecast');
+            setIsDemoTourOpen(true);
+          }}
         />
         <ToastContainer toasts={toasts} onDismiss={handleDismissToast} />
       </>
@@ -310,6 +317,8 @@ export function App() {
               }
             }}
             onNavigateLanding={() => setViewMode('landing')}
+            onStartDemoTour={() => setIsDemoTourOpen(!isDemoTourOpen)}
+            isDemoTourActive={isDemoTourOpen}
           />
 
           <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
@@ -433,7 +442,7 @@ export function App() {
       <ConfirmationModal
         isOpen={isResetModalOpen}
         title="Reset to Canonical Demo Data?"
-        message="This will restore all batches, predictions, IoT telemetry logs, and Vijayawada NGO dispatch routes to the default SIH26234 canonical demo scenario."
+        message="This will restore all batches, predictions, IoT telemetry logs, and Vijayawada NGO dispatch routes to the default canonical demo scenario."
         confirmLabel="Reset All Data"
         cancelLabel="Keep Current State"
         variant="warning"
@@ -443,6 +452,18 @@ export function App() {
 
       {/* Toast Notification Container */}
       <ToastContainer toasts={toasts} onDismiss={handleDismissToast} />
+
+      {/* Guided Walkthrough Tour for Evaluators */}
+      <GuidedDemoTour
+        isOpen={isDemoTourOpen}
+        onClose={() => setIsDemoTourOpen(false)}
+        currentTab={currentTab}
+        onNavigateTab={(tab) => {
+          setCurrentTab(tab);
+          if (viewMode !== 'app') setViewMode('app');
+        }}
+        onSwitchRole={handleRoleChange}
+      />
     </div>
   );
 }

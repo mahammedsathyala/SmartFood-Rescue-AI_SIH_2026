@@ -164,7 +164,7 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-teal-700 bg-teal-100/80 px-2.5 py-0.5 rounded-full">
               Demand Forecasting Baseline
             </span>
-            <span className="text-xs text-slate-400">SIH26234 Decision Support</span>
+            <span className="text-xs text-slate-400">AI Decision Support</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
             AI-Assisted, Data-Informed Demand Forecasting

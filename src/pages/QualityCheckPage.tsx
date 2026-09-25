@@ -123,7 +123,7 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-cyan-700 bg-cyan-100/80 px-2.5 py-0.5 rounded-full">
               Decision-Support Quality Engine
             </span>
-            <span className="text-xs text-slate-400">SIH26234 Safety Gate</span>
+            <span className="text-xs text-slate-400">Certified Safety Gate</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
             Food Quality Assessment & Eligibility

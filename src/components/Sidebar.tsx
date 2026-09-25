@@ -85,7 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     SmartFood <span className="text-emerald-600">Rescue</span>
                   </div>
                   <div className="text-[10px] text-slate-400 font-semibold tracking-wide uppercase">
-                    SIH26234 • AP Vijayawada
+                    AI Ecosystem • AP Vijayawada
                   </div>
                 </div>
               </div>

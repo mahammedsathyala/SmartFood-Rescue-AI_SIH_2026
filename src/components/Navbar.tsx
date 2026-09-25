@@ -23,6 +23,8 @@ interface NavbarProps {
   onResetData: () => void;
   onToggleSidebar: () => void;
   onNavigateLanding: () => void;
+  onStartDemoTour?: () => void;
+  isDemoTourActive?: boolean;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -33,7 +35,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout,
   onResetData,
   onToggleSidebar,
-  onNavigateLanding
+  onNavigateLanding,
+  onStartDemoTour,
+  isDemoTourActive = false
 }) => {
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -89,8 +93,24 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Date Display */}
         <div className="hidden lg:flex flex-col text-right pr-2 border-r border-slate-200">
           <span className="text-xs font-semibold text-slate-700">{formattedDate}</span>
-          <span className="text-[11px] text-slate-400">SIH26234 Live Prototype</span>
+          <span className="text-[11px] text-slate-400">Live Prototype Hub</span>
         </div>
+
+        {/* Guided Tour Trigger Button */}
+        {onStartDemoTour && (
+          <button
+            onClick={onStartDemoTour}
+            className={`flex items-center gap-1.5 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl text-xs font-bold transition-all border shadow-2xs cursor-pointer ${
+              isDemoTourActive
+                ? 'bg-linear-to-r from-emerald-600 to-teal-600 text-white border-emerald-500 shadow-emerald-600/20'
+                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
+            }`}
+            title="Start SIH Evaluator Guided Tour"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-emerald-500 animate-pulse" />
+            <span className="hidden sm:inline">SIH Tour</span>
+          </button>
+        )}
 
         {/* Role Selector Pill */}
         <div className="relative">

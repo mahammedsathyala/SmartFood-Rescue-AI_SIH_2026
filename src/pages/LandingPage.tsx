@@ -19,17 +19,20 @@ import {
   CalendarCheck
 } from 'lucide-react';
 import { UserRole } from '../types';
+import { WasteSavingsCalculator } from '../components/WasteSavingsCalculator';
 
 interface LandingPageProps {
   onGetStarted: () => void;
   onExploreDashboard: () => void;
   onSelectRole: (role: UserRole) => void;
+  onStartTour?: () => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
   onGetStarted,
   onExploreDashboard,
-  onSelectRole
+  onSelectRole,
+  onStartTour
 }) => {
   const problems = [
     {
@@ -148,17 +151,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans">
-      {/* Top Banner for SIH 2026 */}
-      <div className="bg-linear-to-r from-emerald-700 via-teal-700 to-cyan-700 text-white text-xs py-2 px-4 text-center font-medium shadow-xs">
-        <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 flex-wrap">
-          <span className="bg-white/20 text-white px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider">
-            SIH Problem Statement: SIH26234
-          </span>
-          <span>
-            AI-Powered Smart Food Waste Reduction & Sustainable Redistribution Ecosystem • Prototype City: Vijayawada, AP
-          </span>
-        </div>
-      </div>
 
       {/* Hero Section */}
       <header className="relative overflow-hidden bg-gradient-to-b from-white via-emerald-50/30 to-slate-50 pt-12 pb-20 border-b border-slate-200">
@@ -203,6 +195,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <span>Explore Live Dashboard</span>
                 <ChevronRight className="w-4 h-4 text-slate-400" />
               </button>
+
+              {onStartTour && (
+                <button
+                  onClick={onStartTour}
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-sm sm:text-base border border-emerald-300 shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4 text-emerald-600 animate-pulse" />
+                  <span>SIH Walkthrough Mode</span>
+                </button>
+              )}
             </div>
 
             {/* Canonical Demo Highlights Badge */}
@@ -271,6 +273,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Interactive ROI & Carbon Impact Calculator Section */}
+      <section className="py-16 bg-slate-950 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <WasteSavingsCalculator onExploreDemo={onExploreDashboard} />
         </div>
       </section>
 
@@ -387,7 +396,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <section className="py-16 bg-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-2xl sm:text-3xl font-display font-bold text-slate-900">
-            Ready to Experience the SIH26234 Prototype?
+            Ready to Experience the Live Prototype?
           </h2>
           <p className="mt-2 text-sm text-slate-600 max-w-xl mx-auto">
             Select one of the 4 operational roles to explore role-specific views or proceed to the main dashboard.
@@ -421,7 +430,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
       <footer className="mt-auto py-8 bg-slate-900 text-slate-400 text-xs text-center border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 space-y-2">
           <p className="font-semibold text-slate-200">
-            SmartFood Rescue AI • SIH26234 Prototype
+            SmartFood Rescue AI • Live Prototype
           </p>
           <p>
             Demonstrating AI Demand Forecasting & Surplus Redistribution in Vijayawada, Andhra Pradesh.

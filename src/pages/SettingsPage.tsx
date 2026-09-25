@@ -58,7 +58,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-purple-700 bg-purple-100/80 px-2.5 py-0.5 rounded-full">
               System Configuration
             </span>
-            <span className="text-xs text-slate-400">SIH26234 Control Plane</span>
+            <span className="text-xs text-slate-400">Platform Control Plane</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
             Kitchen & Platform Parameters

@@ -237,7 +237,7 @@ export const FoodBatchesPage: React.FC<FoodBatchesPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full">
               Real-time Surplus Tracking
             </span>
-            <span className="text-xs text-slate-400">SIH26234 Detection Engine</span>
+            <span className="text-xs text-slate-400">Surplus Detection Engine</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
             Food Batches & Surplus Detection

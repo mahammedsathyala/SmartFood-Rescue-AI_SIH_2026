@@ -48,6 +48,7 @@ import {
   UserRole 
 } from '../types';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
+import { PipelineStepper } from '../components/PipelineStepper';
 
 interface DashboardPageProps {
   batches: FoodBatch[];
@@ -136,7 +137,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full">
-              Canonical SIH26234 Scenario Active
+              Canonical Live Scenario Active
             </span>
             <span className="text-xs text-slate-400">Vijayawada, AP</span>
           </div>
@@ -173,6 +174,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           </button>
         </div>
       </div>
+
+      {/* End-to-End Visual Workflow Pipeline */}
+      <PipelineStepper 
+        batches={batches}
+        donations={donations}
+        iotData={iotData}
+        onNavigate={onNavigate}
+      />
 
       {/* 8 Primary KPI Cards Required by Prompt */}
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">

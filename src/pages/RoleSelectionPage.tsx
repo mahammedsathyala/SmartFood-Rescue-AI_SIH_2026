@@ -110,7 +110,7 @@ export const RoleSelectionPage: React.FC<RoleSelectionPageProps> = ({
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>SIH26234 Role-Based Access</span>
+            <span>Unified Role-Based Access</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-slate-900 tracking-tight">
             Select Your Role to Continue

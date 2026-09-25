@@ -126,7 +126,7 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-amber-700 bg-amber-100/80 px-2.5 py-0.5 rounded-full">
               Formal Institutional Audit
             </span>
-            <span className="text-xs text-slate-400">SIH26234 Compliance</span>
+            <span className="text-xs text-slate-400">FSSAI & Institutional Compliance</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
             Redistribution & Sustainability Reports
@@ -248,7 +248,7 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">
-                Smart India Hackathon • Problem Statement SIH26234
+                SmartFood Rescue AI System Report
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display mt-1">
@@ -405,7 +405,7 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
               </span>
             </div>
             <div className="font-bold text-slate-800">Verified AI System Audit</div>
-            <div className="text-[11px] text-slate-500">SmartFood Rescue AI • SIH26234</div>
+            <div className="text-[11px] text-slate-500">SmartFood Rescue AI</div>
             <div className="text-[10px] text-slate-400">Automated Digital Timestamp</div>
           </div>
         </div>

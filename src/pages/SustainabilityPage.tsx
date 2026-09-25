@@ -151,7 +151,7 @@ export const SustainabilityPage: React.FC<SustainabilityPageProps> = ({ showToas
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full">
               UN SDG 12.3 & ESG Reporting
             </span>
-            <span className="text-xs text-slate-400">SIH26234 Impact Engine</span>
+            <span className="text-xs text-slate-400">Sustainability Impact Engine</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
             Sustainability & Carbon Impact Analytics
