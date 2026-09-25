@@ -1,0 +1,63 @@
+type DemandForecast @table {
+  date: Date!
+  mealType: String!
+  attendance: Int!
+  predictedDemand: Float!
+  recommendedPrep: Float!
+  risk: String
+}
+
+type FoodBatch @table {
+  foodItem: String!
+  category: String!
+  preparedKg: Float!
+  servedKg: Float!
+  remainingKg: Float!
+  prepDateTime: Timestamp!
+  deadlineDateTime: Timestamp!
+  storageCondition: String
+  packagingStatus: String
+  appearance: String
+  qualityScore: Float
+  qualityStatus: String!
+  donationStatus: String!
+  forecast: DemandForecast
+}
+
+type VirtualIoTSensor @table {
+  batch: FoodBatch!
+  temperature: Float!
+  humidity: Float!
+  weight: Float!
+  storageHours: Float!
+  alertLevel: String
+  deviceStatus: String!
+}
+
+type NGOPartner @table {
+  name: String!
+  area: String!
+  distanceKm: Float!
+  capacityKg: Float!
+  availability: String!
+  acceptsCategories: [String]
+  hasRefrigeration: Boolean
+  rating: Float
+}
+
+type DonationRequest @table {
+  batch: FoodBatch!
+  ngo: NGOPartner!
+  quantityKg: Float!
+  pickupWindow: String!
+  status: String!
+}
+
+type DeliveryRoute @table {
+  donation: DonationRequest!
+  vehicleType: String
+  distanceKm: Float!
+  travelTimeMinutes: Int
+  estimatedArrival: Timestamp!
+  safetyStatus: String!
+}

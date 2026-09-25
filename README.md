@@ -10,6 +10,8 @@
 [![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.3-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![SIH 2026](https://img.shields.io/badge/SIH-2026-FF9933?style=flat&logo=target&logoColor=white)](https://www.sih.gov.in/)
+[![Firebase](https://img.shields.io/badge/Firebase-v12-FFCA28?style=flat&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Hosting: Live](https://img.shields.io/badge/Live_Demo-Firebase_Hosting-0288D1?style=flat&logo=google-cloud&logoColor=white)](https://smartfood-rescue-ai-25f38.web.app)
 [![Zero Hardware Required](https://img.shields.io/badge/Hardware-Software_Simulation_Mode-10B981?style=flat&logo=cpu&logoColor=white)](#-virtual-iot-monitoring-simulator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -160,9 +162,14 @@ The platform is constructed on modern, type-safe web technologies configured for
 | **Micro-Interactions** | [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) | `^1.9.4` | Lightweight celebratory physics animation triggered upon successful food rescue dispatch and receipt completion. |
 | **Static Code Quality** | [Oxlint](https://oxc-project.github.io/) | `^1.81.0` | High-performance Rust-based static analyzer enforcing clean code, optimal patterns, and zero lint warnings across the codebase. |
 | **Type Definitions** | `@types/node`, `@types/react`, `@types/react-dom`, `@types/canvas-confetti` | Latest | Standardized type declarations for browser and Node.js toolchain interoperability. |
+| **Cloud Services & DB** | [Firebase](https://firebase.google.com/) | `^12.19.0` | Google Cloud Firebase suite integrating Cloud Firestore real-time database, Authentication, Cloud Storage (batch verification photos), and Analytics with HMR protection. |
+| **Serverless Functions** | [Firebase Functions](https://firebase.google.com/docs/functions) | `^7.0.0` | TypeScript serverless Cloud Functions codebase (`functions/`) for automated scheduled audits, real-time alerts, and backend webhook triggers. |
+| **Edge CDN Hosting** | [Firebase Hosting](https://firebase.google.com/docs/hosting) | Global CDN | Production single-page application hosting with instant worldwide edge distribution (`smartfood-rescue-ai-25f38.web.app`). |
 
 ### Architectural Design Decisions
-1. **Zero External Backend Runtime:** By running mathematical evaluation models and state management within pure TypeScript services backed by browser `LocalStorage v2`, the app runs completely offline with 0% chance of third-party API rate limits, server downtime, or authentication hurdles during evaluation.
+1. **Hybrid Dual-Persistence Strategy (Local-First + Cloud Sync):** 
+   - **Offline-First Resilience:** In live hackathon pitches, venue Wi-Fi drops can kill cloud-dependent apps. SmartFood Rescue AI runs pure deterministic TypeScript algorithms and reactive state backed by browser `LocalStorage v2`, guaranteeing 100% functionality with zero latency even without internet access.
+   - **Cloud Extensibility:** Pre-wired with Google Firebase (`src/services/firebase.ts`, `firestore.rules`, `functions/`) for multi-device sync, Firestore batch streaming, and Cloud Functions backend automation.
 2. **Tailwind v4 Native CSS:** Zero-configuration CSS compilation using modern `@import "tailwindcss";` in `src/index.css` provides optimized bundle size, high performance, and rapid UI development.
 3. **Hardware-Free Deterministic Simulation:** Physical IoT hardware in live hackathon venues frequently suffers from Wi-Fi drops, battery exhaustion, or calibration drift. Our Virtual IoT Simulator replicates multi-sensor telemetry mathematically while providing judges with interactive threshold controls (Normal, Warning, Danger) to test system resilience in real time.
 
@@ -446,15 +453,46 @@ Vite will serve the `/dist` folder locally at `http://localhost:4173/`.
 | `npm run build` | `tsc -b && vite build` | Performs strict whole-project TypeScript typechecking and compiles minified production assets into `/dist`. |
 | `npm run lint` | `oxlint` | Runs the high-performance Oxlint linter across all `.ts` and `.tsx` files in the repository. |
 | `npm run preview` | `vite preview` | Boots a lightweight local HTTP server to preview and test the built production distribution. |
+| `npx firebase deploy --only hosting` | `firebase deploy` | Deploys the compiled `/dist` single-page application to Firebase Hosting edge CDN. |
+| `npx firebase deploy` | `firebase deploy` | Deploys all services (Hosting, Firestore rules, and Cloud Functions) simultaneously. |
+| `npm --prefix functions run build` | `tsc` | Compiles serverless TypeScript Cloud Functions in `/functions`. |
 
 ---
 
-### Environment & Zero-Config Architecture
+### Environment & Cloud Configuration
 
-SmartFood Rescue AI requires **zero environment configuration** out-of-the-box:
-- **No `.env` File Required:** No third-party API keys (e.g., Google Maps, OpenAI, weather APIs) are required to run the prototype.
-- **No Cloud Database Required:** All data models are processed in-memory and persisted via browser `LocalStorage v2`.
-- **100% Offline Capable:** Once `npm install` completes, the entire application can run, simulate IoT telemetry, plan routes, and generate ESG reports completely offline without an active internet connection.
+SmartFood Rescue AI is engineered for both **plug-and-play zero-config offline usage** and **cloud-ready production deployment**:
+- **Offline / Zero-Config by Default:** All core algorithms, simulations, route planning, and ESG reporting operate out-of-the-box without requiring external API keys. Data persists seamlessly in browser `LocalStorage v2`.
+- **Firebase Cloud Services (.env):** When connecting to live Firebase Cloud Firestore, Authentication, or Storage, credentials are automatically loaded from `.env` (with a `.env.example` template provided):
+  ```bash
+  VITE_FIREBASE_API_KEY=AIzaSyC7VchI...
+  VITE_FIREBASE_AUTH_DOMAIN=smartfood-rescue-ai.firebaseapp.com
+  VITE_FIREBASE_PROJECT_ID=smartfood-rescue-ai
+  VITE_FIREBASE_STORAGE_BUCKET=smartfood-rescue-ai.firebasestorage.app
+  VITE_FIREBASE_MESSAGING_SENDER_ID=86396956859
+  VITE_FIREBASE_APP_ID=1:86396956859:web:daa396f63a353ce132b99e
+  VITE_FIREBASE_MEASUREMENT_ID=G-WBWCX7W49D
+  ```
+- **Live Deployment:** The production build is hosted live at [https://smartfood-rescue-ai-25f38.web.app](https://smartfood-rescue-ai-25f38.web.app).
+
+---
+
+### 🗺️ Maps Integration
+
+SmartFood Rescue AI implements a secure, resilient dual-mode route visualization system:
+
+- **Google Maps Demo Key (`VITE_GOOGLE_MAPS_DEMO_KEY`):**
+  - Optional client-side environment variable (`.env.local`).
+  - Used strictly in the React frontend to render an interactive Google Map with origin (Smart College Canteen) and destination (Hope Food Bank, Benz Circle) markers and route polylines for testing and prototyping.
+  - Displays: `“Google Maps Demo Integration — testing/prototyping only.”`
+- **Route Simulation Mode (Zero-Crash Fallback):**
+  - If no demo key is configured, or if the key is missing, invalid, expired, or unavailable, the application operates in **Route Simulation Mode**.
+  - Renders a clean animated transit corridor simulation without crashing or depending on external APIs.
+  - Displays: `“Map Simulation Mode — Google Maps demo key is unavailable.”`
+- **Secure Server Routes Key (`GOOGLE_MAPS_SERVER_ROUTES_KEY`):**
+  - The production Google Routes Server Key is **never exposed to the browser, Vite client code, or public bundles**.
+  - Stored only in backend environments (`backend/.env.example`).
+  - Reserved for future secure backend execution (FastAPI/Node.js via `POST /api/routes/estimate`) where the backend queries the Google Routes API securely and streams sanitized metrics to the client.
 
 ---
 
@@ -514,9 +552,21 @@ SmartFood-Rescue-AI_SIH_2026/
 ├── tsconfig.json                # Root TypeScript configuration
 ├── tsconfig.app.json            # Application TypeScript settings
 ├── vite.config.ts               # Vite configuration with React & Tailwind plugins
+├── .env.example                 # Template for Firebase credentials & environment keys
+├── .firebaserc                  # Firebase project routing (smartfood-rescue-ai)
+├── firebase.json                # Firebase Hosting (dist/), Firestore & Functions routing
+├── firestore.rules              # Cloud Firestore security rules
+├── firestore.indexes.json       # Cloud Firestore query index definitions
+├── backend/                     # Future-ready secure backend architecture
+│   ├── .env.example             # Secret GOOGLE_MAPS_SERVER_ROUTES_KEY template
+│   └── README.md                # Server Routes API & POST /api/routes/estimate docs
 ├── docs/
 │   └── screenshots/             # Visual UI walkthrough artifacts
 │       └── .gitkeep
+├── functions/                   # Serverless Firebase Cloud Functions codebase
+│   ├── src/index.ts             # Cloud Functions triggers & background worker
+│   ├── package.json             # Functions dependencies (firebase-admin, functions v7)
+│   └── tsconfig.json            # TypeScript build configuration for functions
 ├── src/
 │   ├── main.tsx                 # React DOM bootstrapping
 │   ├── App.tsx                  # Master application shell & state coordinator
@@ -524,11 +574,13 @@ SmartFood-Rescue-AI_SIH_2026/
 │   ├── types/
 │   │   └── index.ts             # Domain models (Batch, Forecast, IoT, NGO, Route, ESG)
 │   ├── services/
+│   │   ├── firebase.ts          # Firebase SDK client initialization (Auth, DB, Storage)
 │   │   ├── mockData.ts          # Seed data for Vijayawada canonical scenario
 │   │   └── storage.ts           # LocalStorage service, math formulas & algorithms
 │   ├── components/
 │   │   ├── Navbar.tsx           # Top header with role switcher, notifications, date
 │   │   ├── Sidebar.tsx          # Collapsible/mobile-responsive navigation sidebar
+│   │   ├── GoogleRouteMap.tsx   # Dual-mode Google Maps & Corridor Simulation component
 │   │   ├── DisclaimerBanner.tsx # Software simulation & food safety disclaimers
 │   │   ├── ConfirmationModal.tsx# Reusable modal for alerts and data resets
 │   │   └── Toast.tsx            # Animated notification alert container

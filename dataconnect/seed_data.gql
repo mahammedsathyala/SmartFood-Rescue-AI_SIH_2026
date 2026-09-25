@@ -1,0 +1,29 @@
+mutation SeedData @transaction @auth(level: USER) {
+  demandForecast_insertMany(data: [
+    { date: "2023-11-01", mealType: "Lunch", attendance: 100, predictedDemand: 100.0, recommendedPrep: 110.0, risk: "Low" },
+    { date: "2023-11-02", mealType: "Dinner", attendance: 150, predictedDemand: 150.0, recommendedPrep: 165.0, risk: "Medium" },
+    { date: "2023-11-03", mealType: "Breakfast", attendance: 80, predictedDemand: 80.0, recommendedPrep: 90.0, risk: "Low" }
+  ])
+  foodBatch_insertMany(data: [
+    { foodItem: "Pasta", category: "Carbs", preparedKg: 50.0, servedKg: 40.0, remainingKg: 10.0, prepDateTime: "2023-11-01T10:00:00Z", deadlineDateTime: "2023-11-02T10:00:00Z", qualityStatus: "Good", donationStatus: "Available" },
+    { foodItem: "Chicken", category: "Protein", preparedKg: 30.0, servedKg: 25.0, remainingKg: 5.0, prepDateTime: "2023-11-02T11:00:00Z", deadlineDateTime: "2023-11-03T11:00:00Z", qualityStatus: "Good", donationStatus: "Claimed" },
+    { foodItem: "Salad", category: "Vegetables", preparedKg: 20.0, servedKg: 10.0, remainingKg: 10.0, prepDateTime: "2023-11-03T09:00:00Z", deadlineDateTime: "2023-11-04T09:00:00Z", qualityStatus: "Excellent", donationStatus: "Available" }
+  ])
+  nGOPartner_insertMany(data: [
+    { name: "City Food Bank", area: "Downtown", distanceKm: 2.5, capacityKg: 500.0, availability: "Daily", rating: 4.8 },
+    { name: "Hope Kitchen", area: "Northside", distanceKm: 5.2, capacityKg: 200.0, availability: "Weekends", rating: 4.5 },
+    { name: "Community Table", area: "Westside", distanceKm: 8.0, capacityKg: 300.0, availability: "Daily", rating: 4.9 }
+  ])
+  donationRequest_insertMany(data: [
+    { quantityKg: 10.0, pickupWindow: "14:00-16:00", status: "Pending", batch: { id: "00000000-0000-0000-0000-000000000000" }, ngo: { id: "00000000-0000-0000-0000-000000000000" } },
+    { quantityKg: 5.0, pickupWindow: "10:00-12:00", status: "Completed", batch: { id: "00000000-0000-0000-0000-000000000000" }, ngo: { id: "00000000-0000-0000-0000-000000000000" } }
+  ])
+  deliveryRoute_insertMany(data: [
+    { distanceKm: 3.0, estimatedArrival: "2023-11-01T15:00:00Z", safetyStatus: "Clear", donation: { id: "00000000-0000-0000-0000-000000000000" } },
+    { distanceKm: 6.0, estimatedArrival: "2023-11-02T11:00:00Z", safetyStatus: "Clear", donation: { id: "00000000-0000-0000-0000-000000000000" } }
+  ])
+  virtualIoTSensor_insertMany(data: [
+    { temperature: 4.5, humidity: 60.0, weight: 10.0, storageHours: 2.0, deviceStatus: "Online", batch: { id: "00000000-0000-0000-0000-000000000000" } },
+    { temperature: 5.2, humidity: 62.0, weight: 5.0, storageHours: 5.0, deviceStatus: "Online", batch: { id: "00000000-0000-0000-0000-000000000000" } }
+  ])
+}

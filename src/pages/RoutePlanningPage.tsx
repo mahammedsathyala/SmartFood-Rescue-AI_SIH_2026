@@ -1,24 +1,10 @@
 import React, { useState } from 'react';
 import { 
-  Navigation, 
-  MapPin, 
   Truck, 
   Bike, 
   Car, 
-  Clock, 
-  CheckCircle2, 
-  AlertTriangle, 
-  User, 
-  Phone, 
   Camera, 
-  Upload, 
-  Check, 
-  Sparkles, 
-  ArrowRight,
-  ShieldCheck,
-  Building2,
-  Calendar,
-  Fuel
+  Check 
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { 
@@ -30,6 +16,7 @@ import {
   UserRole 
 } from '../types';
 import { calculateRouteTime } from '../services/storage';
+import { GoogleRouteMap } from '../components/GoogleRouteMap';
 
 interface RoutePlanningPageProps {
   routes: DeliveryRoute[];
@@ -194,86 +181,16 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column: Route Details, Mock Map & Metrics (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Mock Map View */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <div className="flex items-center gap-2">
-                  <Navigation className="w-4 h-4 text-emerald-600" />
-                  <span className="font-bold text-xs sm:text-sm text-slate-900">
-                    Live Transit Corridor Simulation (Vijayawada)
-                  </span>
-                </div>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                  Corridor Status: Safe
-                </span>
-              </div>
-
-              {/* Graphical SVG / Mock Map Interface */}
-              <div className="relative h-64 sm:h-72 bg-linear-to-br from-slate-900 via-slate-800 to-teal-950 p-6 flex flex-col justify-between overflow-hidden">
-                {/* Background Street Grid Effect */}
-                <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]" />
-
-                {/* SVG Route Line */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                  <path
-                    d="M 80 180 Q 220 70 420 120"
-                    fill="transparent"
-                    stroke="#10b981"
-                    strokeWidth="4"
-                    strokeDasharray="6 6"
-                    className="animate-pulse"
-                  />
-                </svg>
-
-                {/* Top Origin Marker */}
-                <div className="relative z-10 flex items-center gap-3">
-                  <div className="p-2.5 bg-emerald-500 text-white rounded-2xl shadow-lg shadow-emerald-500/30 flex items-center justify-center">
-                    <Building2 className="w-5 h-5" />
-                  </div>
-                  <div className="bg-slate-900/90 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10 text-white text-xs">
-                    <span className="text-[10px] text-emerald-400 font-bold block uppercase">Origin (Kitchen Hub)</span>
-                    <span className="font-bold">{currentRoute.origin}</span>
-                  </div>
-                </div>
-
-                {/* Floating Distance Badge on Route */}
-                <div className="relative z-10 self-center bg-emerald-600/90 text-white text-[11px] font-extrabold px-3 py-1 rounded-full shadow-lg border border-white/20 flex items-center gap-1.5">
-                  <Truck className="w-3.5 h-3.5" />
-                  <span>{distanceKm} km • ~{timeCalc.totalTimeMinutes} mins</span>
-                </div>
-
-                {/* Bottom Destination Marker */}
-                <div className="relative z-10 self-end flex items-center gap-3">
-                  <div className="bg-slate-900/90 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10 text-white text-xs text-right">
-                    <span className="text-[10px] text-teal-400 font-bold block uppercase">Destination (Recipient NGO)</span>
-                    <span className="font-bold">{currentRoute.destination}</span>
-                  </div>
-                  <div className="p-2.5 bg-teal-500 text-white rounded-2xl shadow-lg shadow-teal-500/30 flex items-center justify-center">
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Route Computation Metrics Bar */}
-              <div className="p-4 bg-slate-50 border-t border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Route Distance</span>
-                  <span className="text-base font-extrabold text-slate-900 font-display">{distanceKm} km</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Transit Time</span>
-                  <span className="text-base font-bold text-teal-700 font-display">{timeCalc.travelTimeMinutes} mins</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Handling Buffer</span>
-                  <span className="text-base font-bold text-slate-700 font-display">{timeCalc.handlingTimeMinutes} mins</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[10px] uppercase font-bold">Estimated Arrival</span>
-                  <span className="text-base font-extrabold text-emerald-700 font-display">{timeCalc.estimatedArrival}</span>
-                </div>
-              </div>
-            </div>
+            {/* Google Map & Transit Corridor View (Interactive Google Maps when Demo Key is configured, Simulation Mode fallback) */}
+            <GoogleRouteMap
+              originName={currentRoute.origin}
+              destinationName={currentRoute.destination}
+              distanceKm={distanceKm}
+              vehicleType={vehicle}
+              travelTimeMinutes={timeCalc.travelTimeMinutes}
+              handlingTimeMinutes={timeCalc.handlingTimeMinutes}
+              totalTimeMinutes={timeCalc.totalTimeMinutes}
+            />
 
             {/* Vehicle Selection & Specs */}
             <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs">

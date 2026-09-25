@@ -1,0 +1,172 @@
+mutation UpsertDeliveryRoute($data: DeliveryRoute_Data!) @auth(level: USER) {
+  deliveryRoute_upsert(data: $data)
+}
+
+mutation DeleteDeliveryRoute($id: UUID!) @auth(level: USER) {
+  deliveryRoute_delete(id: $id)
+}
+
+mutation UpdateDeliveryRoute($id: UUID!, $data: DeliveryRoute_Data!) @auth(level: USER) {
+  deliveryRoute_update(id: $id, data: $data)
+}
+
+query GetDeliveryRoute($id: UUID!) @auth(level: USER) {
+  deliveryRoute(id: $id) {
+    id
+    distanceKm
+    estimatedArrival
+    safetyStatus
+  }
+}
+
+query ListDeliveryRoutes @auth(level: USER) {
+  deliveryRoutes {
+    id
+    vehicleType
+    distanceKm
+  }
+}
+
+mutation UpsertDemandForecast($data: DemandForecast_Data!) @auth(level: USER) {
+  demandForecast_upsert(data: $data)
+}
+
+mutation DeleteDemandForecast($id: UUID!) @auth(level: USER) {
+  demandForecast_delete(id: $id)
+}
+
+mutation UpdateDemandForecast($id: UUID!, $data: DemandForecast_Data!) @auth(level: USER) {
+  demandForecast_update(id: $id, data: $data)
+}
+
+query GetDemandForecast($id: UUID!) @auth(level: USER) {
+  demandForecast(id: $id) {
+    id
+    date
+    mealType
+    predictedDemand
+  }
+}
+
+query ListDemandForecasts @auth(level: USER) {
+  demandForecasts {
+    id
+    date
+    attendance
+  }
+}
+
+mutation UpsertDonationRequest($data: DonationRequest_Data!) @auth(level: USER) {
+  donationRequest_upsert(data: $data)
+}
+
+mutation DeleteDonationRequest($id: UUID!) @auth(level: USER) {
+  donationRequest_delete(id: $id)
+}
+
+mutation UpdateDonationRequest($id: UUID!, $data: DonationRequest_Data!) @auth(level: USER) {
+  donationRequest_update(id: $id, data: $data)
+}
+
+query GetDonationRequest($id: UUID!) @auth(level: USER) {
+  donationRequest(id: $id) {
+    id
+    quantityKg
+    status
+  }
+}
+
+query ListDonationRequests @auth(level: USER) {
+  donationRequests {
+    id
+    quantityKg
+    status
+  }
+}
+
+mutation UpsertFoodBatch($data: FoodBatch_Data!) @auth(level: USER) {
+  foodBatch_upsert(data: $data)
+}
+
+mutation DeleteFoodBatch($id: UUID!) @auth(level: USER) {
+  foodBatch_delete(id: $id)
+}
+
+mutation UpdateFoodBatch($id: UUID!, $data: FoodBatch_Data!) @auth(level: USER) {
+  foodBatch_update(id: $id, data: $data)
+}
+
+query GetFoodBatch($id: UUID!) @auth(level: USER) {
+  foodBatch(id: $id) {
+    id
+    foodItem
+    preparedKg
+    qualityStatus
+  }
+}
+
+query ListFoodBatches @auth(level: USER) {
+  foodBatches {
+    id
+    foodItem
+    category
+  }
+}
+
+mutation UpsertNGOPartner($data: NGOPartner_Data!) @auth(level: PUBLIC, insecureReason: "NGO partner list is intended to be public for food collection transparency.") {
+  nGOPartner_upsert(data: $data)
+}
+
+mutation DeleteNGOPartner($id: UUID!) @auth(level: USER) {
+  nGOPartner_delete(id: $id)
+}
+
+mutation UpdateNGOPartner($id: UUID!, $data: NGOPartner_Data!) @auth(level: USER) {
+  nGOPartner_update(id: $id, data: $data)
+}
+
+query GetNGOPartner($id: UUID!) @auth(level: PUBLIC, insecureReason: "Public directory of NGO partners.") {
+  nGOPartner(id: $id) {
+    id
+    name
+    area
+    rating
+  }
+}
+
+query ListNGOPartners @auth(level: PUBLIC, insecureReason: "Public directory of NGO partners.") {
+  nGOPartners {
+    id
+    name
+    area
+  }
+}
+
+mutation UpsertVirtualIoTSensor($data: VirtualIoTSensor_Data!) @auth(level: USER) {
+  virtualIoTSensor_upsert(data: $data)
+}
+
+mutation DeleteVirtualIoTSensor($id: UUID!) @auth(level: USER) {
+  virtualIoTSensor_delete(id: $id)
+}
+
+mutation UpdateVirtualIoTSensor($id: UUID!, $data: VirtualIoTSensor_Data!) @auth(level: USER) {
+  virtualIoTSensor_update(id: $id, data: $data)
+}
+
+query GetVirtualIoTSensor($id: UUID!) @auth(level: USER) {
+  virtualIoTSensor(id: $id) {
+    id
+    temperature
+    humidity
+    deviceStatus
+  }
+}
+
+query ListVirtualIoTSensors @auth(level: USER) {
+  virtualIoTSensors {
+    id
+    temperature
+    deviceStatus
+  }
+}
