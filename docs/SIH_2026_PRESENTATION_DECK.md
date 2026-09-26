@@ -131,6 +131,6 @@
 * **Lucide & Canvas-Confetti:** Intuitive visual feedback and micro-interactions.
 
 #### D. Live Links & Demonstration
-* **Live Web Application Prototype:** [Enter Your Deployed Vercel / Firebase URL]
+* **Live Web Application Prototype:** [https://smartfood-rescue-ai-25f38.web.app](https://smartfood-rescue-ai-25f38.web.app) (Fallback: [https://smartfood-rescue-ai.web.app](https://smartfood-rescue-ai.web.app))
 * **GitHub Source Repository:** `https://github.com/mahammedsathyala/SmartFood-Rescue-AI_SIH_2026.git`
 * **Video Demonstration:** [Enter Video Drive/YouTube Unlisted Link]
