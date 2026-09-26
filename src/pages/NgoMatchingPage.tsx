@@ -30,16 +30,17 @@ import {
 } from '../types';
 import { matchNGOsForBatch } from '../services/storage';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
+import { useAppContext } from '../context/AppContext';
 
 interface NgoMatchingPageProps {
-  batches: FoodBatch[];
-  ngos: NGOPartner[];
-  donations: DonationRequest[];
-  activeRole: UserRole;
+  batches?: FoodBatch[];
+  ngos?: NGOPartner[];
+  donations?: DonationRequest[];
+  activeRole?: UserRole;
   selectedBatchIdInitially?: string;
-  onAddDonationRequest: (req: DonationRequest) => void;
-  onUpdateDonationRequest: (req: DonationRequest) => void;
-  onUpdateBatch: (batch: FoodBatch) => void;
+  onAddDonationRequest?: (req: DonationRequest) => void;
+  onUpdateDonationRequest?: (req: DonationRequest) => void;
+  onUpdateBatch?: (batch: FoodBatch) => void;
   onProceedToRoutePlanning: (donationId: string) => void;
   showToast: (title: string, message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
   settings?: AppSettings | null;
@@ -58,13 +59,23 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
   showToast,
   settings
 }) => {
+  const context = useAppContext();
+  const effectiveBatches = batches || context.batches;
+  const effectiveNgos = ngos || context.ngos;
+  const effectiveDonations = donations || context.donations;
+  const effectiveRole = activeRole || context.activeRole;
+  const effectiveSettings = settings || context.settings;
+  const effectiveAddDonation = onAddDonationRequest || context.handleAddDonation;
+  const effectiveUpdateDonation = onUpdateDonationRequest || context.handleUpdateDonation;
+  const effectiveUpdateBatch = onUpdateBatch || context.handleUpdateBatch;
+
   // Find suitable batch
-  const eligibleBatches = batches.filter(b => b.remainingKg > 0 && b.donationStatus !== 'Do Not Redistribute');
+  const eligibleBatches = effectiveBatches.filter(b => b.remainingKg > 0 && b.donationStatus !== 'Do Not Redistribute');
   const [selectedBatchId, setSelectedBatchId] = useState<string>(
-    selectedBatchIdInitially || eligibleBatches[0]?.id || batches[0]?.id || ''
+    selectedBatchIdInitially || eligibleBatches[0]?.id || effectiveBatches[0]?.id || ''
   );
 
-  const selectedBatch = batches.find(b => b.id === selectedBatchId) || batches[0];
+  const selectedBatch = effectiveBatches.find(b => b.id === selectedBatchId) || effectiveBatches[0];
 
   // Filters for NGOs
   const [maxDistance, setMaxDistance] = useState<number>(10);
@@ -76,7 +87,7 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
   const [pickupWindow, setPickupWindow] = useState('02:30 PM - 03:30 PM');
   const [notes, setNotes] = useState('Ground floor pantry loading ramp, insulated hot transport vessels.');
   const [customPickupAddress, setCustomPickupAddress] = useState<string>(
-    settings?.kitchenAddress || 'Smart College Canteen, MG Road'
+    effectiveSettings?.kitchenAddress || 'Smart College Canteen, MG Road'
   );
 
   useEffect(() => {
@@ -86,7 +97,7 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
   }, [settings?.kitchenAddress]);
 
   // Run matching logic
-  const rankedNGOs = selectedBatch ? matchNGOsForBatch(selectedBatch, ngos) : [];
+  const rankedNGOs = selectedBatch ? matchNGOsForBatch(selectedBatch, effectiveNgos) : [];
 
   // Filtered Ranked NGOs
   const filteredNGOs = rankedNGOs.filter(ngo => {
@@ -99,7 +110,7 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
   const bestMatchNgo = filteredNGOs[0] || rankedNGOs[0];
 
   // Active donation request for current batch
-  const currentDonation = donations.find(d => d.batchId === selectedBatchId);
+  const currentDonation = effectiveDonations.find(d => d.batchId === selectedBatchId);
 
   // Send Offer to NGO
   const handleOpenSendModal = (ngo: NGOPartner) => {
@@ -120,7 +131,7 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
       quantityKg: selectedBatch.remainingKg,
       preparationTime: selectedBatch.prepDateTime,
       deadline: selectedBatch.deadlineDateTime,
-      pickupAddress: customPickupAddress || settings?.kitchenAddress || 'Smart College Canteen Hub',
+      pickupAddress: customPickupAddress || effectiveSettings?.kitchenAddress || 'Smart College Canteen Hub',
       pickupWindow,
       qualityStatus: selectedBatch.qualityStatus,
       status: 'Offered',
@@ -128,8 +139,8 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
       createdAt: new Date().toISOString()
     };
 
-    onAddDonationRequest(newDonation);
-    onUpdateBatch({
+    effectiveAddDonation(newDonation);
+    effectiveUpdateBatch({
       ...selectedBatch,
       donationStatus: 'Offered',
       matchedNgoId: requestModalNgo.id
@@ -145,9 +156,9 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
       ...req,
       status: 'Accepted'
     };
-    onUpdateDonationRequest(updated);
+    effectiveUpdateDonation(updated);
     if (selectedBatch) {
-      onUpdateBatch({
+      effectiveUpdateBatch({
         ...selectedBatch,
         donationStatus: 'Accepted'
       });
@@ -166,7 +177,7 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
       status: 'Rejected',
       rejectionReason: 'Capacity filled with earlier donation / Volunteer team deployed elsewhere'
     };
-    onUpdateDonationRequest(updated);
+    effectiveUpdateDonation(updated);
 
     showToast(
       'NGO Declined Offer',
@@ -210,7 +221,7 @@ export const NgoMatchingPage: React.FC<NgoMatchingPageProps> = ({
             onChange={(e) => setSelectedBatchId(e.target.value)}
             className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
           >
-            {batches.map(b => (
+            {effectiveBatches.map(b => (
               <option key={b.id} value={b.id}>
                 {b.foodItem} ({b.remainingKg} kg) - {b.id.slice(-9)}
               </option>

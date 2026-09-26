@@ -19,12 +19,13 @@ import {
 } from 'lucide-react';
 import { FoodBatch, DemandForecastRecord, NGOPartner, DonationRequest } from '../types';
 import { calculateSustainabilityImpact, getSettings } from '../services/storage';
+import { useAppContext } from '../context/AppContext';
 
 interface ReportsPageProps {
-  batches: FoodBatch[];
-  forecasts: DemandForecastRecord[];
-  ngos: NGOPartner[];
-  donations: DonationRequest[];
+  batches?: FoodBatch[];
+  forecasts?: DemandForecastRecord[];
+  ngos?: NGOPartner[];
+  donations?: DonationRequest[];
   showToast: (title: string, message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
@@ -35,8 +36,13 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
   donations,
   showToast,
 }) => {
-  const settings = getSettings();
-  const impact = calculateSustainabilityImpact();
+  const context = useAppContext();
+  const effectiveBatches = batches || context.batches;
+  const effectiveForecasts = forecasts || context.forecasts;
+  const effectiveNgos = ngos || context.ngos;
+  const effectiveDonations = donations || context.donations;
+  const settings = context.settings || getSettings();
+  const impact = calculateSustainabilityImpact(effectiveBatches, effectiveDonations, context.routes, settings);
 
   // Filter criteria
   const [dateRange, setDateRange] = useState('Last 7 Days (18 Sep - 24 Sep 2026)');
@@ -49,14 +55,14 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
   const [isGenerated, setIsGenerated] = useState(true);
 
   // Filtered batches for report
-  const reportBatches = batches.filter(b => {
+  const reportBatches = effectiveBatches.filter(b => {
     const matchCat = selectedCategory === 'ALL' || b.category === selectedCategory;
     const matchStat = selectedStatus === 'ALL' || b.donationStatus === selectedStatus;
     const matchNgo = selectedNgo === 'ALL' || b.matchedNgoId === selectedNgo;
     return matchCat && matchStat && matchNgo;
   });
 
-  const totalPredicted = forecasts.reduce((acc, f) => acc + f.predictedDemand, 0);
+  const totalPredicted = effectiveForecasts.reduce((acc, f) => acc + f.predictedDemand, 0);
   const totalPrepared = reportBatches.reduce((acc, b) => acc + b.mealsPrepared, 0);
   const totalServed = reportBatches.reduce((acc, b) => acc + b.mealsServed, 0);
   const totalSurplusKg = reportBatches.reduce((acc, b) => acc + b.remainingKg, 0);
@@ -210,7 +216,7 @@ export const ReportsPage: React.FC<ReportsPageProps> = ({
               className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-hidden"
             >
               <option value="ALL">All NGOs</option>
-              {ngos.map(n => (
+              {effectiveNgos.map(n => (
                 <option key={n.id} value={n.id}>{n.name}</option>
               ))}
             </select>

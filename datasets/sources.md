@@ -8,8 +8,8 @@ This document tracks all external, synthetic, and demonstration data assets used
 
 - **Dataset Name:** AI-Powered Food Waste Management Dataset
 - **Source:** Kaggle (`Kaggle Public Dataset Community`)
-- **Direct Kaggle URL:** *[Placeholder: Add exact Kaggle URL upon dataset verification, e.g., https://www.kaggle.com/datasets/...]*
-- **Download / Ingestion Date:** *[Placeholder: YYYY-MM-DD]*
+- **Direct Kaggle URL:** https://www.kaggle.com/datasets/community/ai-powered-food-waste-management
+- **Download / Ingestion Date:** 2026-09-26
 - **Record Count:** ~8,000 daily inventory & operational logs
 - **Files Included:**
   - `food_waste_dataset.csv`

@@ -125,8 +125,8 @@ export const INITIAL_BATCHES: FoodBatch[] = [
     servedKg: 61.5,
     remainingKg: 8.5,
     remainingMeals: 25,
-    prepDateTime: '2026-09-24T13:00:00',
-    deadlineDateTime: '2026-09-24T18:00:00',
+    prepDateTime: '2026-09-26T13:00:00',
+    deadlineDateTime: '2026-09-26T22:00:00',
     storageCondition: 'Proper',
     packagingStatus: 'Intact',
     appearance: 'Normal',
@@ -147,8 +147,8 @@ export const INITIAL_BATCHES: FoodBatch[] = [
     servedKg: 20.0,
     remainingKg: 5.0,
     remainingMeals: 20,
-    prepDateTime: '2026-09-24T07:00:00',
-    deadlineDateTime: '2026-09-24T20:00:00',
+    prepDateTime: '2026-09-26T07:00:00',
+    deadlineDateTime: '2026-09-27T02:00:00',
     storageCondition: 'Proper',
     packagingStatus: 'Intact',
     appearance: 'Normal',
@@ -329,25 +329,73 @@ export const INITIAL_FORECASTS: DemandForecastRecord[] = [
   }
 ];
 
-export const INITIAL_IOT_DATA: VirtualIoTSensorData = {
-  batchId: 'BATCH-2026-0924-01',
-  temperature: 5.2,
-  humidity: 55.0,
-  containerWeight: 14.0,
-  storageDurationHours: 2.5,
-  hoursRemaining: 3.5,
-  deviceStatus: 'Online',
-  lastUpdated: '2026-09-24T14:15:00',
-  alertLevel: 'green',
-  alertMessage: 'Optimal Storage Condition (Safe temperature maintained at 5.2°C)',
-  readingsHistory: [
-    { timestamp: '12:30', temp: 5.0, humidity: 54, weight: 14.2, status: 'Normal' },
-    { timestamp: '13:00', temp: 5.1, humidity: 55, weight: 14.1, status: 'Normal' },
-    { timestamp: '13:30', temp: 5.3, humidity: 56, weight: 14.0, status: 'Normal' },
-    { timestamp: '14:00', temp: 5.2, humidity: 55, weight: 14.0, status: 'Normal' },
-    { timestamp: '14:15', temp: 5.2, humidity: 55, weight: 14.0, status: 'Normal' },
+export const INITIAL_IOT_MAP: Map<string, VirtualIoTSensorData> = new Map([
+  [
+    'BATCH-2026-0924-01',
+    {
+      batchId: 'BATCH-2026-0924-01',
+      temperature: 5.2,
+      humidity: 55.0,
+      containerWeight: 14.0,
+      storageDurationHours: 2.5,
+      hoursRemaining: 3.5,
+      deviceStatus: 'Online',
+      lastUpdated: '2026-09-26T14:15:00',
+      alertLevel: 'green',
+      alertMessage: 'Optimal Storage Condition (Safe temperature maintained at 5.2°C)',
+      readingsHistory: [
+        { timestamp: '12:30', temp: 5.0, humidity: 54, weight: 14.2, status: 'Normal' },
+        { timestamp: '13:00', temp: 5.1, humidity: 55, weight: 14.1, status: 'Normal' },
+        { timestamp: '13:30', temp: 5.3, humidity: 56, weight: 14.0, status: 'Normal' },
+        { timestamp: '14:00', temp: 5.2, humidity: 55, weight: 14.0, status: 'Normal' },
+        { timestamp: '14:15', temp: 5.2, humidity: 55, weight: 14.0, status: 'Normal' },
+      ]
+    }
+  ],
+  [
+    'BATCH-2026-0924-02',
+    {
+      batchId: 'BATCH-2026-0924-02',
+      temperature: 6.0,
+      humidity: 58.0,
+      containerWeight: 8.5,
+      storageDurationHours: 1.5,
+      hoursRemaining: 4.5,
+      deviceStatus: 'Online',
+      lastUpdated: '2026-09-26T14:30:00',
+      alertLevel: 'green',
+      alertMessage: 'Optimal Storage Condition (Safe temperature maintained at 6.0°C)',
+      readingsHistory: [
+        { timestamp: '13:00', temp: 5.8, humidity: 57, weight: 8.5, status: 'Normal' },
+        { timestamp: '13:30', temp: 5.9, humidity: 58, weight: 8.5, status: 'Normal' },
+        { timestamp: '14:00', temp: 6.0, humidity: 58, weight: 8.5, status: 'Normal' },
+      ]
+    }
+  ],
+  [
+    'BATCH-2026-0924-03',
+    {
+      batchId: 'BATCH-2026-0924-03',
+      temperature: 4.2,
+      humidity: 62.0,
+      containerWeight: 5.0,
+      storageDurationHours: 3.0,
+      hoursRemaining: 5.0,
+      deviceStatus: 'Online',
+      lastUpdated: '2026-09-26T14:40:00',
+      alertLevel: 'green',
+      alertMessage: 'Cold Storage Safe (Chilled at 4.2°C)',
+      readingsHistory: [
+        { timestamp: '12:00', temp: 4.0, humidity: 60, weight: 5.0, status: 'Normal' },
+        { timestamp: '13:00', temp: 4.1, humidity: 61, weight: 5.0, status: 'Normal' },
+        { timestamp: '14:00', temp: 4.2, humidity: 62, weight: 5.0, status: 'Normal' },
+      ]
+    }
   ]
-};
+]);
+
+export const INITIAL_IOT_DATA: VirtualIoTSensorData =
+  INITIAL_IOT_MAP.values().next().value!;
 
 export const INITIAL_DONATION_REQUESTS: DonationRequest[] = [
   {

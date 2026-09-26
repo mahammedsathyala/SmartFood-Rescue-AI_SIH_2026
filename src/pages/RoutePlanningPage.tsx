@@ -20,17 +20,18 @@ import {
 } from '../types';
 import { calculateRouteTime } from '../services/storage';
 import { GoogleRouteMap } from '../components/GoogleRouteMap';
+import { useAppContext } from '../context/AppContext';
 
 interface RoutePlanningPageProps {
-  routes: DeliveryRoute[];
-  batches: FoodBatch[];
-  donations: DonationRequest[];
-  ngos: NGOPartner[];
-  activeRole: UserRole;
+  routes?: DeliveryRoute[];
+  batches?: FoodBatch[];
+  donations?: DonationRequest[];
+  ngos?: NGOPartner[];
+  activeRole?: UserRole;
   selectedDonationIdInitially?: string;
-  onUpdateRoute: (route: DeliveryRoute) => void;
-  onUpdateBatch: (batch: FoodBatch) => void;
-  onUpdateDonation: (donation: DonationRequest) => void;
+  onUpdateRoute?: (route: DeliveryRoute) => void;
+  onUpdateBatch?: (batch: FoodBatch) => void;
+  onUpdateDonation?: (donation: DonationRequest) => void;
   showToast: (title: string, message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
   settings?: AppSettings | null;
 }
@@ -48,14 +49,25 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
   showToast,
   settings
 }) => {
+  const context = useAppContext();
+  const effectiveRoutes = routes || context.routes;
+  const effectiveBatches = batches || context.batches;
+  const effectiveDonations = donations || context.donations;
+  const effectiveNgos = ngos || context.ngos;
+  const effectiveRole = activeRole || context.activeRole;
+  const effectiveSettings = settings || context.settings;
+  const effectiveUpdateRoute = onUpdateRoute || context.handleUpdateRoute;
+  const effectiveUpdateBatch = onUpdateBatch || context.handleUpdateBatch;
+  const effectiveUpdateDonation = onUpdateDonation || context.handleUpdateDonation;
+
   // Select active route or default canonical route
   const [selectedRouteId, setSelectedRouteId] = useState<string>(
-    routes[0]?.id || 'ROUTE-2026-001'
+    effectiveRoutes[0]?.id || 'ROUTE-2026-001'
   );
 
-  const currentRoute = routes.find(r => r.id === selectedRouteId) || routes[0];
-  const currentBatch = batches.find(b => b.id === currentRoute?.batchId) || batches[0];
-  const currentNgo = ngos.find(n => n.id === currentRoute?.ngoId) || ngos[0];
+  const currentRoute = effectiveRoutes.find(r => r.id === selectedRouteId) || effectiveRoutes[0];
+  const currentBatch = effectiveBatches.find(b => b.id === currentRoute?.batchId) || effectiveBatches[0];
+  const currentNgo = effectiveNgos.find(n => n.id === currentRoute?.ngoId) || effectiveNgos[0];
 
   // Vehicle selector
   const [vehicle, setVehicle] = useState<'Bike' | 'Auto' | 'Van' | 'Refrigerated Van'>(
@@ -109,20 +121,20 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
       completedAt: isDelivered ? new Date().toISOString() : currentRoute.completedAt
     };
 
-    onUpdateRoute(updatedRoute);
+    effectiveUpdateRoute(updatedRoute);
 
     // Update batch and donation request status
     if (isDelivered) {
       if (currentBatch) {
-        onUpdateBatch({
+        effectiveUpdateBatch({
           ...currentBatch,
           donationStatus: 'Delivered',
           assignedDriver: `${driverName} (${vehicle})`
         });
       }
-      const matchedDonation = donations.find(d => d.id === currentRoute.donationId || d.batchId === currentRoute.batchId);
+      const matchedDonation = effectiveDonations.find(d => d.id === currentRoute.donationId || d.batchId === currentRoute.batchId);
       if (matchedDonation) {
-        onUpdateDonation({
+        effectiveUpdateDonation({
           ...matchedDonation,
           status: 'Delivered'
         });
@@ -155,7 +167,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-100/80 px-2.5 py-0.5 rounded-full">
               Time-Critical Redistribution
             </span>
-            <span className="text-xs text-slate-400">{settings?.city ? `${settings.city} Safe Corridor` : 'Safe Transit Corridor'}</span>
+            <span className="text-xs text-slate-400">{effectiveSettings?.city ? `${effectiveSettings.city} Safe Corridor` : 'Safe Transit Corridor'}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
             Time-Aware Route Planning & Dispatch
@@ -173,7 +185,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
             onChange={(e) => setSelectedRouteId(e.target.value)}
             className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-hidden max-w-[240px] truncate"
           >
-            {routes.map(r => (
+            {effectiveRoutes.map(r => (
               <option key={r.id} value={r.id}>
                 {r.destination} ({r.distanceKm} km) - {r.id}
               </option>
@@ -205,7 +217,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
                   <input
                     type="text"
                     value={currentRoute.origin}
-                    onChange={(e) => onUpdateRoute({ ...currentRoute, origin: e.target.value })}
+                    onChange={(e) => effectiveUpdateRoute({ ...currentRoute, origin: e.target.value })}
                     placeholder="Enter pickup address..."
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                   />
@@ -217,7 +229,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
                   <input
                     type="text"
                     value={currentRoute.destination}
-                    onChange={(e) => onUpdateRoute({ ...currentRoute, destination: e.target.value })}
+                    onChange={(e) => effectiveUpdateRoute({ ...currentRoute, destination: e.target.value })}
                     placeholder="Enter destination address..."
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
                   />
@@ -234,7 +246,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
                     value={currentRoute.distanceKm}
                     onChange={(e) => {
                       const val = parseFloat(e.target.value);
-                      onUpdateRoute({ ...currentRoute, distanceKm: isNaN(val) ? 0 : val });
+                      effectiveUpdateRoute({ ...currentRoute, distanceKm: isNaN(val) ? 0 : val });
                     }}
                     placeholder="e.g. 3.2"
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-emerald-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
@@ -256,7 +268,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
                     key={p.val}
                     type="button"
                     onClick={() => {
-                      onUpdateRoute({ ...currentRoute, distanceKm: p.val });
+                      effectiveUpdateRoute({ ...currentRoute, distanceKm: p.val });
                       showToast('Distance Updated', `Transit distance set to ${p.val} km. ETA recalculated!`, 'info');
                     }}
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-colors cursor-pointer ${
@@ -272,7 +284,7 @@ export const RoutePlanningPage: React.FC<RoutePlanningPageProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    onUpdateRoute({
+                    effectiveUpdateRoute({
                       ...currentRoute,
                       origin: 'Smart College Canteen, MG Road, Vijayawada',
                       destination: 'Hope Food Bank, Benz Circle, Vijayawada',

@@ -21,11 +21,12 @@ import {
 } from 'lucide-react';
 import { DemandForecastRecord, FoodCategory } from '../types';
 import { calculateDemandForecast } from '../services/storage';
+import { useAppContext } from '../context/AppContext';
 
 interface DemandForecastPageProps {
-  forecasts: DemandForecastRecord[];
-  onAddForecast: (forecast: DemandForecastRecord) => void;
-  onDeleteForecast: (id: string) => void;
+  forecasts?: DemandForecastRecord[];
+  onAddForecast?: (forecast: DemandForecastRecord) => void;
+  onDeleteForecast?: (id: string) => void;
   showToast: (title: string, message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
@@ -35,6 +36,10 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
   onDeleteForecast,
   showToast,
 }) => {
+  const context = useAppContext();
+  const effectiveForecasts = forecasts || context.forecasts;
+  const effectiveAddForecast = onAddForecast || context.handleAddForecast;
+  const effectiveDeleteForecast = onDeleteForecast || context.handleDeleteForecast;
   // Form State initialized to the canonical demo scenario
   const [date, setDate] = useState<string>('2026-09-25');
   const [mealType, setMealType] = useState<'Breakfast' | 'Lunch' | 'Dinner'>('Lunch');
@@ -94,7 +99,7 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
       status: 'Pending Actuals'
     };
 
-    onAddForecast(newRecord);
+    effectiveAddForecast(newRecord);
     showToast('Prediction Saved', `AI generated recommendation of ${calculation.recommendedPreparation} meals saved to history.`, 'success');
   };
 
@@ -116,7 +121,7 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
   // CSV Export
   const handleExportCSV = () => {
     const headers = ['Date', 'Meal Type', 'Food Item', 'Category', 'Expected Attendance', 'Predicted Meals', 'Recommended Prep', 'Actual Served', 'Accuracy %', 'Risk', 'Status'];
-    const rows = forecasts.map(f => [
+    const rows = effectiveForecasts.map(f => [
       f.date,
       f.mealType,
       `"${f.foodItem}"`,
@@ -142,7 +147,7 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
   };
 
   // Filtered and Sorted Forecasts
-  const filteredForecasts = forecasts.filter(f => {
+  const filteredForecasts = effectiveForecasts.filter(f => {
     const matchesSearch = f.foodItem.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           f.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesMeal = filterMealType === 'ALL' || f.mealType === filterMealType;
@@ -554,7 +559,7 @@ export const DemandForecastPage: React.FC<DemandForecastPageProps> = ({
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button
-                        onClick={() => onDeleteForecast(f.id)}
+                        onClick={() => effectiveDeleteForecast(f.id)}
                         className="p-1 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
                         title="Delete forecast record"
                       >

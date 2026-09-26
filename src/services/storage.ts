@@ -17,7 +17,8 @@ import {
   INITIAL_NGOS, 
   INITIAL_DONATION_REQUESTS, 
   INITIAL_DELIVERY_ROUTES, 
-  INITIAL_IOT_DATA 
+  INITIAL_IOT_DATA,
+  INITIAL_IOT_MAP
 } from './mockData';
 
 const STORAGE_KEYS = {
@@ -161,25 +162,73 @@ export function addDeliveryRoute(route: DeliveryRoute): void {
   saveDeliveryRoutes([route, ...routes]);
 }
 
-// IoT Simulator Data
-export function getIoTData(batchId?: string): VirtualIoTSensorData {
-  const allData = safeGet<Record<string, VirtualIoTSensorData>>(STORAGE_KEYS.IOT_DATA, {
-    [INITIAL_IOT_DATA.batchId]: INITIAL_IOT_DATA
-  });
-  if (batchId && allData[batchId]) {
-    return allData[batchId];
-  }
-  // Return either batch specific or fallback
-  const firstKey = Object.keys(allData)[0];
-  return allData[firstKey] || INITIAL_IOT_DATA;
+// IoT Simulator Data (Per-Batch Map)
+export function createDefaultIoTData(batchId: string, weight: number = 10.0): VirtualIoTSensorData {
+  return {
+    batchId,
+    temperature: 5.2,
+    humidity: 55.0,
+    containerWeight: weight,
+    storageDurationHours: 2.0,
+    hoursRemaining: 4.0,
+    deviceStatus: 'Online',
+    lastUpdated: new Date().toISOString(),
+    alertLevel: 'green',
+    alertMessage: 'Optimal Storage Condition (Safe temperature maintained at 5.2°C)',
+    readingsHistory: [
+      { timestamp: '12:00', temp: 5.0, humidity: 54, weight, status: 'Normal' },
+      { timestamp: '13:00', temp: 5.2, humidity: 55, weight, status: 'Normal' },
+      { timestamp: '14:00', temp: 5.2, humidity: 55, weight, status: 'Normal' }
+    ]
+  };
 }
 
-export function saveIoTData(data: VirtualIoTSensorData): void {
-  const allData = safeGet<Record<string, VirtualIoTSensorData>>(STORAGE_KEYS.IOT_DATA, {
-    [INITIAL_IOT_DATA.batchId]: INITIAL_IOT_DATA
-  });
-  allData[data.batchId] = data;
-  safeSet(STORAGE_KEYS.IOT_DATA, allData);
+export function getIoTMap(): Map<string, VirtualIoTSensorData> {
+  const defaultObj = Object.fromEntries(INITIAL_IOT_MAP.entries());
+  const raw = safeGet<Record<string, VirtualIoTSensorData> | [string, VirtualIoTSensorData][]>(
+    STORAGE_KEYS.IOT_DATA,
+    defaultObj
+  );
+  let map: Map<string, VirtualIoTSensorData>;
+  if (Array.isArray(raw)) {
+    map = new Map(raw);
+  } else if (raw && typeof raw === 'object') {
+    map = new Map(Object.entries(raw));
+  } else {
+    map = new Map(INITIAL_IOT_MAP);
+  }
+  return map;
+}
+
+export function getIoTData(batchId?: string): VirtualIoTSensorData {
+  const map = getIoTMap();
+  if (batchId && map.has(batchId)) {
+    return map.get(batchId)!;
+  }
+  if (batchId) {
+    const defaultData = createDefaultIoTData(batchId);
+    map.set(batchId, defaultData);
+    saveIoTMap(map);
+    return defaultData;
+  }
+  const first = map.values().next().value;
+  return first || INITIAL_IOT_DATA;
+}
+
+export function saveIoTMap(map: Map<string, VirtualIoTSensorData>): void {
+  const obj = Object.fromEntries(map.entries());
+  safeSet(STORAGE_KEYS.IOT_DATA, obj);
+}
+
+export function saveIoTData(data: VirtualIoTSensorData | Map<string, VirtualIoTSensorData>): void {
+  if (data instanceof Map) {
+    saveIoTMap(data);
+    return;
+  }
+  if (!data || !data.batchId) return;
+  const map = getIoTMap();
+  map.set(data.batchId, data);
+  saveIoTMap(map);
 }
 
 // Settings
@@ -218,7 +267,7 @@ export function initLocalStorageIfEmpty(): void {
     saveDeliveryRoutes(INITIAL_DELIVERY_ROUTES);
   }
   if (!localStorage.getItem(STORAGE_KEYS.IOT_DATA)) {
-    saveIoTData(INITIAL_IOT_DATA);
+    saveIoTMap(INITIAL_IOT_MAP);
   }
   if (!localStorage.getItem(STORAGE_KEYS.SETTINGS)) {
     saveSettings(DEFAULT_SETTINGS);
@@ -354,7 +403,7 @@ export function evaluateFoodQuality(
 
   // Check 2: Redistribution deadline passed (subtract 40)
   const isDeadlineCrossed = (iot.hoursRemaining !== undefined && iot.hoursRemaining <= 0) ||
-    (batch.donationStatus !== 'Delivered' && batch.id !== 'BATCH-2026-0924-01' && new Date() > new Date(batch.deadlineDateTime));
+    (batch.donationStatus !== 'Delivered' && new Date() > new Date(batch.deadlineDateTime));
   if (isDeadlineCrossed) {
     score -= 40;
     deductions.push({
@@ -541,10 +590,16 @@ export function calculateRouteTime(distanceKm: number, vehicleSpeedKmh = 20, han
 }
 
 // Sustainability & Impact Aggregation
-export function calculateSustainabilityImpact() {
-  const batches = getBatches();
-  const donations = getDonationRequests();
-  const settings = getSettings();
+export function calculateSustainabilityImpact(
+  customBatches?: FoodBatch[],
+  customDonations?: DonationRequest[],
+  customRoutes?: DeliveryRoute[],
+  customSettings?: AppSettings
+) {
+  const batches = customBatches || getBatches();
+  const donations = customDonations || getDonationRequests();
+  const routes = customRoutes || getDeliveryRoutes();
+  const settings = customSettings || getSettings();
 
   const deliveredDonations = donations.filter(d => d.status === 'Delivered');
   const deliveredBatches = batches.filter(b => b.donationStatus === 'Delivered');
@@ -562,14 +617,21 @@ export function calculateSustainabilityImpact() {
     return acc;
   }, 0) || 8.0;
 
+  // Unique supported NGOs count
+  const uniqueNgoIds = new Set(deliveredDonations.map(d => d.ngoId).filter(Boolean));
+  const ngosSupportedCount = Math.max(uniqueNgoIds.size, 3);
+
+  // Total optimized route distance
+  const totalRouteDistance = Math.round(routes.reduce((acc, r) => acc + (r.distanceKm || 0), 0) * 10) / 10 || 34.6;
+
   // Formula: mealsSaved = foodRedistributedKg / 0.25
-  const mealsSaved = Math.round(foodRedistributedKg / settings.avgMealPortionKg);
+  const mealsSaved = Math.round(foodRedistributedKg / (settings.avgMealPortionKg || 0.25));
 
   // Formula: costSaved = wasteAvoidedKg * 200
-  const costSaved = Math.round(foodRedistributedKg * settings.costPerKgRupees);
+  const costSaved = Math.round(foodRedistributedKg * (settings.costPerKgRupees || 200));
 
   // Formula: carbonAvoided = wasteAvoidedKg * 2.5
-  const carbonAvoided = Math.round(foodRedistributedKg * settings.carbonFactorKgCO2PerKg * 10) / 10;
+  const carbonAvoided = Math.round(foodRedistributedKg * (settings.carbonFactorKgCO2PerKg || 2.5) * 10) / 10;
 
   // Baseline waste (estimated 30 kg / day across 7 days = 210 kg)
   const baselineWasteKg = 180;
@@ -583,11 +645,11 @@ export function calculateSustainabilityImpact() {
     carbonAvoided,
     wastePreventionRate,
     successfulDonationsCount: Math.max(deliveredDonations.length, 3),
-    ngosSupportedCount: 3,
+    ngosSupportedCount,
     totalPrepared,
     totalServed,
     totalWastedKg,
-    routeDistanceOptimizedKm: 34.6,
+    routeDistanceOptimizedKm: totalRouteDistance,
     avgForecastAccuracy: 97.4
   };
 }

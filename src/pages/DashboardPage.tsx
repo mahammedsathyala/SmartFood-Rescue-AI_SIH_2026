@@ -50,15 +50,16 @@ import {
 } from '../types';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
 import { PipelineStepper } from '../components/PipelineStepper';
+import { useAppContext } from '../context/AppContext';
 
 interface DashboardPageProps {
-  batches: FoodBatch[];
-  forecasts: DemandForecastRecord[];
-  ngos: NGOPartner[];
-  donations: DonationRequest[];
-  routes: DeliveryRoute[];
-  iotData: VirtualIoTSensorData;
-  activeRole: UserRole;
+  batches?: FoodBatch[];
+  forecasts?: DemandForecastRecord[];
+  ngos?: NGOPartner[];
+  donations?: DonationRequest[];
+  routes?: DeliveryRoute[];
+  iotData?: Map<string, VirtualIoTSensorData> | VirtualIoTSensorData;
+  activeRole?: UserRole;
   onNavigate: (tab: NavigationTab) => void;
   onOpenAddBatch: () => void;
   onSelectBatchForQuality: (batchId: string) => void;
@@ -80,6 +81,28 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   onSelectBatchForNgo,
   settings
 }) => {
+  const context = useAppContext();
+  const effectiveBatches = batches || context.batches;
+  const effectiveForecasts = forecasts || context.forecasts;
+  const effectiveNgos = ngos || context.ngos;
+  const effectiveDonations = donations || context.donations;
+  const effectiveRoutes = routes || context.routes;
+  const effectiveRole = activeRole || context.activeRole;
+  const effectiveSettings = settings || context.settings;
+
+  const [selectedTelemetryBatchId, setSelectedTelemetryBatchId] = React.useState<string>(
+    effectiveBatches.find(b => b.remainingKg > 0)?.id || effectiveBatches[0]?.id || ''
+  );
+
+  const currentBatchTelemetry = React.useMemo(() => {
+    if (iotData instanceof Map) {
+      return iotData.get(selectedTelemetryBatchId) || context.getBatchIoT(selectedTelemetryBatchId);
+    }
+    if (iotData && typeof iotData === 'object' && 'temperature' in iotData) {
+      return iotData;
+    }
+    return context.getBatchIoT(selectedTelemetryBatchId);
+  }, [iotData, selectedTelemetryBatchId, context]);
   // Chart 1: Food Waste Trend for Last 7 Days (kg)
   const wasteTrendData = [
     { day: 'Fri', wasteKg: 12.5, preparedKg: 78 },
@@ -102,7 +125,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   ];
 
   // Chart 3: Food Batch Distribution Status
-  const statusCounts = batches.reduce<Record<string, number>>((acc, b) => {
+  const statusCounts = effectiveBatches.reduce<Record<string, number>>((acc, b) => {
     acc[b.donationStatus] = (acc[b.donationStatus] || 0) + 1;
     return acc;
   }, {});
@@ -123,9 +146,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   ];
 
   // Active Surplus Batches
-  const surplusBatches = batches.filter(b => b.remainingKg > 0);
-  const pendingDonations = donations.filter(d => d.status === 'Offered' || d.status === 'Pending NGO Response');
-  const activeRoute = routes[0];
+  const surplusBatches = effectiveBatches.filter(b => b.remainingKg > 0);
+  const pendingDonations = effectiveDonations.filter(d => d.status === 'Offered' || d.status === 'Pending NGO Response');
+  const activeRoute = effectiveRoutes[0];
 
   return (
     <div className="space-y-6">
@@ -142,10 +165,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full">
               Canonical Live Scenario Active
             </span>
-            <span className="text-xs text-slate-400">{settings?.city ? `${settings.city}, AP` : 'Demonstration Hub'}</span>
+            <span className="text-xs text-slate-400">{effectiveSettings?.city ? `${effectiveSettings.city}, AP` : 'Demonstration Hub'}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-display font-extrabold text-slate-900 mt-1">
-            {settings?.kitchenName || 'Smart College Canteen'} Overview
+            {effectiveSettings?.kitchenName || 'Smart College Canteen'} Overview
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
             Real-time synchronization across AI Demand Forecast, IoT Quality Telemetry, and NGO Logistics.
@@ -180,11 +203,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
       {/* End-to-End Visual Workflow Pipeline */}
       <PipelineStepper 
-        batches={batches}
-        donations={donations}
-        iotData={iotData}
+        batches={effectiveBatches}
+        donations={effectiveDonations}
+        iotData={currentBatchTelemetry}
         onNavigate={onNavigate}
-        locationCity={settings?.city}
+        locationCity={effectiveSettings?.city}
       />
 
       {/* 8 Primary KPI Cards Required by Prompt */}
@@ -322,7 +345,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               <p className="text-xs text-slate-500">Current state of recorded preparation batches</p>
             </div>
             <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-              {batches.length} Batches
+              {effectiveBatches.length} Batches
             </span>
           </div>
           <div className="h-64 w-full flex items-center justify-center">
@@ -394,7 +417,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </button>
           </div>
           <div className="space-y-3">
-            {batches.slice(0, 3).map((b) => (
+            {effectiveBatches.slice(0, 3).map((b) => (
               <div key={b.id} className="p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200/80 transition-all text-xs">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-800">{b.foodItem}</span>
@@ -533,7 +556,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Section 4: Virtual Sensor Status */}
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-2">
             <h3 className="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-2">
               <Cpu className="w-4 h-4 text-teal-600" />
               Virtual Sensor Telemetry
@@ -545,29 +568,49 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
               Open Simulator <ArrowRight className="w-3 h-3" />
             </button>
           </div>
+
+          {effectiveBatches.length > 0 && (
+            <div className="mb-3 flex items-center justify-between gap-2 bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-xs">
+              <span className="text-slate-500 font-medium text-[11px]">Sensor Node:</span>
+              <select
+                value={selectedTelemetryBatchId}
+                onChange={(e) => setSelectedTelemetryBatchId(e.target.value)}
+                className="bg-white border border-slate-200 rounded-lg px-2 py-0.5 text-xs font-mono font-bold text-teal-800 focus:outline-none focus:border-teal-500 max-w-[200px] truncate"
+              >
+                {effectiveBatches.map(b => (
+                  <option key={b.id} value={b.id}>
+                    {b.id} ({b.foodItem.slice(0, 16)})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div className="p-3 bg-teal-50/70 rounded-xl border border-teal-100">
               <span className="text-slate-500 text-[11px] block font-medium">Temperature</span>
-              <span className="text-lg font-bold text-teal-900 font-display">{iotData.temperature.toFixed(1)}°C</span>
-              <span className="text-[10px] text-teal-700 block mt-0.5">Within Safe Threshold (≤8°C)</span>
+              <span className="text-lg font-bold text-teal-900 font-display">{currentBatchTelemetry.temperature.toFixed(1)}°C</span>
+              <span className="text-[10px] text-teal-700 block mt-0.5">
+                {currentBatchTelemetry.temperature <= 8.0 ? 'Within Safe Threshold (≤8°C)' : 'Warning (>8°C)'}
+              </span>
             </div>
             <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-100">
               <span className="text-slate-500 text-[11px] block font-medium">Humidity</span>
-              <span className="text-lg font-bold text-blue-900 font-display">{iotData.humidity.toFixed(0)}%</span>
+              <span className="text-lg font-bold text-blue-900 font-display">{currentBatchTelemetry.humidity.toFixed(0)}%</span>
               <span className="text-[10px] text-blue-700 block mt-0.5">Optimum RH</span>
             </div>
             <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-100">
               <span className="text-slate-500 text-[11px] block font-medium">Container Weight</span>
-              <span className="text-lg font-bold text-amber-900 font-display">{iotData.containerWeight.toFixed(1)} kg</span>
+              <span className="text-lg font-bold text-amber-900 font-display">{currentBatchTelemetry.containerWeight.toFixed(1)} kg</span>
               <span className="text-[10px] text-amber-700 block mt-0.5">Digital Scale Sync</span>
             </div>
             <div className="p-3 bg-emerald-50/70 rounded-xl border border-emerald-100">
               <span className="text-slate-500 text-[11px] block font-medium">Device Status</span>
               <span className="text-lg font-bold text-emerald-900 font-display flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                {iotData.deviceStatus}
+                <span className={`w-2 h-2 rounded-full ${currentBatchTelemetry.deviceStatus === 'Online' ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
+                {currentBatchTelemetry.deviceStatus}
               </span>
-              <span className="text-[10px] text-emerald-700 block mt-0.5">Virtual IoT Node</span>
+              <span className="text-[10px] text-emerald-700 block mt-0.5 truncate">{selectedTelemetryBatchId || 'Node Online'}</span>
             </div>
           </div>
         </div>
@@ -587,7 +630,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             </button>
           </div>
           <div className="space-y-2.5">
-            {ngos.slice(0, 3).map((ngo) => (
+            {effectiveNgos.slice(0, 3).map((ngo) => (
               <div key={ngo.id} className="p-2.5 rounded-xl border border-slate-200 hover:border-emerald-300 transition-all flex items-center justify-between text-xs">
                 <div>
                   <div className="font-bold text-slate-800">{ngo.name}</div>

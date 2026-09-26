@@ -20,13 +20,14 @@ import {
 import { FoodBatch, VirtualIoTSensorData, UserRole, QualityStatus } from '../types';
 import { evaluateFoodQuality } from '../services/storage';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
+import { useAppContext } from '../context/AppContext';
 
 interface QualityCheckPageProps {
-  batches: FoodBatch[];
-  iotData: VirtualIoTSensorData;
-  activeRole: UserRole;
+  batches?: FoodBatch[];
+  iotData?: Map<string, VirtualIoTSensorData> | VirtualIoTSensorData;
+  activeRole?: UserRole;
   selectedBatchIdInitially?: string;
-  onUpdateBatch: (batch: FoodBatch) => void;
+  onUpdateBatch?: (batch: FoodBatch) => void;
   onProceedToNgoMatching: (batchId: string) => void;
   showToast: (title: string, message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
 }
@@ -40,24 +41,39 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
   onProceedToNgoMatching,
   showToast
 }) => {
+  const context = useAppContext();
+  const effectiveBatches = batches || context.batches;
+  const effectiveRole = activeRole || context.activeRole;
+  const effectiveUpdateBatch = onUpdateBatch || context.handleUpdateBatch;
+
   const [selectedBatchId, setSelectedBatchId] = useState<string>(
-    selectedBatchIdInitially || batches.find(b => b.remainingKg > 0)?.id || batches[0]?.id || ''
+    selectedBatchIdInitially || effectiveBatches.find(b => b.remainingKg > 0)?.id || effectiveBatches[0]?.id || ''
   );
 
-  const selectedBatch = batches.find(b => b.id === selectedBatchId) || batches[0];
+  const selectedBatch = effectiveBatches.find(b => b.id === selectedBatchId) || effectiveBatches[0];
   const [reviewerNote, setReviewerNote] = useState<string>('Visual inspection and temperature check verified on-site.');
 
-  // Run evaluation formula
+  const batchIoT = React.useMemo(() => {
+    if (iotData instanceof Map) {
+      return iotData.get(selectedBatch?.id || '') || context.getBatchIoT(selectedBatch?.id);
+    }
+    if (iotData && typeof iotData === 'object' && 'temperature' in iotData) {
+      return iotData;
+    }
+    return context.getBatchIoT(selectedBatch?.id);
+  }, [iotData, selectedBatch, context]);
+
+  // Run evaluation formula using per-batch IoT readings
   const evaluation = selectedBatch 
-    ? evaluateFoodQuality(selectedBatch, iotData, 8) 
+    ? evaluateFoodQuality(selectedBatch, batchIoT, 8) 
     : { score: 100, status: 'Safe for Human Review' as QualityStatus, deductions: [], positives: [] };
 
-  const isAuthorized = activeRole === 'Kitchen Staff' || activeRole === 'Administrator';
+  const isAuthorized = effectiveRole === 'Kitchen Staff' || effectiveRole === 'Administrator';
 
   // Handle Approve for Donation
   const handleApprove = () => {
     if (!isAuthorized) {
-      showToast('Unauthorized Role', `Only Kitchen Staff or Administrator can formally approve food redistribution. (Current role: ${activeRole})`, 'error');
+      showToast('Unauthorized Role', `Only Kitchen Staff or Administrator can formally approve food redistribution. (Current role: ${effectiveRole})`, 'error');
       return;
     }
 
@@ -71,10 +87,10 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
       qualityScore: evaluation.score,
       qualityStatus: 'Safe for Human Review',
       donationStatus: selectedBatch.donationStatus === 'Delivered' ? 'Delivered' : 'Offered',
-      notes: `${selectedBatch.notes || ''} [Approved by ${activeRole}: ${reviewerNote}]`
+      notes: `${selectedBatch.notes || ''} [Approved by ${effectiveRole}: ${reviewerNote}]`
     };
 
-    onUpdateBatch(updatedBatch);
+    effectiveUpdateBatch(updatedBatch);
     showToast('Quality Approval Granted', `Batch ${selectedBatch.id} marked eligible for NGO matching (Score: ${evaluation.score}/100).`, 'success');
   };
 
@@ -93,7 +109,7 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
       notes: `${selectedBatch.notes || ''} [Rejected/Unsafe: ${reviewerNote}]`
     };
 
-    onUpdateBatch(updatedBatch);
+    effectiveUpdateBatch(updatedBatch);
     showToast('Batch Rejected', `Batch ${selectedBatch.id} marked as unsafe for human consumption. Redistribution disabled.`, 'warning');
   };
 
@@ -143,7 +159,7 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
             onChange={(e) => setSelectedBatchId(e.target.value)}
             className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
           >
-            {batches.map(b => (
+            {effectiveBatches.map(b => (
               <option key={b.id} value={b.id}>
                 {b.foodItem} ({b.remainingKg} kg) - {b.id.slice(-9)}
               </option>
@@ -228,7 +244,7 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
             {/* Role Verification Gate Footer */}
             <div className="mt-4 pt-3 border-t border-slate-100 w-full text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
               <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Sign-off Role: <strong>{activeRole}</strong> ({isAuthorized ? 'Authorized' : 'Viewer Only'})</span>
+              <span>Sign-off Role: <strong>{effectiveRole}</strong> ({isAuthorized ? 'Authorized' : 'Viewer Only'})</span>
             </div>
           </div>
 
@@ -245,8 +261,8 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
               <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
                 <span className="text-slate-400 block text-[10px]">Sensor Temp</span>
-                <span className={`font-bold ${iotData.temperature > 8 ? 'text-rose-600' : 'text-teal-700'}`}>
-                  {iotData.temperature.toFixed(1)}°C (Limit ≤8°C)
+                <span className={`font-bold ${batchIoT.temperature > 8 ? 'text-rose-600' : 'text-teal-700'}`}>
+                  {batchIoT.temperature.toFixed(1)}°C (Limit ≤8°C)
                 </span>
               </div>
 
@@ -280,8 +296,8 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
 
               <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
                 <span className="text-slate-400 block text-[10px]">Sensor Gateway</span>
-                <span className={`font-bold ${iotData.deviceStatus === 'Offline' ? 'text-rose-600' : 'text-emerald-700'}`}>
-                  {iotData.deviceStatus}
+                <span className={`font-bold ${batchIoT.deviceStatus === 'Offline' ? 'text-rose-600' : 'text-emerald-700'}`}>
+                  {batchIoT.deviceStatus}
                 </span>
               </div>
             </div>

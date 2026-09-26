@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Settings as SettingsIcon, 
   Save, 
@@ -17,10 +17,11 @@ import {
 } from 'lucide-react';
 import { AppSettings } from '../types';
 import { DEFAULT_SETTINGS } from '../services/mockData';
+import { useAppContext } from '../context/AppContext';
 
 interface SettingsPageProps {
-  settings: AppSettings;
-  onSaveSettings: (settings: AppSettings) => void;
+  settings?: AppSettings;
+  onSaveSettings?: (settings: AppSettings) => void;
   onResetAllData: () => void;
   showToast: (title: string, message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
 }
@@ -31,7 +32,17 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
   onResetAllData,
   showToast,
 }) => {
-  const [form, setForm] = useState<AppSettings>(settings);
+  const context = useAppContext();
+  const effectiveSettings = settings || context.settings || DEFAULT_SETTINGS;
+  const effectiveSaveSettings = onSaveSettings || context.handleSaveSettings;
+
+  const [form, setForm] = useState<AppSettings>(effectiveSettings);
+
+  useEffect(() => {
+    if (context.settings) {
+      setForm(context.settings);
+    }
+  }, [context.settings]);
 
   const handleChange = (key: keyof AppSettings, value: any) => {
     setForm(prev => ({ ...prev, [key]: value }));
@@ -39,13 +50,13 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    onSaveSettings(form);
+    effectiveSaveSettings(form);
     showToast('Settings Saved', 'System configuration updated and persisted to localStorage.', 'success');
   };
 
   const handleResetDefaults = () => {
     setForm(DEFAULT_SETTINGS);
-    onSaveSettings(DEFAULT_SETTINGS);
+    effectiveSaveSettings(DEFAULT_SETTINGS);
     showToast('Vijayawada Demo Configured', 'Facility parameters restored to Smart College Canteen, Vijayawada (MG Road).', 'success');
   };
 

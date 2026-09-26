@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { 
-  Cpu, 
   Thermometer, 
   Droplets, 
   Scale, 
@@ -8,12 +7,8 @@ import {
   Wifi, 
   WifiOff, 
   RotateCcw, 
-  AlertTriangle, 
-  CheckCircle2, 
-  Sparkles, 
-  TrendingUp, 
   Sliders,
-  Radio,
+  Sparkles,
   Flame,
   Snowflake,
   ShieldAlert
@@ -25,16 +20,16 @@ import {
   XAxis, 
   YAxis, 
   CartesianGrid, 
-  Tooltip, 
-  Legend 
+  Tooltip
 } from 'recharts';
 import { FoodBatch, VirtualIoTSensorData } from '../types';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
+import { useAppContext } from '../context/AppContext';
 
 interface IoTSimulatorPageProps {
-  batches: FoodBatch[];
-  iotData: VirtualIoTSensorData;
-  onUpdateIoT: (data: VirtualIoTSensorData) => void;
+  batches?: FoodBatch[];
+  iotData?: Map<string, VirtualIoTSensorData> | VirtualIoTSensorData;
+  onUpdateIoT?: (data: VirtualIoTSensorData) => void;
   showToast: (title: string, message: string, type?: 'success' | 'error' | 'warning' | 'info') => void;
 }
 
@@ -44,18 +39,39 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
   onUpdateIoT,
   showToast,
 }) => {
+  const context = useAppContext();
+  const effectiveBatches = batches || context.batches;
+  const effectiveUpdateIoT = onUpdateIoT || context.handleUpdateIoT;
+
   const [selectedBatchId, setSelectedBatchId] = useState<string>(
-    batches.find(b => b.remainingKg > 0)?.id || batches[0]?.id || 'BATCH-2026-0924-01'
+    effectiveBatches.find(b => b.remainingKg > 0)?.id || effectiveBatches[0]?.id || ''
   );
 
-  const selectedBatch = batches.find(b => b.id === selectedBatchId) || batches[0];
+  const currentBatchData = React.useMemo(() => {
+    if (iotData instanceof Map) {
+      return iotData.get(selectedBatchId) || context.getBatchIoT(selectedBatchId);
+    }
+    if (iotData && typeof iotData === 'object' && 'temperature' in iotData) {
+      return iotData;
+    }
+    return context.getBatchIoT(selectedBatchId);
+  }, [iotData, selectedBatchId, context]);
 
-  // Current values
-  const [temperature, setTemperature] = useState<number>(iotData.temperature);
-  const [humidity, setHumidity] = useState<number>(iotData.humidity);
-  const [weight, setWeight] = useState<number>(iotData.containerWeight);
-  const [storageDuration, setStorageDuration] = useState<number>(iotData.storageDurationHours);
-  const [deviceStatus, setDeviceStatus] = useState<'Online' | 'Offline'>(iotData.deviceStatus);
+  // Current values initialized from the selected batch's telemetry
+  const [temperature, setTemperature] = useState<number>(currentBatchData.temperature);
+  const [humidity, setHumidity] = useState<number>(currentBatchData.humidity);
+  const [weight, setWeight] = useState<number>(currentBatchData.containerWeight);
+  const [storageDuration, setStorageDuration] = useState<number>(currentBatchData.storageDurationHours);
+  const [deviceStatus, setDeviceStatus] = useState<'Online' | 'Offline'>(currentBatchData.deviceStatus);
+
+  // Sync state whenever selected batch changes
+  React.useEffect(() => {
+    setTemperature(currentBatchData.temperature);
+    setHumidity(currentBatchData.humidity);
+    setWeight(currentBatchData.containerWeight);
+    setStorageDuration(currentBatchData.storageDurationHours);
+    setDeviceStatus(currentBatchData.deviceStatus);
+  }, [selectedBatchId, currentBatchData]);
 
   // Derive alert level
   const computeAlert = (temp: number, isOnline: boolean, dur: number) => {
@@ -88,7 +104,7 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
     };
 
     const updatedData: VirtualIoTSensorData = {
-      ...iotData,
+      ...currentBatchData,
       batchId: selectedBatchId,
       temperature: Math.round(newTemp * 10) / 10,
       humidity: Math.round(newHum),
@@ -99,10 +115,10 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
       lastUpdated: new Date().toISOString(),
       alertLevel: alert.level,
       alertMessage: alert.msg,
-      readingsHistory: [newLogItem, ...(iotData.readingsHistory || []).slice(0, 9)]
+      readingsHistory: [newLogItem, ...(currentBatchData.readingsHistory || []).slice(0, 9)]
     };
 
-    onUpdateIoT(updatedData);
+    effectiveUpdateIoT(updatedData);
   };
 
   // Scenario 1: Normal Storage
@@ -192,15 +208,10 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
             value={selectedBatchId}
             onChange={(e) => {
               setSelectedBatchId(e.target.value);
-              const b = batches.find(item => item.id === e.target.value);
-              if (b) {
-                setWeight(b.remainingKg || 14.0);
-                commitUpdate(temperature, humidity, b.remainingKg || 14.0, storageDuration, deviceStatus);
-              }
             }}
             className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
           >
-            {batches.map(b => (
+            {effectiveBatches.map(b => (
               <option key={b.id} value={b.id}>
                 {b.foodItem} ({b.remainingKg} kg) - {b.id.slice(-9)}
               </option>
@@ -564,7 +575,7 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
           </div>
           <div className="h-44 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={iotData.readingsHistory}>
+              <LineChart data={currentBatchData.readingsHistory}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} />
                 <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 35]} unit="°C" />
@@ -586,7 +597,7 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
           </div>
           <div className="h-44 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={iotData.readingsHistory}>
+              <LineChart data={currentBatchData.readingsHistory}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} />
                 <YAxis stroke="#94a3b8" fontSize={10} domain={[30, 90]} unit="%" />
@@ -608,7 +619,7 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
           </div>
           <div className="h-44 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={iotData.readingsHistory}>
+              <LineChart data={currentBatchData.readingsHistory}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
                 <XAxis dataKey="timestamp" stroke="#94a3b8" fontSize={10} />
                 <YAxis stroke="#94a3b8" fontSize={10} domain={[0, 25]} unit="kg" />
@@ -640,8 +651,8 @@ export const IoTSimulatorPage: React.FC<IoTSimulatorPageProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {iotData.readingsHistory && iotData.readingsHistory.length > 0 ? (
-                iotData.readingsHistory.map((item, idx) => (
+              {currentBatchData.readingsHistory && currentBatchData.readingsHistory.length > 0 ? (
+                currentBatchData.readingsHistory.map((item, idx) => (
                   <tr key={idx} className="hover:bg-slate-50/80">
                     <td className="px-4 py-2.5 font-mono text-slate-600">{item.timestamp}</td>
                     <td className="px-4 py-2.5 font-bold text-teal-700">{item.temp}°C</td>

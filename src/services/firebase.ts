@@ -7,13 +7,13 @@ import { getStorage } from "firebase/storage";
 // Web app Firebase configuration
 // Supports Vite environment variables with graceful fallback to project credentials
 export const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyC7VchI6xN-b9CD7C7U_9yscoOccpdO1RM",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "smartfood-rescue-ai.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "smartfood-rescue-ai",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "smartfood-rescue-ai.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "86396956859",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:86396956859:web:daa396f63a353ce132b99e",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-WBWCX7W49D"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase App (prevents re-initialization on Vite HMR)

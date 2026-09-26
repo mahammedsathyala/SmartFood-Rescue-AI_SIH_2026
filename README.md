@@ -67,7 +67,7 @@ College canteens, university hostels, hospital cafeterias, large caterers, and f
 
 ### The Solution: SmartFood Rescue AI
 A software-first, closed-loop platform that integrates:
-1. **AI-Assisted, Data-Informed Demand Forecasting** to prevent overproduction at the source.
+1. **Rule-Based Forecasting Engine with Statistical Smoothing** to prevent overproduction at the source.
 2. **Automated Surplus Detection & Batch Registration** to quantify residual food immediately after service.
 3. **Virtual IoT Storage Telemetry** to track temperature, humidity, and storage hours without physical hardware.
 4. **Algorithmic Decision-Support Quality Gate** to evaluate risk conditions before human review.
@@ -115,7 +115,7 @@ SmartFood Rescue AI is engineered as a resilient **4-tier modular web applicatio
 ```mermaid
 flowchart TD
     subgraph TIER1[1. Pre-Cooking Prevention Phase]
-        A[Historical Attendance & Calendar] --> B[AI-Assisted Demand Forecast Engine]
+        A[Historical Attendance & Calendar] --> B[Rule-Based Forecasting Engine with Statistical Smoothing]
         B -->|Recommended Prep +5% Buffer| C[Kitchen Batch Preparation]
     end
 
@@ -180,7 +180,9 @@ The platform is constructed on modern, type-safe web technologies configured for
 
 ## 📐 Mathematical Models & Decision Formulas
 
-### 1. Demand Forecast Baseline Model
+### 1. Demand Forecast Model: Rule-Based Forecasting Engine with Statistical Smoothing
+
+The platform's demand forecasting module is engineered as a transparent, explainable **Rule-Based Forecasting Engine with Statistical Smoothing** utilizing moving averages and calibrated operational adjustments rather than an unconstrained black-box neural network:
 
 $$\text{Raw Predicted Demand} = \text{Expected Attendance} \times 0.92$$
 
@@ -194,7 +196,7 @@ $$\text{Raw Predicted Demand} = \text{Expected Attendance} \times 0.92$$
 $$\text{Recommended Preparation} = \text{round}\big(\text{Predicted Demand} \times 1.05\big)$$
 *(Includes a $5\%$ calibrated safety buffer to avert meal deficits while curbing overproduction).*
 
-> **Prototype note:** The current release uses an explainable, configurable forecasting baseline based on expected attendance, event flags, previous-day demand, and seven-day average demand. In production, the same input pipeline can support a trained machine-learning model using institution-specific historical consumption data.
+> **Engineering Notice:** The current release uses an explainable, deterministic forecasting baseline based on expected attendance, event flags, previous-day demand, and seven-day average demand. In production, this baseline forms the robust fallback tier for our planned machine-learning regression pipeline.
 
 **Canonical Demo Verification:**
 - Expected Attendance: **320**
@@ -202,6 +204,21 @@ $$\text{Recommended Preparation} = \text{round}\big(\text{Predicted Demand} \tim
 - Previous Day Demand: **295**
 - Seven-Day Average Demand: **295**
 - **Result:** Predicted Demand = **295 meals**, Recommended Preparation = **310 meals**.
+
+#### 🔮 Future ML Roadmap (Planned Scikit-Learn Regression Upgrade)
+
+To evolve from heuristic smoothing into predictive supervised learning, the planned **scikit-learn** regression pipeline incorporates:
+
+1. **Model Architecture:**
+   - **GradientBoostingRegressor / RandomForestRegressor** (`scikit-learn`): Trained on multi-season cafeteria logs to model non-linear interactions between weather, academic milestones, and meal popularity.
+   - **Feature Pipeline:**
+     - Historical consumption lags: 1-day, 7-day, and 14-day rolling exponential moving averages ($\text{EMA}$).
+     - Academic calendar encoders: Examination periods, weekend proximity, and semester phase indicators.
+     - Meteorological covariates: Precipitation probability, ambient maximum heat index, and relative humidity.
+     - Menu categorical embeddings: Heavy vs. light meal categories (e.g., Rice/Curry vs. Continental Breakfast).
+2. **Serving & Edge Inference:**
+   - Model serialized to **ONNX Runtime Web** (`onnxruntime-web`) for zero-latency in-browser evaluation directly within React without requiring external backend roundtrips.
+   - **Hybrid Fallback Guarantee:** If weather APIs or historical tensors are unavailable, the system automatically falls back to the deterministic Rule-Based Smoothing Engine.
 
 ---
 

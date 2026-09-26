@@ -29,12 +29,13 @@ import {
   DonationStatus, 
   QualityStatus 
 } from '../types';
+import { useAppContext } from '../context/AppContext';
 
 interface FoodBatchesPageProps {
-  batches: FoodBatch[];
-  onAddBatch: (batch: FoodBatch) => void;
-  onUpdateBatch: (batch: FoodBatch) => void;
-  onDeleteBatch: (id: string) => void;
+  batches?: FoodBatch[];
+  onAddBatch?: (batch: FoodBatch) => void;
+  onUpdateBatch?: (batch: FoodBatch) => void;
+  onDeleteBatch?: (id: string) => void;
   onStartQualityCheck: (batchId: string) => void;
   onCreateDonation: (batchId: string) => void;
   isAddModalOpenInitially?: boolean;
@@ -51,6 +52,12 @@ export const FoodBatchesPage: React.FC<FoodBatchesPageProps> = ({
   isAddModalOpenInitially = false,
   showToast
 }) => {
+  const context = useAppContext();
+  const effectiveBatches = batches || context.batches;
+  const effectiveAddBatch = onAddBatch || context.handleAddBatch;
+  const effectiveUpdateBatch = onUpdateBatch || context.handleUpdateBatch;
+  const effectiveDeleteBatch = onDeleteBatch || context.handleDeleteBatch;
+
   const [isModalOpen, setIsModalOpen] = useState(isAddModalOpenInitially);
   const [editingBatch, setEditingBatch] = useState<FoodBatch | null>(null);
   const [viewingBatch, setViewingBatch] = useState<FoodBatch | null>(null);
@@ -183,10 +190,10 @@ export const FoodBatchesPage: React.FC<FoodBatchesPageProps> = ({
         donationStatus: editingBatch.donationStatus === 'Delivered' ? 'Delivered' : donationStatus,
         qualityStatus
       };
-      onUpdateBatch(updated);
+      effectiveUpdateBatch(updated);
       showToast('Batch Updated', `Updated ${batchIdFormat(editingBatch.id)} with ${surplusKg} kg surplus.`, 'success');
     } else {
-      const newId = `BATCH-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${(batches.length + 1).toString().padStart(2, '0')}`;
+      const newId = `BATCH-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${(effectiveBatches.length + 1).toString().padStart(2, '0')}`;
       const newBatch: FoodBatch = {
         id: newId,
         foodItem,
@@ -209,7 +216,7 @@ export const FoodBatchesPage: React.FC<FoodBatchesPageProps> = ({
         qualityStatus,
         donationStatus
       };
-      onAddBatch(newBatch);
+      effectiveAddBatch(newBatch);
       showToast('Batch Registered', `Batch ${newId} logged. Surplus identified: ${surplusKg} kg (${remainingMeals} meals).`, 'success');
     }
 
@@ -220,7 +227,7 @@ export const FoodBatchesPage: React.FC<FoodBatchesPageProps> = ({
   const batchIdFormat = (id: string) => id.length > 18 ? id.slice(-10) : id;
 
   // Filtered batches
-  const filteredBatches = batches.filter(b => {
+  const filteredBatches = effectiveBatches.filter(b => {
     const matchSearch = b.foodItem.toLowerCase().includes(searchTerm.toLowerCase()) || 
                         b.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCat = categoryFilter === 'ALL' || b.category === categoryFilter;
@@ -441,7 +448,7 @@ export const FoodBatchesPage: React.FC<FoodBatchesPageProps> = ({
                         )}
 
                         <button
-                          onClick={() => onDeleteBatch(b.id)}
+                          onClick={() => effectiveDeleteBatch(b.id)}
                           className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                           title="Delete Batch"
                         >

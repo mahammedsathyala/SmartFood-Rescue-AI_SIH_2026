@@ -1,18 +1,86 @@
-rules_version='2'
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Helper functions for authentication and role-based permissions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() && (
+        request.auth.token.role == role ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && getUserData().role == role)
+      );
+    }
+
+    function isKitchenStaffOrAdmin() {
+      return hasRole('Kitchen Staff') || hasRole('Administrator');
+    }
+
+    function isNgoPartner() {
+      return hasRole('NGO Partner');
+    }
+
+    // Default rule: Authenticated users can read all documents
     match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2026, 10, 25);
+      allow read: if isAuthenticated();
+    }
+
+    // Batches collection
+    // Authenticated users can read; only Kitchen Staff / Administrator can write
+    // NGO Partners have read-only access
+    match /batches/{batchId} {
+      allow read: if isAuthenticated();
+      allow write: if isKitchenStaffOrAdmin();
+    }
+
+    // Donations collection
+    // Authenticated users can read
+    // Kitchen Staff and Administrator can write (create, update, delete)
+    // NGO Partners can only update donation status
+    match /donations/{donationId} {
+      allow read: if isAuthenticated();
+      allow create, delete: if isKitchenStaffOrAdmin();
+      allow update: if isKitchenStaffOrAdmin() || (
+        isNgoPartner() && 
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'donationStatus', 'updatedAt', 'notes'])
+      );
+    }
+
+    // Delivery routes collection
+    match /routes/{routeId} {
+      allow read: if isAuthenticated();
+      allow write: if isKitchenStaffOrAdmin();
+    }
+
+    // Demand forecasts collection
+    match /forecasts/{forecastId} {
+      allow read: if isAuthenticated();
+      allow write: if isKitchenStaffOrAdmin();
+    }
+
+    // NGO partners collection
+    match /ngos/{ngoId} {
+      allow read: if isAuthenticated();
+      allow write: if isKitchenStaffOrAdmin() || (isNgoPartner() && request.auth.uid == ngoId);
+    }
+
+    // IoT Telemetry collection
+    match /iot_data/{sensorId} {
+      allow read: if isAuthenticated();
+      allow write: if isKitchenStaffOrAdmin();
+    }
+
+    // User accounts collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (request.auth.uid == userId || hasRole('Administrator'));
     }
   }
 }
