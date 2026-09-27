@@ -130,45 +130,68 @@ SmartFood Rescue AI is engineered as a resilient **4-tier modular web applicatio
 
 ### End-to-End Operational Lifecycle Workflow
 
+SmartFood Rescue AI connects every stakeholder in institutional food service—from kitchen chefs to quality evaluators, shelter directors, couriers, and sustainability managers—through a synchronized, closed-loop operational pipeline. The workflow prevents overproduction at the source, enforces algorithmic food safety gates, optimizes local transit, and creates immutable sustainability audit trails.
+
 ```mermaid
 flowchart TD
-    subgraph TIER1[1. Pre-Cooking Prevention Phase]
-        A[Historical Attendance & Calendar] --> B[Rule-Based Forecasting Engine with Statistical Smoothing]
-        B -->|Recommended Prep +5% Buffer| C[Kitchen Batch Preparation]
+    subgraph PHASE1["Phase 1: Pre-Cooking Demand Forecasting & Prevention"]
+        A["Expected Attendance & Calendar Flags"] --> B["Rule-Based Forecasting Engine with Smoothing"]
+        B -->|"Recommended Quantity + 5% Calibrated Buffer"| C["Kitchen Meal Batch Preparation"]
     end
 
-    subgraph TIER2[2. Post-Service Audit & Registry]
-        C --> D[Prepared vs Served Delta Audit]
-        D -->|Surplus Identified in kg| E[Food Batch Digital Registry]
-        E -->|Firestore onBatchCreated Trigger| E_CF[Cloud Function: Sensor Threshold Audit]
+    subgraph PHASE2["Phase 2: Post-Service Surplus Detection & Digital Logging"]
+        C --> D["Prepared vs Served Delta Audit"]
+        D -->|"Surplus Quantified (kg & Category)"| E["Food Batch Digital Registry"]
+        E -->|"Shelf-Life Clock Initiated"| E_STORE["LocalStorage v2 & Firestore Event Queue"]
     end
 
-    subgraph TIER3[3. Edge Vision, IoT & Quality Gate]
-        E --> F[Virtual IoT Telemetry Simulator]
-        E --> G_CAM[Live Webcam QualityCamera]
-        G_CAM -->|2s Frame to Canvas| G_ONNX[ONNX Runtime Web: YOLOv8 Model]
-        G_ONNX -->|Fresh: 0pts | Mild: -15pts | Spoiled: -30pts| G[Algorithmic Quality Gate]
-        F -->|Temp, RH, Weight, Duration| G
-        G -->|Score >= 80| H{Safe for Human Review?}
-        H -->|Approved| I[Authorised Human Sign-Off]
-        H -->|Rejected / Spoiled| J[Flagged for Composting / Disposal]
+    subgraph PHASE3["Phase 3: Edge AI Vision & Multi-Factor Quality Gate"]
+        E --> F["Virtual IoT Telemetry Simulator (Temp, RH, Weight)"]
+        E --> G_CAM["Live Webcam QualityCamera"]
+        G_CAM -->|"2-Second Canvas Sampling"| G_ONNX["ONNX Runtime Web (YOLOv8 Edge Model)"]
+        G_ONNX -->|"Fresh (0) | Suspicious (-15) | Spoiled (-30)"| G["Multi-Factor Quality Deduction Gate (100 pts)"]
+        F -->|"Thermal Breach Check (-35 pts) & Duration Check"| G
+        G -->|"Quality Score Evaluated (0 - 100)"| H{"Score >= 80 & Within Window?"}
+        H -->|"Passed (Score >= 80)"| I["Authorised Human Quality Review & Sign-Off"]
+        H -->|"Failed (Score < 50 or Spoiled)"| J["Diverted to Composting & Disposal"]
+        H -->|"Borderline (50 - 79)"| J_WARN["Physical Inspection Required"]
     end
 
-    subgraph TIER4[4. AI Intelligence & Distribution]
-        I --> INSIGHT[RescueInsightCard: Claude 3.5 / Gemini LLM Briefing]
-        I --> K[Vijayawada NGO Match Radar]
-        K -->|Ranked Partners: Distance, Capacity, Score| L[Offer Broadcasted to Shelter]
-        L -->|Firestore onBatchStatusChanged Trigger| L_NOTIF[Cloud Function: NGO Push Notification]
-        L --> M[Vehicle-Aware Route Planning Corridor]
-        M -->|Auto/Van/Bike Velocity Profile| N[Safe Delivery Handover & Signoff]
+    subgraph PHASE4["Phase 4: AI Rescue Intelligence & NGO Matching Radar"]
+        I --> INSIGHT["RescueInsightCard (Local Zero-Latency Engine / Claude 3.5)"]
+        I --> K["Vijayawada Multi-Criteria NGO Match Radar"]
+        K -->|"Weighted Match: Distance (35%), Capacity (25%), Dietary (20%), Availability (20%)"| L["Top Recipient NGO Matched & Broadcasted"]
+        L -->|"Instant Order Claim & Slot Approval"| L_DISPATCH["Logistics Dispatch Triggered"]
     end
 
-    subgraph TIER5[5. Impact Accounting & Serverless Audit]
-        N -->|onDeliveryCompleted Trigger| O[Firestore ESG Ledger & Audit Log]
-        O --> P[Sustainability Ledger: Meals Rescued, Cost Savings, CO2e Avoided]
-        O -->|weeklyESGDigest Cron Monday 3 AM| Q[Automated Weekly Executive ESG Digest]
+    subgraph PHASE5["Phase 5: Time-Aware Live OpenStreetMap Routing & Handover"]
+        L_DISPATCH --> M["Live OpenStreetMap Interactive Routing Engine"]
+        M -->|"Transit Velocity Formula: (dist / speed) * 60 + 10m"| M_ETA["Time-Aware Delivery Feasibility Check"]
+        M_ETA -->|"ETA < Deadline (Feasible)"| N["Driver Dispatched & Hot Containers Loaded"]
+        N -->|"Corridor Tracking: MG Road Hub to Benz Circle Shelter"| N_TRANSIT["In-Transit Tracking & Step Progress (1-6)"]
+        N_TRANSIT -->|"Physical Handover & Photo Proof Upload"| N_DELIVERY["Delivery Completed & Signed Off"]
+    end
+
+    subgraph PHASE6["Phase 6: Closed-Loop ESG Accounting & Audit Trail"]
+        N_DELIVERY --> O["Automated ESG Ledger Accounting"]
+        O --> P1["Meals Rescued (4 meals / kg)"]
+        O --> P2["Institutional Cost Saved (Rs 200 / kg)"]
+        O --> P3["CO2e Mitigated (2.5 kg CO2e / kg)"]
+        O --> Q["Tamper-Proof Audit Trail & Regulatory ESG Reports"]
+        Q -.->|"Feedback Loop: Consumption Delta Refines Historical Moving Averages"| A
     end
 ```
+
+#### Operational Lifecycle Matrix
+
+| Phase | Primary Actor | Inputs & Signals | Decision Engine / AI Technology | Operational Output & Safety SLA |
+| :--- | :--- | :--- | :--- | :--- |
+| **1. Demand Forecasting** | Kitchen Staff / Head Chef | Expected attendance, day of week, campus events, special feast flags, 7-day rolling average. | Rule-Based Statistical Smoothing Engine ($0.92 \times \text{attendance} \pm \text{modifiers} + 5\%\text{ buffer}$). | Recommended cooking volume in meals and kg to avert overproduction. |
+| **2. Surplus Audit** | Kitchen Staff | Total meals prepared, trays returned from serving counter, timestamp. | Automated delta surplus calculator: $\text{Surplus} = \text{Prepared} - \text{Consumed}$. | Unique batch registered (`BATCH-2026-XXX`), initiating countdown to consumption use-by deadline. |
+| **3. Quality Safety Gate** | Food Safety Officer / Supervisor | Live webcam feed, virtual IoT thermal data (ambient/storage temp, humidity), packaging seal status. | In-browser **ONNX Runtime Web (YOLOv8)** classification + 100-point multi-factor deduction model. | Deductions calculated. Score $\ge 80/100$ unlocks human sign-off; $<50$ diverts to organic composting. |
+| **4. Rescue Intelligence & Matching** | NGO Coordinator / Dispatcher | Batch quantity, food category, shelf-life window, shelter capacities and locations across Vijayawada. | **RescueInsightCard** (deterministic local engine + Claude 3.5 fallback) + 4-factor weighted NGO match radar. | 3-point actionable dispatch recommendations synthesized and top recipient NGO paired (e.g., Hope Food Bank, 91% match). |
+| **5. Live Route Dispatch** | Assigned Courier / Driver | Origin kitchen coordinates, destination shelter coordinates, vehicle type (Auto, Bike, Van). | **Live OpenStreetMap Engine (Leaflet)** with vehicle speed-calibrated travel time formula. | 6-step dispatch pipeline (Request $\rightarrow$ Accept $\rightarrow$ Assign $\rightarrow$ Collect $\rightarrow$ Transit $\rightarrow$ Handover). |
+| **6. Closed-Loop ESG Audit** | Institutional Admin / ESG Auditor | Confirmed delivered kg, delivery proof photo, recipient acknowledgement timestamp. | Standardized environmental conversion formulas ($4\text{ meals/kg}$, $₹200/\text{kg}$, $2.5\text{ kg CO}_2\text{e/kg}$). | Immutable ESG ledger updated; audit reports downloadable in CSV/print; consumption delta calibrates future forecasts. |
 
 ---
 
