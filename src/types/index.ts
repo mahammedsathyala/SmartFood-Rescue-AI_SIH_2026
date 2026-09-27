@@ -59,6 +59,8 @@ export interface FoodBatch {
   storageCondition: StorageCondition;
   packagingStatus: PackagingStatus;
   appearance: AppearanceStatus;
+  aiSpoilageClass?: SpoilageClass;
+  aiSpoilageConfidence?: number;
   notes?: string;
   imageUrl?: string;
   qualityScore?: number;
@@ -67,6 +69,15 @@ export interface FoodBatch {
   matchedNgoId?: string;
   assignedDriver?: string;
   deliveryProofUrl?: string;
+}
+
+export type SpoilageClass = 'Fresh' | 'Slightly Spoiled' | 'Spoiled';
+
+export interface SpoilageDetectionResult {
+  spoilageClass: SpoilageClass;
+  confidence: number;
+  deductionPoints: number;
+  timestamp: string;
 }
 
 export interface DemandForecastRecord {
@@ -199,4 +210,20 @@ export interface ToastMessage {
   title: string;
   message: string;
   type: 'success' | 'error' | 'warning' | 'info';
+}
+
+export interface RescueInsightPayload {
+  activeBatches: number;
+  topBatchScore: number;
+  topBatchKg: number;
+  bestNgoName: string;
+  bestNgoMatch: number;
+  deadlineMinutes: number;
+  todayRescuedKg: number;
+  forceRefresh?: boolean;
+}
+
+export interface RescueInsightResponse {
+  insight: string;
+  generatedAt: string;
 }

@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   UserRole, 
   NavigationTab, 
   ToastMessage 
 } from './types';
 import { AppProvider, useAppContext } from './context/AppContext';
+import { AuthContext, useAuth } from './context/AuthContext';
+import { onAuthStateChanged, User, signOut, signInAnonymously } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db, isFirebaseConfigured } from './services/firebase';
+import { getUserRole, setUserRole as setUserRoleInStorage, setActiveAuthSessionRole } from './services/storage';
 
 // Components
 import { Navbar } from './components/Navbar';
@@ -70,18 +75,22 @@ function AppShell() {
     setToasts(prev => prev.filter(t => t.id !== id));
   };
 
-  const handleRoleChangeWithToast = (role: UserRole) => {
+  const authContext = useAuth();
+
+  const handleRoleChangeWithToast = async (role: UserRole) => {
     handleRoleChange(role);
+    await authContext.setUserRole(role);
     showToast('Role Switched', `Logged in as ${role} (Demo User).`, 'info');
   };
 
-  const handleSelectRoleFromLanding = (role: UserRole) => {
-    handleRoleChangeWithToast(role);
+  const handleSelectRoleFromLanding = async (role: UserRole) => {
+    await handleRoleChangeWithToast(role);
     setViewMode('app');
     setCurrentTab('dashboard');
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await authContext.logout();
     setViewMode('role-selection');
     showToast('Logged Out', 'Returned to role selection page.', 'info');
   };
@@ -327,10 +336,145 @@ function AppShell() {
 }
 
 export function App() {
+  const [userRole, setUserRole] = useState<UserRole>(getUserRole());
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState<boolean>(false);
+
+  // Sync role across React state, storage, and Firestore
+  const handleSetUserRole = async (newRole: UserRole) => {
+    setUserRole(newRole);
+    setActiveAuthSessionRole(newRole);
+    setUserRoleInStorage(newRole);
+
+    if (isFirebaseConfigured && auth?.currentUser) {
+      try {
+        const userRef = doc(db, 'users', auth.currentUser.uid);
+        await setDoc(userRef, {
+          role: newRole,
+          name: 'Demo User',
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+      } catch (err) {
+        console.warn('Firestore role persistence notice:', err);
+      }
+    }
+  };
+
+  // Demo user anonymous sign-in path
+  const handleSignInDemoRole = async (role: UserRole) => {
+    try {
+      if (isFirebaseConfigured && typeof signInAnonymously === 'function' && auth) {
+        const cred = await signInAnonymously(auth);
+        const uid = cred.user.uid;
+        await setDoc(doc(db, 'users', uid), {
+          role,
+          name: 'Demo User',
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+      }
+      await handleSetUserRole(role);
+    } catch (err) {
+      console.warn('Anonymous sign in notice (offline fallback used):', err);
+      await handleSetUserRole(role);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      if (isFirebaseConfigured && typeof signOut === 'function' && auth) {
+        await signOut(auth);
+      }
+    } catch (err) {
+      console.warn('Sign out notice:', err);
+    }
+    setCurrentUser(null);
+  };
+
+  // onAuthStateChanged listener: fetches user role from Firestore users/{uid}/role
+  useEffect(() => {
+    if (!isFirebaseConfigured) {
+      setAuthLoading(false);
+      return;
+    }
+
+    let unsubscribe = () => {};
+
+    try {
+      if (auth && typeof onAuthStateChanged === 'function') {
+        unsubscribe = onAuthStateChanged(auth, async (user) => {
+          setCurrentUser(user);
+
+          if (user) {
+            try {
+              const userDocRef = doc(db, 'users', user.uid);
+              const docSnap = await getDoc(userDocRef);
+              if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data?.role) {
+                  const fetchedRole = data.role as UserRole;
+                  setUserRole(fetchedRole);
+                  setActiveAuthSessionRole(fetchedRole);
+                  setUserRoleInStorage(fetchedRole);
+                }
+              }
+            } catch (err) {
+              console.warn('Firestore user role fetch error (offline fallback used):', err);
+            }
+          }
+          setAuthLoading(false);
+        }, (err) => {
+          console.warn('onAuthStateChanged observer notice:', err);
+          setAuthLoading(false);
+        });
+      } else {
+        setAuthLoading(false);
+      }
+    } catch (err) {
+      console.warn('Auth observer setup notice:', err);
+      setAuthLoading(false);
+    }
+
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, []);
+
+  // Loading spinner while auth state resolves (only if explicitly set)
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-6 text-white text-center font-sans">
+        <div className="relative flex items-center justify-center mb-5">
+          <div className="w-14 h-14 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin" />
+          <span className="absolute text-xl">🌱</span>
+        </div>
+        <h2 className="text-xl font-bold font-display tracking-tight text-white">SmartFood Rescue AI</h2>
+        <div className="flex items-center gap-2 mt-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+          <p className="text-xs text-slate-300 font-mono">
+            Resolving Firebase Authentication & security session...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <AppProvider>
-      <AppShell />
-    </AppProvider>
+    <AuthContext.Provider
+      value={{
+        currentUser,
+        userRole,
+        setUserRole: handleSetUserRole,
+        loading: authLoading,
+        logout: handleLogout,
+        signInDemoRole: handleSignInDemoRole
+      }}
+    >
+      <AppProvider>
+        <AppShell />
+      </AppProvider>
+    </AuthContext.Provider>
   );
 }
 

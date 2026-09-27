@@ -9,8 +9,10 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.3-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.3-06B6D4?style=flat&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![SIH 2026](https://img.shields.io/badge/SIH-2026-FF9933?style=flat&logo=target&logoColor=white)](https://www.sih.gov.in/)
+[![ONNX Runtime Web](https://img.shields.io/badge/ONNX_Runtime_Web-v1.21-005CED?style=flat&logo=onnx&logoColor=white)](https://onnxruntime.ai/)
+[![Claude 3.5 / Gemini](https://img.shields.io/badge/Gen_AI-Claude_3.5_/_Gemini-D97706?style=flat&logo=anthropic&logoColor=white)](https://anthropic.com)
 [![Firebase](https://img.shields.io/badge/Firebase-v12-FFCA28?style=flat&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![SIH 2026](https://img.shields.io/badge/SIH-2026-FF9933?style=flat&logo=target&logoColor=white)](https://www.sih.gov.in/)
 [![Hosting: Live](https://img.shields.io/badge/Live_Demo-Firebase_Hosting-0288D1?style=flat&logo=google-cloud&logoColor=white)](https://smartfood-rescue-ai-25f38.web.app)
 [![Zero Hardware Required](https://img.shields.io/badge/Hardware-Software_Simulation_Mode-10B981?style=flat&logo=cpu&logoColor=white)](#-virtual-iot-monitoring-simulator)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -19,16 +21,18 @@
 
 ## 🚀 Executive Summary
 
-SmartFood Rescue AI is a software-first decision-support platform for institutional kitchens, cafeterias, hostels, caterers, and food-processing units. It reduces avoidable food waste through a complete operational loop:
+SmartFood Rescue AI is a software-first decision-support platform for institutional kitchens, cafeterias, hostels, caterers, and food-processing units. It reduces avoidable food waste through an intelligent, closed operational loop:
 
-1. Forecast food demand before cooking.
-2. Register prepared and served food batches.
-3. Detect surplus automatically.
-4. Simulate storage telemetry and evaluate quality-risk conditions.
-5. Require authorised human approval before redistribution.
-6. Match eligible surplus with nearby NGO partners.
-7. Estimate route feasibility and delivery timing.
-8. Measure food waste prevented, meals saved, estimated cost savings, and estimated carbon impact.
+1. **Forecast food demand** before cooking using rule-based statistical smoothing.
+2. **Register prepared and served food batches** with automatic delta surplus calculation.
+3. **Inspect food spoilage in real time** using client-side **Edge Computer Vision (YOLOv8 ONNX via `onnxruntime-web`)** directly through a webcam.
+4. **Simulate storage telemetry** (temperature, humidity, weight, duration) and enforce strict food safety thresholds without physical hardware.
+5. **Evaluate multi-factor quality-risk safety gates** combining visual AI inferences, sensor readings, packaging integrity, and mandatory authorised human review.
+6. **Synthesize operational urgency** using an AI-powered **“Today’s Rescue Intelligence”** agent (Anthropic Claude 3.5 / Google Gemini) with Firestore daily caching.
+7. **Match eligible surplus** with nearby vetted shelters using a multi-criteria algorithm calibrated for Vijayawada, Andhra Pradesh.
+8. **Plan time-aware transit routes** with vehicle-specific speed models to guarantee delivery feasibility before use-by deadlines.
+9. **Automate event-driven workflows** with **5 serverless Firebase Cloud Functions** (IoT thermal breach checks, real-time NGO alerts, ESG ledger updates, and scheduled cron digests).
+10. **Measure ESG sustainability impact** tracking food waste prevented, meals saved, estimated cost savings (₹), and estimated carbon emissions mitigated ($\text{CO}_2\text{e}$).
 
 > **Prototype disclaimer:** All NGO, sensor, route, and logistics data are simulated for the Vijayawada pilot. The application supports decisions; it does not certify food safety or replace authorised human review.
 
@@ -41,18 +45,19 @@ SmartFood Rescue AI is a software-first decision-support platform for institutio
 4. [Mathematical Models & Decision Formulas](#-mathematical-models--decision-formulas)
 5. [Key Features & Application Pages](#-key-features--application-pages)
 6. [Interactive Evaluator Tour & UI/UX Features](#-interactive-evaluator-tour--uiux-features)
-7. [Role-Based Access Control](#-role-based-access-control)
+7. [Role-Based Access Control & Firebase Authentication](#-role-based-access-control--firebase-authentication)
 8. [Virtual IoT Simulator (Hardware-Free Implementation)](#-virtual-iot-monitoring-simulator)
-9. [Canonical Hackathon Demo Scenario (Vijayawada)](#-canonical-hackathon-demo-scenario-vijayawada)
-10. [Kaggle Synthetic Dataset Integration & Ingestion Pipeline](#-kaggle-synthetic-dataset-integration--ingestion-pipeline)
-11. [SIH 2026 Presentation Deck & Visual Assets](#-sih-2026-presentation-deck--visual-assets)
-12. [Application Screenshots](#-application-screenshots)
-13. [Quick Start & Comprehensive Installation Guide](#-quick-start--comprehensive-installation-guide)
-14. [Project Directory Structure](#-project-directory-structure)
-15. [Judge / Evaluator Walkthrough Script](#-judge--evaluator-walkthrough-script)
-16. [Compliance & Ethical Disclaimers](#-compliance--ethical-disclaimers)
-17. [Future Production Roadmap](#-future-production-roadmap)
-18. [Team & Attribution](#-team--attribution)
+9. [Serverless Cloud Functions & Backend Automation](#-serverless-cloud-functions--backend-automation)
+10. [Canonical Hackathon Demo Scenario (Vijayawada)](#-canonical-hackathon-demo-scenario-vijayawada)
+11. [Kaggle Synthetic Dataset Integration & Ingestion Pipeline](#-kaggle-synthetic-dataset-integration--ingestion-pipeline)
+12. [SIH 2026 Presentation Deck & Visual Assets](#-sih-2026-presentation-deck--visual-assets)
+13. [Application Screenshots](#-application-screenshots)
+14. [Quick Start & Comprehensive Installation Guide](#-quick-start--comprehensive-installation-guide)
+15. [Project Directory Structure](#-project-directory-structure)
+16. [Judge / Evaluator Walkthrough Script](#-judge--evaluator-walkthrough-script)
+17. [Compliance & Ethical Disclaimers](#-compliance--ethical-disclaimers)
+18. [Future Production Roadmap](#-future-production-roadmap)
+19. [Team & Attribution](#-team--attribution)
 
 ---
 
@@ -61,7 +66,7 @@ SmartFood Rescue AI is a software-first decision-support platform for institutio
 ### The Problem in Institutional Kitchens
 College canteens, university hostels, hospital cafeterias, large caterers, and food processing facilities face acute unpredictability in daily attendance and dining volume:
 - Kitchen administrators fear food shortages, consistently cooking **15% to 25% more meals** than consumed.
-- Excess cooked food sits in warm ambient temperatures without automated shelf-life tracking.
+- Excess cooked food sits in warm ambient temperatures without automated shelf-life tracking or real-time spoilage inspection.
 - Due to a lack of verified logistical networks, wholesome residual meals end up in municipal landfills.
 - Decomposing organic food waste in open dumps emits massive volumes of **methane ($\text{CH}_4$)**, a potent greenhouse gas, while universities incur heavy financial losses.
 
@@ -69,17 +74,20 @@ College canteens, university hostels, hospital cafeterias, large caterers, and f
 A software-first, closed-loop platform that integrates:
 1. **Rule-Based Forecasting Engine with Statistical Smoothing** to prevent overproduction at the source.
 2. **Automated Surplus Detection & Batch Registration** to quantify residual food immediately after service.
-3. **Virtual IoT Storage Telemetry** to track temperature, humidity, and storage hours without physical hardware.
-4. **Algorithmic Decision-Support Quality Gate** to evaluate risk conditions before human review.
-5. **Multi-Criteria NGO Matching Radar** in Vijayawada to pair batches with nearby vetted shelters.
-6. **Time-Aware Route Planning with vehicle-specific speed models to estimate delivery feasibility before the configured redistribution deadline.**
-7. **Transparent ESG & Sustainability Accounting** measuring meals rescued, estimated cost savings (₹), and estimated $\text{CO}_2\text{e}$ mitigated.
+3. **In-Browser Edge AI Spoilage Computer Vision** via YOLOv8 ONNX models running directly on webcam feeds with zero server latency.
+4. **Virtual IoT Storage Telemetry** to track temperature, humidity, and storage hours without physical hardware.
+5. **Algorithmic Decision-Support Quality Gate** to evaluate risk conditions before human review.
+6. **GenAI Rescue Intelligence Synthesis** delivering instant operational dispatch briefings to kitchen coordinators.
+7. **Multi-Criteria NGO Matching Radar** in Vijayawada to pair batches with nearby vetted shelters.
+8. **Time-Aware Route Planning** with vehicle-specific speed models to estimate delivery feasibility before redistribution deadlines.
+9. **Event-Driven Serverless Architecture** running Cloud Functions for automated quality inspection, NGO push notifications, and immutable ESG accounting.
+10. **Transparent ESG & Sustainability Accounting** measuring meals rescued, estimated cost savings (₹), and estimated $\text{CO}_2\text{e}$ mitigated.
 
 ---
 
 ## 🏗️ End-to-End System Architecture
 
-SmartFood Rescue AI is engineered as a resilient **4-tier modular web application**. The system cleanly separates client presentation, algorithmic decision engines, simulated IoT telemetry, and browser-local persistent storage. This ensures zero runtime failures, zero latency, and zero dependency on external network services during live hackathon evaluation.
+SmartFood Rescue AI is engineered as a resilient **4-tier modular web application** pairing client-side edge computing with cloud serverless automation. The system cleanly separates presentation, edge ML inference, simulated IoT telemetry, serverless background workers, and browser-local persistent caching. This ensures zero runtime failures, zero latency, and zero dependency on external network services during live hackathon evaluation.
 
 ### The 4-Tier Architectural Pattern
 
@@ -89,11 +97,14 @@ SmartFood Rescue AI is engineered as a resilient **4-tier modular web applicatio
 │   React 19 (Component Hierarchy) • Tailwind CSS v4 • Lucide React • Recharts│
 │   [Landing] [Dashboard] [Forecast] [Batches] [IoT Sim] [Quality] [Matching] │
 │   [Route Plan] [ESG Analytics] [Reports] [Settings] [Role Switcher]         │
+│   • QualityCamera (Webcam Stream + 2s Canvas Sampler + Edge ONNX Predictor) │
+│   • RescueInsightCard (Green Radar Pulse + Live 20ms Typewriter Synthesis)  │
 └──────────────────────────────────────┬──────────────────────────────────────┘
-                                       │ State & Event Dispatch
+                                       │ State, Streams & Event Dispatch
 ┌──────────────────────────────────────▼──────────────────────────────────────┐
-│                    2. ALGORITHMIC & DECISION-SUPPORT LAYER                  │
-│       Pure Deterministic TypeScript Mathematical & Operational Engines       │
+│             2. EDGE INTELLIGENCE & ALGORITHMIC DECISION LAYER               │
+│       Client-Side ONNX Runtime Web + Pure Deterministic TypeScript Engines  │
+│   • In-Browser Edge Vision: YOLOv8 ONNX Model (Fresh / Mild / Spoiled)      │
 │   • Demand Forecasting Engine (Historical smoothing + contextual modifiers) │
 │   • Quality Assessment Gate (Deduction-based 100-pt safety scoring)         │
 │   • NGO Match Radar (Multi-criteria weighted distance, capacity, urgency)   │
@@ -102,11 +113,18 @@ SmartFood Rescue AI is engineered as a resilient **4-tier modular web applicatio
 └───────────────────▲──────────────────────────────────────┬──────────────────┘
                     │                                      │
 ┌───────────────────┴──────────────────┐ ┌─────────────────▼──────────────────┐
-│  3. VIRTUAL TELEMETRY & SIMULATOR    │ │ 4. CLIENT STATE & CACHE LAYER      │
-│  • Hardware-Free Sensor Simulation   │ │ • LocalStorage v2 Key-Value Store  │
-│  • Temperature, Humidity & Weight    │ │ • Atomic Seed & Canonical Ingestion│
-│  • Safe/Breach Threshold Triggers    │ │ • Zero-Latency Reset Engine        │
-│  • Visual Badges & Alert Overrides   │ │ • Cross-Component Reactive Sync    │
+│  3. VIRTUAL TELEMETRY & SIMULATOR    │ │ 4. CLOUD SERVERLESS & PERSISTENCE  │
+│  • Hardware-Free Sensor Simulation   │ │ • Firebase Auth (Anonymous Sessions│
+│  • Temperature, Humidity & Weight    │ │   & Firestore users/{uid} Profiles)│
+│  • Safe/Breach Threshold Triggers    │ │ • Cloud Functions v7 (6 Triggers): │
+│  • Visual Badges & Alert Overrides   │ │   - generateRescueInsight (Claude) │
+│  • Cross-Component Reactive Sync     │ │   - onBatchCreated (Temp Breach)   │
+│                                      │ │   - onBatchStatusChanged (NGO Push)│
+│                                      │ │   - onDeliveryCompleted (Audit Log)│
+│                                      │ │   - weeklyESGDigest (Monday Cron)  │
+│                                      │ │   - onIoTThresholdBreach (Alerts)  │
+│                                      │ │ • LocalStorage v2 Resilient Cache  │
+│                                      │ │   (Offline-First Zero-Crash Fallback)
 └──────────────────────────────────────┘ └────────────────────────────────────┘
 ```
 
@@ -122,26 +140,33 @@ flowchart TD
     subgraph TIER2[2. Post-Service Audit & Registry]
         C --> D[Prepared vs Served Delta Audit]
         D -->|Surplus Identified in kg| E[Food Batch Digital Registry]
+        E -->|Firestore onBatchCreated Trigger| E_CF[Cloud Function: Sensor Threshold Audit]
     end
 
-    subgraph TIER3[3. Virtual IoT & Quality Gate]
+    subgraph TIER3[3. Edge Vision, IoT & Quality Gate]
         E --> F[Virtual IoT Telemetry Simulator]
-        F -->|Temp, RH, Weight, Duration| G[Algorithmic Quality Gate]
+        E --> G_CAM[Live Webcam QualityCamera]
+        G_CAM -->|2s Frame to Canvas| G_ONNX[ONNX Runtime Web: YOLOv8 Model]
+        G_ONNX -->|Fresh: 0pts | Mild: -15pts | Spoiled: -30pts| G[Algorithmic Quality Gate]
+        F -->|Temp, RH, Weight, Duration| G
         G -->|Score >= 80| H{Safe for Human Review?}
         H -->|Approved| I[Authorised Human Sign-Off]
         H -->|Rejected / Spoiled| J[Flagged for Composting / Disposal]
     end
 
-    subgraph TIER4[4. Distribution & Logistics]
+    subgraph TIER4[4. AI Intelligence & Distribution]
+        I --> INSIGHT[RescueInsightCard: Claude 3.5 / Gemini LLM Briefing]
         I --> K[Vijayawada NGO Match Radar]
-        K -->|Ranked Partners: Distance, Capacity, Score| L[Offer Accepted by Shelter]
+        K -->|Ranked Partners: Distance, Capacity, Score| L[Offer Broadcasted to Shelter]
+        L -->|Firestore onBatchStatusChanged Trigger| L_NOTIF[Cloud Function: NGO Push Notification]
         L --> M[Vehicle-Aware Route Planning Corridor]
         M -->|Auto/Van/Bike Velocity Profile| N[Safe Delivery Handover & Signoff]
     end
 
-    subgraph TIER5[5. Impact Accounting & Audit]
-        N --> O[Sustainability & ESG Impact Ledger]
-        O --> P[Live Audit Report: Meals Rescued, Est. Cost Savings, Est. CO2e Avoided]
+    subgraph TIER5[5. Impact Accounting & Serverless Audit]
+        N -->|onDeliveryCompleted Trigger| O[Firestore ESG Ledger & Audit Log]
+        O --> P[Sustainability Ledger: Meals Rescued, Cost Savings, CO2e Avoided]
+        O -->|weeklyESGDigest Cron Monday 3 AM| Q[Automated Weekly Executive ESG Digest]
     end
 ```
 
@@ -156,6 +181,8 @@ The platform is constructed on modern, type-safe web technologies configured for
 | **Core Framework** | [React](https://react.dev/) | `^19.2.8` | Component-driven UI architecture leveraging React 19 modern rendering model and client-side reactive hooks (`useState`, `useEffect`, `useCallback`, `useMemo`). |
 | **DOM Renderer** | [React DOM](https://react.dev/) | `^19.2.8` | High-performance reconciliation and DOM manipulation engine. |
 | **Language** | [TypeScript](https://www.typescriptlang.org/) | `~6.0.2` | Complete static type safety across all domain interfaces (`FoodBatch`, `DemandForecast`, `SensorTelemetry`, `NgoProfile`, `RoutePlan`, `EsgMetrics`), eliminating runtime reference exceptions. |
+| **Edge ML Inference** | [ONNX Runtime Web](https://onnxruntime.ai/) | `^1.21.0` | Client-side neural network runtime running YOLOv8 food spoilage ONNX model directly inside the browser using WebAssembly / WebGL with zero server latency. |
+| **Generative AI** | [Anthropic Claude 3.5](https://anthropic.com) / [Google Gemini](https://ai.google.dev/) | API / SDK | Serverless LLM synthesis generating high-urgency 2-sentence operational briefings for kitchen coordinators via Firebase Cloud Functions. |
 | **Build Engine & Dev Server** | [Vite](https://vite.dev/) | `^8.3.0` | Next-generation bundler delivering lightning-fast sub-100ms Hot Module Replacement (HMR) and optimized rollup production bundles. |
 | **Styling & Design System** | [Tailwind CSS](https://tailwindcss.com/) | `^4.3.3` | Tailwind v4 CSS-first design system engine via `@tailwindcss/vite`, generating zero-runtime utility classes with modern emerald/amber/rose color palettes and glassmorphism. |
 | **Vite React Plugin** | [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react) | `^6.1.1` | Enables fast React JSX transformation, Fast Refresh, and Babel/SWC optimizations. |
@@ -165,16 +192,19 @@ The platform is constructed on modern, type-safe web technologies configured for
 | **Micro-Interactions** | [canvas-confetti](https://www.npmjs.com/package/canvas-confetti) | `^1.9.4` | Lightweight celebratory physics animation triggered upon successful food rescue dispatch and receipt completion. |
 | **Static Code Quality** | [Oxlint](https://oxc-project.github.io/) | `^1.81.0` | High-performance Rust-based static analyzer enforcing clean code, optimal patterns, and zero lint warnings across the codebase. |
 | **Type Definitions** | `@types/node`, `@types/react`, `@types/react-dom`, `@types/canvas-confetti` | Latest | Standardized type declarations for browser and Node.js toolchain interoperability. |
-| **Cloud Services & DB** | [Firebase](https://firebase.google.com/) | `^12.19.0` | Google Cloud Firebase suite integrating Cloud Firestore real-time database, Authentication, Cloud Storage (batch verification photos), and Analytics with HMR protection. |
+| **Authentication & Auth State** | [Firebase Auth](https://firebase.google.com/docs/auth) | `^12.19.0` | Anonymous session initialization and state synchronization with Firestore `users/{uid}` role records, coupled with zero-crash LocalStorage fallback. |
+| **Cloud Services & Database** | [Firebase Firestore](https://firebase.google.com/docs/firestore) | `^12.19.0` | Real-time NoSQL cloud database for food batches, notification queues, audit logs, and persistent monthly ESG ledgers. |
 | **Serverless Functions** | [Firebase Functions](https://firebase.google.com/docs/functions) | `^7.0.0` | TypeScript serverless Cloud Functions codebase (`functions/`) for automated scheduled audits, real-time alerts, and backend webhook triggers. |
 | **Edge CDN Hosting** | [Firebase Hosting](https://firebase.google.com/docs/hosting) | Global CDN | Production single-page application hosting with instant worldwide edge distribution (`smartfood-rescue-ai-25f38.web.app`). |
+| **ML Model Pipeline** | Python 3.14 + `onnx` | `~1.17.0` | Scripted ONNX generation and graph export pipeline (`scripts/generate_spoilage_model.py`) compiling the `food_spoilage.onnx` runtime asset. |
 
 ### Architectural Design Decisions
 1. **Hybrid Dual-Persistence Strategy (Local-First + Cloud Sync):** 
-   - **Offline-First Resilience:** In live hackathon pitches, venue Wi-Fi drops can kill cloud-dependent apps. SmartFood Rescue AI runs pure deterministic TypeScript algorithms and reactive state backed by browser `LocalStorage v2`, guaranteeing 100% functionality with zero latency even without internet access.
-   - **Cloud Extensibility:** Pre-wired with Google Firebase (`src/services/firebase.ts`, `firestore.rules`, `functions/`) for multi-device sync, Firestore batch streaming, and Cloud Functions backend automation.
-2. **Tailwind v4 Native CSS:** Zero-configuration CSS compilation using modern `@import "tailwindcss";` in `src/index.css` provides optimized bundle size, high performance, and rapid UI development.
-3. **Hardware-Free Deterministic Simulation:** Physical IoT hardware in live hackathon venues frequently suffers from Wi-Fi drops, battery exhaustion, or calibration drift. Our Virtual IoT Simulator replicates multi-sensor telemetry mathematically while providing judges with interactive threshold controls (Normal, Warning, Danger) to test system resilience in real time.
+   - **Offline-First Resilience:** In live hackathon pitches, venue Wi-Fi drops can kill cloud-dependent apps. SmartFood Rescue AI runs pure deterministic TypeScript algorithms, client-side ONNX vision, and reactive state backed by browser `LocalStorage v2`, guaranteeing 100% functionality with zero latency even without internet access.
+   - **Cloud Extensibility:** Pre-wired with Google Firebase (`src/services/firebase.ts`, `firestore.rules`, `functions/`) for real authentication, multi-device sync, Firestore batch streaming, and Cloud Functions backend automation.
+2. **In-Browser Edge AI Vision:** Running the YOLOv8 computer vision classification model directly inside the browser using `onnxruntime-web` eliminates the latency, privacy concerns, and hosting costs of streaming webcam frames to external servers.
+3. **Tailwind v4 Native CSS:** Zero-configuration CSS compilation using modern `@import "tailwindcss";` in `src/index.css` provides optimized bundle size, high performance, and rapid UI development.
+4. **Hardware-Free Deterministic Simulation:** Physical IoT hardware in live hackathon venues frequently suffers from Wi-Fi drops, battery exhaustion, or calibration drift. Our Virtual IoT Simulator replicates multi-sensor telemetry mathematically while providing judges with interactive threshold controls (Normal, Warning, Danger) to test system resilience in real time.
 
 ---
 
@@ -222,7 +252,38 @@ To evolve from heuristic smoothing into predictive supervised learning, the plan
 
 ---
 
-### 2. Quality-Risk Deduction Scoring Engine
+### 2. Edge Computer Vision Spoilage Detection (YOLOv8 ONNX)
+
+To replace error-prone manual dropdowns with automated quality evaluation, SmartFood Rescue AI runs a computer vision classification model locally in the browser:
+
+```
+[Webcam Video Stream] 
+       │ (Sampled every 2 seconds)
+       ▼
+[HTML5 Canvas: 224 x 224] 
+       │ (Normalized Planar RGB Float32 Tensor: [1, 3, 224, 224])
+       ▼
+[onnxruntime-web: food_spoilage.onnx]
+       │ (Softmax Output Probabilities)
+       ├── Fresh: 0 pts deduction (Confidence: 94.2%)
+       ├── Slightly Spoiled: -15 pts deduction (Confidence: 3.8%)
+       └── Spoiled: -30 pts deduction (Confidence: 2.0%)
+```
+
+#### Tensor Specification & Inference Pipeline:
+- **Model Path:** `/models/food_spoilage.onnx` (derived from YOLOv8 classification architecture).
+- **Input Tensor:** Name `images`, Dimension `[1, 3, 224, 224]`, Datatype `float32` (RGB values normalized to $[0, 1]$).
+- **Sampling Frequency:** Live webcam video frame captured every **2,000 ms** to an off-screen canvas.
+- **Inference Execution:** `await session.run({ images: tensor })` via WebAssembly / WebGL backend.
+- **Output Classes & Automatic Penalty Scoring:**
+  - **Fresh ($0\text{ pts}$ deduction):** Normal surface texture and pristine appearance. Maps to `appearance = Normal`.
+  - **Slightly Spoiled ($-15\text{ pts}$ deduction):** Initial oxidation, slight surface bruising, or minor moisture accumulation. Maps to `appearance = Suspicious` with $-15\text{ pts}$ calibrated deduction.
+  - **Spoiled ($-30\text{ pts}$ deduction):** Severe discoloration, visible mold, or structural decomposition. Maps to `appearance = Suspicious` with $-30\text{ pts}$ deduction.
+- **Human-in-the-Loop Override:** Kitchen staff can immediately review the model's classification, inspect the live confidence percentage badge, and manually override the assessment if necessary before final sign-off.
+
+---
+
+### 3. Quality-Risk Deduction Scoring Engine
 Starting at a pristine baseline score of **$100$ points**:
 
 $$\text{Final Score} = 100 - \sum \text{Deductions}$$
@@ -232,7 +293,8 @@ $$\text{Final Score} = 100 - \sum \text{Deductions}$$
 | **Storage Temperature** | Temperature exceeds the prototype-configured storage threshold (default: 8°C) | **$-35\text{ pts}$** |
 | **Redistribution Deadline** | Redistribution deadline passed (current time $>$ scheduled use-by window) | **$-40\text{ pts}$** |
 | **Packaging Integrity** | Packaging damaged: broken seal, damaged container, or lid leakage | **$-25\text{ pts}$** |
-| **Sensory Appearance** | Human-entered visual or sensory concern: discoloration, abnormal texture, or staff-reported odor concern | **$-30\text{ pts}$** |
+| **AI Computer Vision Spoilage** | Real-time YOLOv8 ONNX spoilage detection: Slightly Spoiled / Spoiled | **$-15\text{ pts}$ to $-30\text{ pts}$** |
+| **Sensory Appearance** | Human-entered visual or sensory concern: discoloration, abnormal texture, or odor concern | **$-30\text{ pts}$** |
 | **Storage Environment** | Improper storage environment: uninsulated vessel or open ambient contamination | **$-20\text{ pts}$** |
 | **Telemetry Gateway** | Virtual IoT device/sensor status offline | **$-10\text{ pts}$** |
 
@@ -245,7 +307,7 @@ $$\text{Final Score} = 100 - \sum \text{Deductions}$$
 
 ---
 
-### 3. Multi-Criteria NGO Matching Algorithm
+### 4. Multi-Criteria NGO Matching Algorithm
 Matches eligible batches against active shelters in Vijayawada using a 100-point composite model:
 
 $$\text{NGO Match Score (out of 100)} = S_{\text{dist}} + S_{\text{cap}} + S_{\text{cat}} + S_{\text{avail}}$$
@@ -270,7 +332,7 @@ $$\text{NGO Match Score (out of 100)} = S_{\text{dist}} + S_{\text{cap}} + S_{\t
 
 ---
 
-### 4. Time-Aware Route Planning & Safety Index
+### 5. Time-Aware Route Planning & Safety Index
 
 $$\text{Travel Time (minutes)} = \left(\frac{\text{Distance (km)}}{\text{Vehicle Speed (km/h)}}\right) \times 60 + \text{Handling Buffer (10 mins)}$$
 
@@ -287,7 +349,7 @@ $$\text{Travel Time (minutes)} = \left(\frac{\text{Distance (km)}}{\text{Vehicle
 
 ---
 
-### 5. Sustainability & ESG Impact Metrics
+### 6. Sustainability & ESG Impact Metrics
 
 - **Meals Rescued:**
   $$\text{Meals Saved} = \frac{\text{Food Redistributed (kg)}}{0.25\text{ kg/meal}}$$
@@ -313,12 +375,12 @@ $$\text{Travel Time (minutes)} = \left(\frac{\text{Distance (km)}}{\text{Vehicle
 | Page / Module | Purpose & Core Capabilities |
 | :--- | :--- |
 | **1. Landing Page** | Public front page with problem workflow, 6-pillar solution, impact cards, institutional problem context, and interactive ROI savings calculator. |
-| **2. Role Selection** | Quick entry point to login as **Demo User** under 4 operational roles: *Kitchen Staff*, *NGO Partner*, *Delivery Partner*, *Administrator*. |
-| **3. Operational Dashboard** | 8 primary KPI cards, 5-stage live pipeline stepper, 4 Recharts graphs (7-day waste trend, prep vs served, batch status pie, weekly volume), recent alerts, and quick actions. |
+| **2. Role Selection** | Quick entry point backed by **Firebase Authentication** (`signInAnonymously`) storing active profiles in Firestore `users/{uid}`, supporting 4 operational roles: *Kitchen Staff*, *NGO Partner*, *Delivery Partner*, *Administrator*. |
+| **3. Operational Dashboard** | 8 primary KPI cards, **“Today’s Rescue Intelligence” AI card (`RescueInsightCard.tsx`)** powered by Claude/Gemini with live radar pulse, 5-stage live pipeline stepper, 4 Recharts graphs, and recent alerts. |
 | **4. Demand Forecast** | Interactive calculator with attendance slider, meal category pickers, baseline rule checkboxes, risk badge, recommendation message, history table, and CSV export. |
 | **5. Food Batches & Surplus** | Batch registration modal, automatic surplus calculation, deadline countdown, status badges, and quick links to quality checks and donation dispatch. |
 | **6. Virtual IoT Simulator** | Software emulator with real-time temperature, humidity, weight, duration, 5 manual sliders, and 6 instant preset scenarios. |
-| **7. Quality Check** | Circular score gauge (0–100), factor penalty breakdown, reviewer notes, human sign-off authorization gate, and mandatory food safety disclaimer. |
+| **7. Quality Check** | Circular score gauge (0–100), **Real-Time Edge Computer Vision Spoilage Camera (`QualityCamera.tsx`)** running YOLOv8 ONNX, confidence meter, deduction rule breakdown, reviewer notes, and human sign-off authorization gate. |
 | **8. NGO Matching** | Ranked radar of 4 Vijayawada partners (Hope Food Bank, Seva Shelter, Helping Hands, Community Kitchen) with simulation of NGO accept/reject and fallback. |
 | **9. Route Planning** | Map corridor interface, vehicle selector (Auto/Bike/Van), travel time calculator, manual corridor endpoints & distance entry with presets, 6-step dispatch timeline, and delivery photo proof. |
 | **10. Sustainability Analytics** | 10 impact KPIs, 8 Recharts trend charts, UN SDG 12.3 alignment, and 1-click ESG CSV download. |
@@ -330,41 +392,61 @@ $$\text{Travel Time (minutes)} = \left(\frac{\text{Distance (km)}}{\text{Vehicle
 
 ## 🎨 Interactive Evaluator Tour & UI/UX Features
 
-To deliver an exceptional evaluator experience during live demonstrations, SmartFood Rescue AI incorporates three interactive UI components:
+To deliver an exceptional evaluator experience during live demonstrations, SmartFood Rescue AI incorporates four interactive UI components:
 
-1. **Guided Evaluator Demo Tour (`GuidedDemoTour.tsx`):**
+1. **AI-Powered "Today's Rescue Intelligence" Card (`RescueInsightCard.tsx`):**
+   - Embedded directly on the top of the Operational Dashboard.
+   - Dispatches operational metrics (active surplus, top batch score, best NGO, deadline, rescued kg) to a serverless callable function executing Claude 3.5 / Gemini.
+   - Features a pulsing green radar beacon, live streaming typewriter animation (20ms/char), and transparent Firestore daily caching with zero-latency local fallback.
+
+2. **Real-Time Webcam Spoilage Detector (`QualityCamera.tsx`):**
+   - Embedded directly inside the Quality Check page.
+   - Accesses user webcam with sub-50ms canvas frame capture, runs edge inference via `onnxruntime-web`, and displays live classification tags (Fresh, Slightly Spoiled, Spoiled) with confidence percentages.
+   - Automatically synchronizes deduction penalties into the master 100-point score while preserving manual override capabilities for kitchen inspectors.
+
+3. **Guided Evaluator Demo Tour (`GuidedDemoTour.tsx`):**
    - Click the **"Guided Tour"** button in the navigation header or landing page to launch an automated 6-step walkthrough.
    - Progresses through: *Demand Forecasting $\rightarrow$ Surplus Batches $\rightarrow$ IoT Telemetry $\rightarrow$ Quality Decision Support $\rightarrow$ NGO Radar $\rightarrow$ Time-Aware Dispatch*.
    - Evaluators can step forward/backward or jump directly to any operational phase.
 
-2. **Interactive ROI & Carbon Savings Calculator (`WasteSavingsCalculator.tsx`):**
+4. **Interactive ROI & Carbon Savings Calculator (`WasteSavingsCalculator.tsx`):**
    - Embedded directly on the public landing page.
-   - Evaluators can drag daily meals cooked (100–3,000) and waste percentage (5%–35%) to instantly compute:
-     - Estimated kilograms of food salvaged annually.
-     - Expected financial recovery in Rupees (₹).
-     - Metric tons of Greenhouse Gas ($\text{CO}_2\text{e}$) emissions prevented from reaching landfills.
+   - Evaluators can drag daily meals cooked (100–3,000) and waste percentage (5%–35%) to instantly compute annual kilograms salvaged, financial savings (₹), and metric tons of $\text{CO}_2\text{e}$ mitigated.
 
-3. **Live 5-Stage Pipeline Stepper (`PipelineStepper.tsx`):**
+5. **Live 5-Stage Pipeline Stepper (`PipelineStepper.tsx`):**
    - Prominently featured on the Operational Dashboard.
    - Dynamically tracks the active status of the 5-stage lifecycle (*1. Forecast $\rightarrow$ 2. Batch Logging $\rightarrow$ 3. IoT Quality Gate $\rightarrow$ 4. NGO Matching $\rightarrow$ 5. Time-Aware Dispatch*).
-   - Allows instant navigation to any stage with real-time batch counts and alerts.
 
 ---
 
-## 👥 Role-Based Access Control
+## 👥 Role-Based Access Control & Firebase Authentication
 
-The application provides customizable interfaces tailored to each stakeholder:
+SmartFood Rescue AI implements a production-grade authentication and session management model using **Firebase Authentication** coupled with Firestore security profiles and offline fallback:
 
+### Authentication Architecture
+- **Auth Context (`src/context/AuthContext.tsx`):** Exposes `useAuth()` providing `{ user, role, loading, signInWithRole, signOut }` throughout the React component hierarchy.
+- **Anonymous Session Initialization:** Clicking any role card on the Role Selection page calls `signInAnonymously(auth)`. Upon sign-in, the system writes or updates the user profile in Firestore:
+  ```typescript
+  // Write session state to Firestore
+  await setDoc(doc(db, 'users', user.uid), {
+    role: selectedRole,
+    name: 'Demo User',
+    lastLogin: serverTimestamp(),
+  }, { merge: true });
+  ```
+- **Real-Time Auth Observer (`onAuthStateChanged`):** Synchronizes the active user session, retrieves the persisted role from `users/{uid}`, and renders an emerald loading indicator while credentials resolve.
+- **Offline-First Zero-Crash Fallback:** If the browser is offline or Firebase credentials are not supplied, `AuthContext` seamlessly falls back to local session state, allowing offline evaluation to continue uninterrupted.
+
+### Role Responsibilities
 1. **Kitchen Staff:**
-   - Records food batches, runs forecasts, monitors alerts, and submits batches for review.
-   - Can record an authorised approval decision according to institutional policy.
-   - *(Kitchen Staff does not independently provide legal food-safety certification; all evaluations remain operational decision support).*
+   - Records food batches, runs forecasts, monitors alerts, and runs webcam spoilage checks.
+   - Records authorised approval decisions according to institutional policy.
 2. **NGO Partner:**
-   - Focuses on recipient surplus alerts in Vijayawada, incoming food offers, and accepting/declining batches.
+   - Receives surplus broadcast alerts in Vijayawada, reviews incoming food offers, and accepts/declines batches.
 3. **Delivery Partner:**
-   - Specialized in transit route planning, vehicle assignment, step-by-step dispatch tracking, and delivery proof uploads.
+   - Handles transit route corridors, vehicle assignment, step-by-step dispatch tracking, and delivery proof photo uploads.
 4. **Administrator:**
-   - Supervisory access to configure policy thresholds, review compliance reports, and oversee the prototype approval workflow.
+   - Supervisory access to configure policy thresholds, review compliance certificates, manage datasets, and oversee audit logs.
 
 ---
 
@@ -382,6 +464,57 @@ The simulator provides:
   5. **Simulate Sensor Offline:** Emulates gateway disconnection $\rightarrow$ *Warning Penalty Applied*.
   6. **Reset Simulation:** Returns to default canonical readings.
 - **Streaming Telemetry Table:** Timestamped readings log with status flags.
+
+---
+
+## ⚡ Serverless Cloud Functions & Backend Automation
+
+The backend codebase (`functions/src/index.ts`) implements **6 serverless Cloud Functions** engineered for autonomous event-driven processing and scheduled compliance:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                 FIREBASE CLOUD FUNCTIONS v7 (TypeScript)                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 1. generateRescueInsight    │ Callable   │ Calls Claude 3.5 / Gemini to     │
+│                             │            │ synthesize daily rescue brief.   │
+├─────────────────────────────┼────────────┼──────────────────────────────────┤
+│ 2. onBatchCreated           │ Firestore  │ Triggered on batches/{id}. Checks│
+│                             │ Trigger    │ linked IoT temp against 8°C limit│
+├─────────────────────────────┼────────────┼──────────────────────────────────┤
+│ 3. onBatchStatusChanged     │ Firestore  │ Triggered on batches/{id} update.│
+│                             │ Trigger    │ Emits NGO alert on 'Offered';    │
+│                             │            │ Appends to esg_ledger on 'Deliv'.│
+├─────────────────────────────┼────────────┼──────────────────────────────────┤
+│ 4. onDeliveryCompleted      │ Callable   │ Commits audit trail record to    │
+│                             │            │ audit_log and seals batch record.│
+├─────────────────────────────┼────────────┼──────────────────────────────────┤
+│ 5. weeklyESGDigest          │ Scheduled  │ Cron: 0 3 * * 1 (Mondays 3:00 AM)│
+│                             │ Cron       │ Computes weekly ESG rollups.     │
+├─────────────────────────────┼────────────┼──────────────────────────────────┤
+│ 6. onIoTThresholdBreach     │ Firestore  │ Triggered on iot_readings/{id}.  │
+│                             │ Trigger    │ Broadcasts urgent warning alerts.│
+└─────────────────────────────┴────────────┴──────────────────────────────────┘
+```
+
+1. **`generateRescueInsight` (Callable Function):**
+   - Accepts operational parameters (`activeBatches`, `topBatchScore`, `topBatchKg`, `bestNgoName`, `bestNgoMatch`, `deadlineMinutes`, `todayRescuedKg`).
+   - Queries Anthropic Claude API (`claude-3-5-sonnet`) or Google Gemini with prompt calibrated for institutional coordinators.
+   - Caches output daily in Firestore `insights/{YYYY-MM-DD}` to optimize API quotas.
+2. **`onBatchCreated` (Firestore Document Created Trigger):**
+   - Automatically monitors `batches/{batchId}` creation.
+   - Cross-references linked IoT telemetry: if temperature exceeds 8°C, instantly sets `qualityStatus = 'Needs Manual Inspection'`.
+3. **`onBatchStatusChanged` (Firestore Document Updated Trigger):**
+   - Detects status changes in `batches/{batchId}`.
+   - On transition to `'Offered'`: Creates a new document in `notifications/{timestamp}` targeting the matched NGO with surplus weight and pickup details.
+   - On transition to `'Delivered'`: Computes ESG impact ($\text{meals} = \text{kg} \times 4$, $\text{CO}_2\text{e} = \text{kg} \times 2.5$) and appends an entry to the monthly ledger `esg_ledger/{YYYY-MM}`.
+4. **`onDeliveryCompleted` (Callable Function):**
+   - Receives delivery confirmation and writes an immutable audit record to `audit_log/{autoId}` containing batch ID, recipient NGO, handover timestamp, and delivery partner signature.
+5. **`weeklyESGDigest` (Scheduled Cloud Cron Job):**
+   - Executes weekly every Monday at 3:00 AM (`0 3 * * 1`).
+   - Aggregates all deliveries from `esg_ledger`, sums total kilograms rescued and carbon avoided, and commits a signed executive summary to `reports/weekly_digest_{week}`.
+6. **`onIoTThresholdBreach` (Firestore Document Created Trigger):**
+   - Watches `iot_readings/{readingId}`.
+   - If temperature $> 8^\circ\text{C}$ or humidity $> 80\%$, logs an emergency alert document in `alerts/{autoId}` to notify the on-duty kitchen staff immediately.
 
 ---
 
@@ -640,54 +773,71 @@ npm run dev
 SmartFood-Rescue-AI_SIH_2026/
 ├── LICENSE                      # MIT License (Team Annadata AI)
 ├── README.md                    # Comprehensive project documentation
-├── package.json                 # Project dependencies & scripts (React 19, Vite 8, TS 6)
+├── package.json                 # Project dependencies & scripts (React 19, Vite 8, TS 6, ONNX Runtime)
 ├── tsconfig.json                # Root TypeScript configuration
 ├── tsconfig.app.json            # Application TypeScript settings
 ├── vite.config.ts               # Vite configuration with React & Tailwind plugins
 ├── .env.example                 # Template for Firebase credentials & environment keys
 ├── .firebaserc                  # Firebase project routing (smartfood-rescue-ai)
 ├── firebase.json                # Firebase Hosting (dist/), Firestore & Functions routing
-├── firestore.rules              # Cloud Firestore security rules
+├── firestore.rules              # Cloud Firestore security rules with RBAC policies
 ├── firestore.indexes.json       # Cloud Firestore query index definitions
 ├── backend/                     # Future-ready secure backend architecture
 │   ├── .env.example             # Secret GOOGLE_MAPS_SERVER_ROUTES_KEY template
 │   └── README.md                # Server Routes API & POST /api/routes/estimate docs
+├── public/
+│   ├── data/                    # CSV templates for Kaggle dataset ingestion
+│   ├── images/                  # Infographics and 3D ecosystem visual assets
+│   └── models/
+│       └── food_spoilage.onnx   # Edge YOLOv8 food spoilage ONNX model (Fresh/Mild/Spoiled)
+├── scripts/
+│   └── generate_spoilage_model.py # Python ONNX model generator script
 ├── docs/
-│   └── screenshots/             # Visual UI walkthrough artifacts
-│       └── .gitkeep
+│   ├── screenshots/             # Visual UI walkthrough artifacts
+│   ├── DATA_DICTIONARY_TEMPLATE.md
+│   ├── PPT_VISUAL_ASSETS.md
+│   └── SIH_2026_PRESENTATION_DECK.md
 ├── functions/                   # Serverless Firebase Cloud Functions codebase
-│   ├── src/index.ts             # Cloud Functions triggers & background worker
-│   ├── package.json             # Functions dependencies (firebase-admin, functions v7)
+│   ├── src/index.ts             # 6 Functions: GenAI brief, IoT audit, NGO alert, ESG ledger
+│   ├── package.json             # Functions dependencies (@anthropic-ai/sdk, firebase-admin)
 │   └── tsconfig.json            # TypeScript build configuration for functions
 ├── src/
 │   ├── main.tsx                 # React DOM bootstrapping
-│   ├── App.tsx                  # Master application shell & state coordinator
+│   ├── App.tsx                  # Master shell, AuthContext provider & state coordinator
 │   ├── index.css                # Tailwind CSS v4 imports & custom styles
 │   ├── types/
 │   │   └── index.ts             # Domain models (Batch, Forecast, IoT, NGO, Route, ESG)
+│   ├── context/
+│   │   └── AuthContext.tsx      # Firebase Auth session state & role context hook (useAuth)
 │   ├── services/
-│   │   ├── firebase.ts          # Firebase SDK client initialization (Auth, DB, Storage)
+│   │   ├── firebase.ts          # Firebase SDK client initialization (Auth, DB, Functions)
 │   │   ├── mockData.ts          # Seed data for Vijayawada canonical scenario
-│   │   └── storage.ts           # LocalStorage service, math formulas & algorithms
+│   │   └── storage.ts           # LocalStorage service, math formulas & insight aggregator
 │   ├── components/
 │   │   ├── Navbar.tsx           # Top header with role switcher, notifications, date
 │   │   ├── Sidebar.tsx          # Collapsible/mobile-responsive navigation sidebar
+│   │   ├── RescueInsightCard.tsx# AI GenAI card with pulsing radar & 20ms typewriter effect
+│   │   ├── QualityCamera.tsx    # Live webcam food spoilage detector via onnxruntime-web
+│   │   ├── PipelineStepper.tsx  # Live 5-stage lifecycle progress tracker
+│   │   ├── WasteSavingsCalculator.tsx # Interactive public ROI & carbon savings calculator
+│   │   ├── GuidedDemoTour.tsx   # Interactive 6-step guided walkthrough modal
 │   │   ├── GoogleRouteMap.tsx   # Dual-mode Google Maps & Corridor Simulation component
 │   │   ├── DisclaimerBanner.tsx # Software simulation & food safety disclaimers
 │   │   ├── ConfirmationModal.tsx# Reusable modal for alerts and data resets
 │   │   └── Toast.tsx            # Animated notification alert container
 │   └── pages/
 │       ├── LandingPage.tsx          # Public presentation & problem-solution page
-│       ├── RoleSelectionPage.tsx    # 4-role login & workspace selector
-│       ├── DashboardPage.tsx        # 8 KPI cards, 4 Recharts charts, recent alerts
+│       ├── RoleSelectionPage.tsx    # Firebase Auth 4-role login & workspace selector
+│       ├── DashboardPage.tsx        # 8 KPI cards, AI insight card, Recharts charts, alerts
 │       ├── DemandForecastPage.tsx   # Pre-cooking demand predictor with CSV export
 │       ├── FoodBatchesPage.tsx      # Batch tracking, surplus calculation & status flows
 │       ├── IoTSimulatorPage.tsx     # Virtual IoT emulator with sliders & 6 presets
-│       ├── QualityCheckPage.tsx     # Circular score gauge & deduction rule breakdown
+│       ├── QualityCheckPage.tsx     # ONNX webcam detector, score gauge & deduction breakdown
 │       ├── NgoMatchingPage.tsx      # Multi-criteria Vijayawada partner matching radar
 │       ├── RoutePlanningPage.tsx    # Transit corridor map, vehicle matrix & 6-step state
 │       ├── SustainabilityPage.tsx   # ESG metrics, 10 KPIs, 8 charts & CSV export
 │       ├── ReportsPage.tsx          # Executive printable compliance certificate
+│       ├── DatasetManagementPage.tsx# Admin Kaggle synthetic dataset ingestion console
 │       └── SettingsPage.tsx         # Platform parameter tuning & defaults reset
 ```
 
@@ -700,10 +850,15 @@ Follow this 5-minute flow to demonstrate the entire ecosystem during evaluation:
 1. **Landing Page:**
    - Point out the tagline: *“Predict. Rescue. Redistribute. Measure.”*
    - Review the 5-step problem workflow and 6 solution pillars.
+   - Test the interactive **Waste Savings Calculator** slider.
    - Click **“Get Started (Choose Role)”**.
-2. **Role Selection Page:**
-   - Show the 4 available roles. Click **“Continue as Kitchen Staff”**.
-3. **Operational Dashboard:**
+2. **Role Selection Page (Real Firebase Authentication):**
+   - Show the 4 available operational roles (*Kitchen Staff*, *NGO Partner*, *Delivery Partner*, *Administrator*).
+   - Click **“Continue as Kitchen Staff”** to trigger Firebase `signInAnonymously(auth)` and establish session state in Firestore `users/{uid}`.
+3. **Operational Dashboard & AI Rescue Intelligence:**
+   - Highlight the **“Today’s Rescue Intelligence” AI card (`RescueInsightCard.tsx`)** at the top:
+     - Point out the pulsing green radar beacon.
+     - Note the streaming typewriter animation summarizing current surplus urgency, nearest NGO, and delivery deadlines via Claude 3.5 / Gemini.
    - Highlight the **8 KPI Cards** matching the canonical scenario: 295 predicted meals, 310 prepared, 14 kg surplus, 56 meals saved, estimated ₹2,800 saved, estimated 35 kg $\text{CO}_2\text{e}$ avoided.
    - Point out the 4 Recharts charts (7-day waste drop, prep vs served).
 4. **Demand Forecast:**
@@ -714,25 +869,32 @@ Follow this 5-minute flow to demonstrate the entire ecosystem during evaluation:
 5. **Virtual IoT Simulator:**
    - In the sidebar, click **Virtual IoT Simulator**.
    - Note the visible software simulation notice banner.
-   - Click **“Simulate High Temperature (28°C)”** to see the system turn into an amber/red warning state.
+   - Click **“Simulate High Temperature (28°C)”** to see the system turn into an amber/red warning state (triggers serverless alert condition).
    - Click **“Simulate Normal Storage”** to observe the system recover to optimal storage (5°C) within threshold.
-6. **Quality Check & Decision Support:**
+6. **Quality Check & Edge Computer Vision Spoilage Detection:**
    - In the sidebar, click **Quality Check**.
-   - Observe the circular gauge showing **100/100** (*Safe for Human Review*) for the canonical normal storage conditions.
-   - Review the rule breakdown deductions and click **“Approve for Donation”** with authorised role verification.
+   - Demonstrate the **Live Webcam Spoilage Detector (`QualityCamera.tsx`)**:
+     - Point webcam toward food or a sample object.
+     - Observe live frame sampling every 2 seconds and edge inference execution via `onnxruntime-web` (`/models/food_spoilage.onnx`).
+     - Point out the real-time classification tag (**Fresh 0pts**, **Slightly Spoiled -15pts**, or **Spoiled -30pts**) and confidence score percentage.
+     - Observe the automatic deduction dynamically applied to the circular score gauge.
+     - Highlight the human-in-the-loop manual override dropdown.
+   - Click **“Approve for Donation”** with authorised role verification.
 7. **NGO Matching Radar:**
    - In the sidebar, click **NGO Matching**.
    - Point out **Hope Food Bank** ranked #1 (Benz Circle, 3.2 km, 25 kg capacity, **91% match score**).
    - Note that if an NGO has insufficient capacity, the system displays "Partial Capacity Available" and suggests splitting the batch.
    - Click **“Simulate NGO Accept”** or test **“Simulate NGO Reject”** to show instant AI fallback to the next best partner (*Seva Shelter Home*).
+   - Point out the background Cloud Function trigger (`onBatchStatusChanged`) broadcasting the donation offer notification.
 8. **Route Planning & Delivery:**
    - In the sidebar, click **Route Planning**.
    - View the simulated transit corridor between College Canteen and Hope Food Bank (3.2 km, 20 minutes total via Auto).
    - Toggle vehicle type between *Auto*, *Bike*, and *Van* to see travel time recalculations.
    - Walk through the 6-step timeline and click **“6. Mark Delivered ✓”** to trigger delivery completion confetti.
+   - Highlight the backend trigger appending immutable ESG metrics to `esg_ledger` and logging to `audit_log`.
 9. **Sustainability Analytics & Reports:**
    - In the sidebar, view **Sustainability Analytics** to see dynamically calculated ESG figures (56 meals saved, estimated ₹2,800 saved, estimated 35 kg $\text{CO}_2\text{e}$ avoided).
-   - Click **Reports** and then **“Print / Save as PDF”** to demonstrate institutional certification generation.
+   - Click **Reports** and then **“Print / Save as PDF”** to demonstrate institutional compliance certification generation.
 
 ---
 
@@ -749,8 +911,11 @@ Follow this 5-minute flow to demonstrate the entire ecosystem during evaluation:
 
 ## 🔮 Future Production Roadmap
 
-- [ ] **Physical Hardware Connectors:** Plug-and-play firmware drivers for ESP32 and LoRaWAN long-range temperature sensors.
-- [ ] **Computer Vision Spoilage Detection:** Edge AI image classification for visual surface discoloration and mold detection using kitchen smartphone cameras.
+- [x] **Edge Computer Vision Spoilage Detection:** Implemented in-browser YOLOv8 ONNX classification via `onnxruntime-web` with real-time webcam frame sampling.
+- [x] **Generative AI Rescue Intelligence:** Implemented operational briefing agent powered by Claude 3.5 / Gemini via Cloud Functions with Firestore daily caching.
+- [x] **Production Firebase Authentication:** Implemented anonymous demo sessions and persistent Firestore `users/{uid}` role synchronization with offline fallback.
+- [x] **Serverless Event-Driven Architecture:** Implemented 6 Cloud Functions triggers for IoT threshold audits, NGO alerts, delivery confirmations, and weekly ESG digest crons.
+- [ ] **Physical Hardware Connectors:** Plug-and-play firmware drivers for ESP32 and LoRaWAN long-range temperature and humidity probes.
 - [ ] **Government FSSAI & Food Bank API Integration:** Direct digital compliance filings with national food-safety and redistribution authorities.
 - [ ] **Multi-Facility Aggregator:** Centralized dashboard for city-wide university clusters and district-level food banks across Andhra Pradesh.
 

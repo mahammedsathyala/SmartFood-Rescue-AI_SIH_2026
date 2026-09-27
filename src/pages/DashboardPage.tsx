@@ -50,6 +50,7 @@ import {
 } from '../types';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
 import { PipelineStepper } from '../components/PipelineStepper';
+import { RescueInsightCard } from '../components/RescueInsightCard';
 import { useAppContext } from '../context/AppContext';
 
 interface DashboardPageProps {
@@ -270,6 +271,12 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           <div className="text-[10px] text-cyan-600 font-semibold mt-0.5">Prototype estimate</div>
         </div>
       </div>
+
+      {/* AI-Powered Today's Rescue Intelligence Card */}
+      <RescueInsightCard 
+        onNavigateToBatches={() => onNavigate('food-batches')}
+        onNavigateToNgo={() => onNavigate('ngo-matching')}
+      />
 
       {/* Recharts Analytics Grid (4 charts) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -1,15 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   ChefHat, 
   HeartHandshake, 
   Truck, 
   ShieldCheck, 
   ArrowRight, 
-  Sparkles,
-  ArrowLeft,
-  CheckCircle2,
-  MapPin
+  Sparkles, 
+  ArrowLeft, 
+  CheckCircle2, 
+  MapPin,
+  RefreshCw
 } from 'lucide-react';
+import { signInAnonymously } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db, isFirebaseConfigured } from '../services/firebase';
 import { UserRole } from '../types';
 
 interface RoleSelectionPageProps {
@@ -21,6 +25,36 @@ export const RoleSelectionPage: React.FC<RoleSelectionPageProps> = ({
   onSelectRole,
   onBackToHome
 }) => {
+  const [authenticatingRole, setAuthenticatingRole] = useState<UserRole | null>(null);
+
+  const handleRoleClick = async (selectedRole: UserRole) => {
+    setAuthenticatingRole(selectedRole);
+    try {
+      if (isFirebaseConfigured && auth) {
+        // 1. Sign in anonymously with Firebase Auth for live cloud sessions
+        const userCredential = await signInAnonymously(auth);
+        const uid = userCredential.user.uid;
+
+        // 2. Write role and name to Firestore users/{uid}
+        const userRef = doc(db, 'users', uid);
+        await setDoc(userRef, {
+          role: selectedRole,
+          name: 'Demo User',
+          updatedAt: new Date().toISOString()
+        }, { merge: true });
+      }
+
+      // 3. Navigate to dashboard
+      onSelectRole(selectedRole);
+    } catch (err) {
+      console.warn('Firebase authentication/Firestore write notice:', err);
+      // Fallback: Proceed with role selection to preserve offline demo resilience
+      onSelectRole(selectedRole);
+    } finally {
+      setAuthenticatingRole(null);
+    }
+  };
+
   const roles: {
     role: UserRole;
     title: string;
@@ -110,7 +144,7 @@ export const RoleSelectionPage: React.FC<RoleSelectionPageProps> = ({
         <div className="text-center max-w-2xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Unified Role-Based Access</span>
+            <span>Unified Role-Based Access • Firebase Auth</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-display font-extrabold text-slate-900 tracking-tight">
             Select Your Role to Continue
@@ -158,11 +192,22 @@ export const RoleSelectionPage: React.FC<RoleSelectionPageProps> = ({
 
               <div className="mt-6 pt-4">
                 <button
-                  onClick={() => onSelectRole(r.role)}
-                  className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 group-hover:shadow-emerald-600/20 cursor-pointer"
+                  type="button"
+                  onClick={() => handleRoleClick(r.role)}
+                  disabled={authenticatingRole !== null}
+                  className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-md transition-all flex items-center justify-center gap-2 group-hover:shadow-emerald-600/20 cursor-pointer disabled:opacity-75"
                 >
-                  <span>Continue as {r.role}</span>
-                  <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                  {authenticatingRole === r.role ? (
+                    <div className="flex items-center gap-2">
+                      <RefreshCw className="w-4 h-4 animate-spin text-emerald-400" />
+                      <span>Authenticating Session...</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span>Continue as {r.role}</span>
+                      <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -171,7 +216,7 @@ export const RoleSelectionPage: React.FC<RoleSelectionPageProps> = ({
       </div>
 
       <div className="mt-8 text-center text-xs text-slate-400">
-        SmartFood Rescue AI • Persistent localStorage State • Seamless Live Switching
+        SmartFood Rescue AI • Firebase Authentication & Anonymous Demo Sessions • Persistent Offline Fallback
       </div>
     </div>
   );

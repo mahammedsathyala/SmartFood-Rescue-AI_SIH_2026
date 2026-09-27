@@ -27,23 +27,23 @@ service cloud.firestore {
       return hasRole('NGO Partner');
     }
 
-    // Default rule: Authenticated users can read all documents
-    match /{document=**} {
-      allow read: if isAuthenticated();
+    // Batches collection: Allow reads and writes only if request.auth != null
+    match /batches/{batchId} {
+      allow read, write: if request.auth != null;
     }
 
-    // Batches collection
-    // Authenticated users can read; only Kitchen Staff / Administrator can write
-    // NGO Partners have read-only access
-    match /batches/{batchId} {
+    // Admin collections: Allow reads and writes only if user role == 'Administrator'
+    match /admin/{adminDoc=**} {
+      allow read, write: if hasRole('Administrator');
+    }
+
+    // Settings collection: read authenticated, write only Administrator
+    match /settings/{settingDoc} {
       allow read: if isAuthenticated();
-      allow write: if isKitchenStaffOrAdmin();
+      allow write: if hasRole('Administrator');
     }
 
     // Donations collection
-    // Authenticated users can read
-    // Kitchen Staff and Administrator can write (create, update, delete)
-    // NGO Partners can only update donation status
     match /donations/{donationId} {
       allow read: if isAuthenticated();
       allow create, delete: if isKitchenStaffOrAdmin();
@@ -77,10 +77,50 @@ service cloud.firestore {
       allow write: if isKitchenStaffOrAdmin();
     }
 
+    // AI Rescue Insights collection
+    match /insights/{insightId} {
+      allow read, write: if isAuthenticated();
+    }
+
+    // Alerts collection
+    match /alerts/{alertId} {
+      allow read: if isAuthenticated();
+      allow write: if isKitchenStaffOrAdmin();
+    }
+
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // ESG Ledger collection
+    match /esg_ledger/{document=**} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // Audit Log collection
+    match /audit_log/{batchId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated();
+    }
+
+    // Reports collection
+    match /reports/{reportId} {
+      allow read: if isAuthenticated();
+      allow write: if hasRole('Administrator');
+    }
+
     // User accounts collection
     match /users/{userId} {
       allow read: if isAuthenticated();
       allow write: if isAuthenticated() && (request.auth.uid == userId || hasRole('Administrator'));
+    }
+
+    // Default rule: Authenticated users can read documents
+    match /{document=**} {
+      allow read: if isAuthenticated();
     }
   }
 }

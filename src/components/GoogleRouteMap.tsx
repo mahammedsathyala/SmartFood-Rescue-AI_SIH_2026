@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Navigation, MapPin, Truck, Building2, AlertCircle, Sparkles } from 'lucide-react';
-
-declare global {
-  interface Window {
-    google?: any;
-    gm_authFailure?: () => void;
-  }
-}
+import React, { useEffect, useRef } from 'react';
+import { 
+  Navigation, 
+  Truck, 
+  MapPin
+} from 'lucide-react';
+import L from 'leaflet';
 
 interface GoogleRouteMapProps {
   originName: string;
@@ -42,266 +40,162 @@ export const GoogleRouteMap: React.FC<GoogleRouteMapProps> = ({
   vehicleType,
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
-
-  // Read only the demo key from Vite environment
-  const demoKey = import.meta.env.VITE_GOOGLE_MAPS_DEMO_KEY?.trim() || '';
-  const isKeyPresent = Boolean(demoKey && demoKey !== 'your_google_maps_demo_key');
-
-  const [mapState, setMapState] = useState<'loading' | 'ready' | 'simulation'>(
-    isKeyPresent ? 'loading' : 'simulation'
-  );
+  const mapInstanceRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
-    // If no demo key or default placeholder, fallback to simulation mode immediately
-    if (!isKeyPresent) {
-      setMapState('simulation');
-      return;
+    if (!mapContainerRef.current) return;
+
+    // Reset previous instance if already initialized
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
     }
 
-    let isMounted = true;
-    let timeoutId: number | undefined;
-
-    // Safety handler for Google Maps authentication failures (invalid key, expired, unauthorized)
-    window.gm_authFailure = () => {
-      if (isMounted) {
-        setMapState('simulation');
-      }
-    };
-
-    const initMap = () => {
-      if (!isMounted || !mapContainerRef.current || !window.google?.maps) return;
-
-      try {
-        const map = new window.google.maps.Map(mapContainerRef.current, {
-          center: { lat: 16.5069, lng: 80.6425 },
-          zoom: 14,
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: true,
-          zoomControl: true,
-          styles: [
-            {
-              featureType: 'poi',
-              elementType: 'labels',
-              stylers: [{ visibility: 'off' }]
-            }
-          ]
-        });
-
-        mapInstanceRef.current = map;
-
-        // 1. Green Origin Marker
-        const originMarker = new window.google.maps.Marker({
-          position: CANONICAL_ORIGIN,
-          map,
-          title: originName,
-          icon: {
-            url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
-            scaledSize: new window.google.maps.Size(40, 40)
-          }
-        });
-
-        const originInfoWindow = new window.google.maps.InfoWindow({
-          content: `
-            <div style="font-family: inherit; padding: 6px; color: #0f172a; max-width: 200px;">
-              <span style="font-size: 10px; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.5px;">Origin (Kitchen Hub)</span>
-              <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">${originName}</div>
-              <div style="font-size: 11px; color: #64748b;">Origin Kitchen Hub</div>
-            </div>
-          `
-        });
-
-        originMarker.addListener('click', () => {
-          originInfoWindow.open(map, originMarker);
-        });
-
-        // 2. Red Destination Marker
-        const destinationMarker = new window.google.maps.Marker({
-          position: CANONICAL_DESTINATION,
-          map,
-          title: destinationName,
-          icon: {
-            url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-            scaledSize: new window.google.maps.Size(40, 40)
-          }
-        });
-
-        const destInfoWindow = new window.google.maps.InfoWindow({
-          content: `
-            <div style="font-family: inherit; padding: 6px; color: #0f172a; max-width: 200px;">
-              <span style="font-size: 10px; font-weight: 800; color: #dc2626; text-transform: uppercase; letter-spacing: 0.5px;">Destination (Recipient NGO)</span>
-              <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">${destinationName}</div>
-              <div style="font-size: 11px; color: #64748b;">Recipient Partner Shelter</div>
-            </div>
-          `
-        });
-
-        destinationMarker.addListener('click', () => {
-          destInfoWindow.open(map, destinationMarker);
-        });
-
-        // 3. Visual Route Polyline between the two points
-        const polyline = new window.google.maps.Polyline({
-          path: CANONICAL_ROUTE_PATH,
-          geodesic: true,
-          strokeColor: '#059669',
-          strokeOpacity: 0.9,
-          strokeWeight: 5,
-          map
-        });
-
-        // Auto-fit bounds
-        const bounds = new window.google.maps.LatLngBounds();
-        CANONICAL_ROUTE_PATH.forEach((pt) => bounds.extend(pt));
-        map.fitBounds(bounds, { top: 50, right: 50, bottom: 50, left: 50 });
-
-        setMapState('ready');
-      } catch (err) {
-        console.warn('Google Maps initialization failed, falling back to Simulation Mode:', err);
-        if (isMounted) setMapState('simulation');
-      }
-    };
-
-    // If script is already loaded
-    if (window.google?.maps) {
-      initMap();
-      return () => {
-        isMounted = false;
-      };
-    }
-
-    // Set timeout in case network blocks or key check hangs
-    timeoutId = window.setTimeout(() => {
-      if (isMounted && mapState !== 'ready') {
-        setMapState('simulation');
-      }
-    }, 6000);
-
-    // Dynamically inject script
-    const existingScript = document.getElementById('google-maps-script');
-    if (!existingScript) {
-      const script = document.createElement('script');
-      script.id = 'google-maps-script';
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(demoKey)}`;
-      script.async = true;
-      script.defer = true;
-      script.onload = () => {
-        if (isMounted) initMap();
-      };
-      script.onerror = () => {
-        if (isMounted) setMapState('simulation');
-      };
-      document.head.appendChild(script);
-    } else {
-      existingScript.addEventListener('load', initMap);
-      existingScript.addEventListener('error', () => {
-        if (isMounted) setMapState('simulation');
+    try {
+      // 1. Initialize Leaflet Map centered on Vijayawada corridor
+      const map = L.map(mapContainerRef.current, {
+        center: [16.5069, 80.6425],
+        zoom: 14,
+        zoomControl: true,
+        scrollWheelZoom: true,
       });
-    }
 
-    return () => {
-      isMounted = false;
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [demoKey, isKeyPresent]);
+      // 2. OpenStreetMap High-Resolution Street Tiles
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      // 3. Custom Origin Marker (Kitchen Hub)
+      const originIcon = L.divIcon({
+        className: 'custom-origin-marker',
+        html: `
+          <div style="position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <div style="position: absolute; width: 44px; height: 44px; border-radius: 9999px; background: rgba(16, 185, 129, 0.4); animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            <div style="width: 36px; height: 36px; border-radius: 12px; background: #059669; border: 2.5px solid #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); color: white;">
+              <span style="font-size: 16px;">👨‍🍳</span>
+            </div>
+          </div>
+        `,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18],
+      });
+
+      const originMarker = L.marker([CANONICAL_ORIGIN.lat, CANONICAL_ORIGIN.lng], { icon: originIcon }).addTo(map);
+      originMarker.bindPopup(`
+        <div style="font-family: inherit; padding: 4px 6px; min-width: 170px;">
+          <div style="font-size: 10px; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.5px;">Pickup Origin (Kitchen Hub)</div>
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 3px;">${originName}</div>
+          <div style="font-size: 11px; color: #64748b; margin-top: 2px;">MG Road Transit Hub, Vijayawada</div>
+        </div>
+      `);
+
+      // 4. Custom Destination Marker (Recipient NGO Shelter)
+      const destIcon = L.divIcon({
+        className: 'custom-dest-marker',
+        html: `
+          <div style="position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <div style="position: absolute; width: 44px; height: 44px; border-radius: 9999px; background: rgba(225, 29, 72, 0.4); animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            <div style="width: 36px; height: 36px; border-radius: 12px; background: #e11d48; border: 2.5px solid #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); color: white;">
+              <span style="font-size: 16px;">📍</span>
+            </div>
+          </div>
+        `,
+        iconSize: [36, 36],
+        iconAnchor: [18, 18],
+      });
+
+      const destMarker = L.marker([CANONICAL_DESTINATION.lat, CANONICAL_DESTINATION.lng], { icon: destIcon }).addTo(map);
+      destMarker.bindPopup(`
+        <div style="font-family: inherit; padding: 4px 6px; min-width: 170px;">
+          <div style="font-size: 10px; font-weight: 800; color: #e11d48; text-transform: uppercase; letter-spacing: 0.5px;">Destination (Recipient NGO)</div>
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 3px;">${destinationName}</div>
+          <div style="font-size: 11px; color: #64748b; margin-top: 2px;">Benz Circle Partner Shelter, Vijayawada</div>
+        </div>
+      `);
+
+      // 5. In-Transit Delivery Vehicle Badge
+      const midPoint = CANONICAL_ROUTE_PATH[1] || CANONICAL_ORIGIN;
+      const vehicleIcon = L.divIcon({
+        className: 'custom-vehicle-marker',
+        html: `
+          <div style="display: flex; align-items: center; gap: 5px; background: #0f172a; color: white; padding: 5px 10px; border-radius: 9999px; border: 2px solid #10b981; box-shadow: 0 8px 16px rgba(0,0,0,0.35); font-size: 11px; font-weight: 800; white-space: nowrap;">
+            <span>🚚</span>
+            <span>${vehicleType} &bull; ${travelTimeMinutes} mins driving</span>
+          </div>
+        `,
+        iconSize: [140, 28],
+        iconAnchor: [70, 14],
+      });
+      L.marker([midPoint.lat, midPoint.lng], { icon: vehicleIcon }).addTo(map);
+
+      // 6. Visual Route Polyline (Corridor through Vijayawada)
+      const latLngs: [number, number][] = CANONICAL_ROUTE_PATH.map(p => [p.lat, p.lng]);
+      const polyline = L.polyline(latLngs, {
+        color: '#059669',
+        weight: 6,
+        opacity: 0.9,
+        lineCap: 'round',
+        lineJoin: 'round',
+      }).addTo(map);
+
+      // 7. Auto-fit bounds
+      map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+      mapInstanceRef.current = map;
+
+      // Invalidate size once rendered to ensure sharp, complete tile rendering
+      const timer = setTimeout(() => {
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.invalidateSize();
+        }
+      }, 150);
+
+      return () => {
+        clearTimeout(timer);
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.remove();
+          mapInstanceRef.current = null;
+        }
+      };
+    } catch (err) {
+      console.warn('Leaflet Live Map initialization error:', err);
+    }
+  }, [originName, destinationName, vehicleType, travelTimeMinutes]);
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
-      {/* Top Header / Status Banner */}
-      <div className="p-3.5 sm:p-4 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3 bg-slate-50/50">
+      {/* Top Header */}
+      <div className="p-3.5 sm:p-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/80">
         <div className="flex items-start sm:items-center gap-2.5 min-w-0">
           <Navigation className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5 sm:mt-0" />
           <div className="text-xs sm:text-sm font-bold text-slate-900 leading-relaxed flex items-center flex-wrap gap-1.5">
             <span className="text-slate-500 font-semibold text-[11px] uppercase tracking-wide">Transit Corridor:</span>
-            <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200/80 font-bold whitespace-normal">
+            <span className="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200/80 font-bold whitespace-normal">
               {originName}
             </span>
-            <span className="text-slate-400 font-black px-0.5">→</span>
-            <span className="text-rose-700 bg-rose-50 px-2 py-0.5 rounded-lg border border-rose-200/80 font-bold whitespace-normal">
+            <span className="text-slate-400 font-black px-0.5">&rarr;</span>
+            <span className="text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-lg border border-rose-200/80 font-bold whitespace-normal">
               {destinationName}
             </span>
           </div>
         </div>
 
-        {/* Integration Mode Badge */}
-        <div className="shrink-0 self-start md:self-center">
-          {mapState === 'ready' ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-2xs">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              Google Maps Demo
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 shadow-2xs">
-              <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
-              Map Simulation Mode
-            </span>
-          )}
+        {/* Live Map Status Badge */}
+        <div className="shrink-0 self-start sm:self-center">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            Live Real Map &bull; Vijayawada
+          </span>
         </div>
       </div>
 
-      {/* Map Display Container */}
-      <div className="relative h-72 sm:h-80 w-full overflow-hidden">
-        {/* Real Interactive Google Map */}
+      {/* Real Interactive Map Display */}
+      <div className="relative h-80 sm:h-[420px] w-full overflow-hidden bg-slate-100">
         <div
           ref={mapContainerRef}
-          className={`w-full h-full ${mapState === 'ready' ? 'block' : 'hidden'}`}
-          aria-label="Google Map View"
+          className="w-full h-full z-10"
+          aria-label="Interactive Live Map of Vijayawada"
         />
-
-        {/* Simulated Route Map Fallback (Shown when demo key missing, loading, or failed) */}
-        {mapState !== 'ready' && (
-          <div className="relative w-full h-full bg-linear-to-br from-slate-900 via-slate-800 to-teal-950 p-6 flex flex-col justify-between overflow-hidden">
-            {/* Background Grid Pattern */}
-            <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:16px_16px]" />
-
-            {/* SVG Simulated Route Polyline */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
-              <path
-                d="M 80 200 Q 220 80 420 140"
-                fill="transparent"
-                stroke="#10b981"
-                strokeWidth="4"
-                strokeDasharray="6 6"
-                className="animate-pulse"
-              />
-            </svg>
-
-            {/* Top Origin Marker (Smart College Canteen, Vijayawada) */}
-            <div className="relative z-10 flex items-center gap-3">
-              <div className="p-2.5 bg-emerald-500 text-white rounded-2xl shadow-lg shadow-emerald-500/30 flex items-center justify-center">
-                <Building2 className="w-5 h-5" />
-              </div>
-              <div className="bg-slate-900/90 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10 text-white text-xs">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  <span className="text-[10px] text-emerald-400 font-bold uppercase">Origin (Kitchen Hub)</span>
-                </div>
-                <span className="font-bold">{originName}</span>
-              </div>
-            </div>
-
-            {/* Floating Distance Badge on Corridor */}
-            <div className="relative z-10 self-center bg-emerald-600/95 text-white text-[11px] font-extrabold px-3 py-1.5 rounded-full shadow-lg border border-white/20 flex items-center gap-2">
-              <Truck className="w-3.5 h-3.5" />
-              <span>{distanceKm} km • {vehicleType} • {travelTimeMinutes} mins driving</span>
-            </div>
-
-            {/* Bottom Destination Marker (Hope Food Bank, Benz Circle) */}
-            <div className="relative z-10 self-end flex items-center gap-3">
-              <div className="bg-slate-900/90 backdrop-blur px-3 py-1.5 rounded-xl border border-white/10 text-white text-xs text-right">
-                <div className="flex items-center justify-end gap-1.5">
-                  <span className="text-[10px] text-rose-400 font-bold uppercase">Destination (Recipient NGO)</span>
-                  <span className="w-2 h-2 rounded-full bg-rose-500"></span>
-                </div>
-                <span className="font-bold">{destinationName}</span>
-              </div>
-              <div className="p-2.5 bg-rose-500 text-white rounded-2xl shadow-lg shadow-rose-500/30 flex items-center justify-center">
-                <MapPin className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Canonical Metrics & Calculation Formula Bar */}

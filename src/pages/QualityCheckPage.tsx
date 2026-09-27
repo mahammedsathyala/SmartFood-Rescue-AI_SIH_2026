@@ -15,11 +15,14 @@ import {
   Sparkles,
   ArrowRight,
   Eye,
-  Camera
+  Camera,
+  Sliders,
+  Video
 } from 'lucide-react';
-import { FoodBatch, VirtualIoTSensorData, UserRole, QualityStatus } from '../types';
+import { FoodBatch, VirtualIoTSensorData, UserRole, QualityStatus, SpoilageClass, SpoilageDetectionResult } from '../types';
 import { evaluateFoodQuality } from '../services/storage';
 import { DisclaimerBanner } from '../components/DisclaimerBanner';
+import { QualityCamera } from '../components/QualityCamera';
 import { useAppContext } from '../context/AppContext';
 
 interface QualityCheckPageProps {
@@ -52,6 +55,48 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
 
   const selectedBatch = effectiveBatches.find(b => b.id === selectedBatchId) || effectiveBatches[0];
   const [reviewerNote, setReviewerNote] = useState<string>('Visual inspection and temperature check verified on-site.');
+  const [isManualOverride, setIsManualOverride] = useState<boolean>(false);
+  const [lastDetection, setLastDetection] = useState<SpoilageDetectionResult | null>(null);
+
+  // Auto-set appearance field and apply YOLOv8 ONNX deduction to the quality score
+  const handleAiDetection = React.useCallback((result: SpoilageDetectionResult) => {
+    setLastDetection(result);
+    if (!selectedBatch || isManualOverride) return;
+
+    const newAppearance = result.spoilageClass === 'Fresh' ? 'Normal' : 'Suspicious';
+
+    if (
+      selectedBatch.appearance !== newAppearance ||
+      selectedBatch.aiSpoilageClass !== result.spoilageClass ||
+      selectedBatch.aiSpoilageConfidence !== result.confidence
+    ) {
+      const updatedBatch: FoodBatch = {
+        ...selectedBatch,
+        appearance: newAppearance,
+        aiSpoilageClass: result.spoilageClass,
+        aiSpoilageConfidence: result.confidence
+      };
+      effectiveUpdateBatch(updatedBatch);
+    }
+  }, [selectedBatch, isManualOverride, effectiveUpdateBatch]);
+
+  // Handle manual dropdown selection when override is toggled
+  const handleManualClassChange = (selectedClass: SpoilageClass) => {
+    if (!selectedBatch) return;
+    const newAppearance = selectedClass === 'Fresh' ? 'Normal' : 'Suspicious';
+    const updatedBatch: FoodBatch = {
+      ...selectedBatch,
+      appearance: newAppearance,
+      aiSpoilageClass: selectedClass,
+      aiSpoilageConfidence: 100
+    };
+    effectiveUpdateBatch(updatedBatch);
+    showToast(
+      'Manual Appearance Updated',
+      `Batch appearance set to ${selectedClass} (${selectedClass === 'Fresh' ? '0' : selectedClass === 'Slightly Spoiled' ? '-15' : '-30'} pts deduction).`,
+      'info'
+    );
+  };
 
   const batchIoT = React.useMemo(() => {
     if (iotData instanceof Map) {
@@ -168,6 +213,43 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
         </div>
       </div>
 
+      {/* AI Visual Inspection — Powered by YOLOv8 ONNX Banner */}
+      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white p-4 sm:p-5 rounded-2xl border border-indigo-500/30 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="p-2.5 bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/30 shrink-0">
+            <Sparkles className="w-5 h-5 text-emerald-400 animate-pulse" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-extrabold text-sm sm:text-base text-white tracking-wide">
+                AI Visual Inspection — Powered by YOLOv8 ONNX
+              </h3>
+              <span className="text-[10px] uppercase font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                Edge WASM In-Browser
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 mt-0.5">
+              Continuous live webcam analysis: Classifies spoilage (Fresh 0pts, Slightly Spoiled -15pts, Spoiled -30pts) with automatic quality gate calibration.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 self-start md:self-auto shrink-0">
+          <button
+            type="button"
+            onClick={() => setIsManualOverride(!isManualOverride)}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+              isManualOverride
+                ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shadow-emerald-600/30'
+                : 'bg-slate-800 hover:bg-slate-700 text-indigo-200 border border-indigo-500/40'
+            }`}
+          >
+            <Sliders className="w-3.5 h-3.5" />
+            <span>{isManualOverride ? 'Switch to AI Camera' : 'Manual Override'}</span>
+          </button>
+        </div>
+      </div>
+
       {selectedBatch && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left: Quality Score Gauge & Status (5 cols) */}
@@ -257,6 +339,118 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
               <span className="text-xs text-slate-400">Baseline 100 Points</span>
             </div>
 
+            {/* Visual Inspection Section: QualityCamera component or Manual Override Dropdown */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <Camera className="w-4 h-4 text-emerald-600" />
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Food Appearance & Spoilage Gate
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsManualOverride(!isManualOverride)}
+                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
+                >
+                  <Sliders className="w-3.5 h-3.5" />
+                  <span>{isManualOverride ? 'Use AI Camera' : 'Manual Override'}</span>
+                </button>
+              </div>
+
+              {!isManualOverride ? (
+                <QualityCamera
+                  onDetection={handleAiDetection}
+                  onManualOverride={() => setIsManualOverride(true)}
+                  isManualOverride={isManualOverride}
+                />
+              ) : (
+                <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-slate-800">
+                        Manual Appearance Selection
+                      </div>
+                      <div className="text-[11px] text-slate-500">
+                        Camera unavailable or manual inspection requested by operator.
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 border border-amber-300 font-bold">
+                      Manual Mode
+                    </span>
+                  </div>
+
+                  {/* 3 Classes options */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {[
+                      {
+                        class: 'Fresh' as SpoilageClass,
+                        deduction: 0,
+                        title: 'Fresh',
+                        desc: 'Normal appearance & aroma (0 pts)'
+                      },
+                      {
+                        class: 'Slightly Spoiled' as SpoilageClass,
+                        deduction: 15,
+                        title: 'Slightly Spoiled',
+                        desc: 'Minor discoloration (-15 pts)'
+                      },
+                      {
+                        class: 'Spoiled' as SpoilageClass,
+                        deduction: 30,
+                        title: 'Spoiled',
+                        desc: 'Critical spoilage (-30 pts)'
+                      }
+                    ].map(opt => {
+                      const isSelected = selectedBatch.aiSpoilageClass === opt.class || 
+                        (!selectedBatch.aiSpoilageClass && opt.class === 'Fresh' && selectedBatch.appearance === 'Normal');
+                      return (
+                        <button
+                          key={opt.class}
+                          type="button"
+                          onClick={() => handleManualClassChange(opt.class)}
+                          className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                            isSelected
+                              ? opt.class === 'Fresh'
+                                ? 'bg-emerald-50 border-emerald-400 text-emerald-900 ring-2 ring-emerald-500/20'
+                                : opt.class === 'Slightly Spoiled'
+                                ? 'bg-amber-50 border-amber-400 text-amber-900 ring-2 ring-amber-500/20'
+                                : 'bg-rose-50 border-rose-400 text-rose-900 ring-2 ring-rose-500/20'
+                              : 'bg-white border-slate-200 hover:border-slate-300 text-slate-700'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between font-bold text-xs">
+                            <span>{opt.title}</span>
+                            <span className={`text-[10px] font-mono font-bold ${
+                              opt.deduction === 0 ? 'text-emerald-700' : opt.deduction === 15 ? 'text-amber-700' : 'text-rose-700'
+                            }`}>
+                              {opt.deduction === 0 ? '0 pts' : `-${opt.deduction} pts`}
+                            </span>
+                          </div>
+                          <p className="text-[10px] text-slate-500 mt-1">{opt.desc}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <label className="text-xs text-slate-600 font-semibold whitespace-nowrap">
+                      Appearance Dropdown:
+                    </label>
+                    <select
+                      value={selectedBatch.aiSpoilageClass || (selectedBatch.appearance === 'Suspicious' ? 'Spoiled' : 'Fresh')}
+                      onChange={(e) => handleManualClassChange(e.target.value as SpoilageClass)}
+                      className="px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-hidden"
+                    >
+                      <option value="Fresh">Fresh — Normal (0 pts deduction)</option>
+                      <option value="Slightly Spoiled">Slightly Spoiled — Suspicious (-15 pts deduction)</option>
+                      <option value="Spoiled">Spoiled — Suspicious (-30 pts deduction)</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Inputs Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
               <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
@@ -274,9 +468,22 @@ export const QualityCheckPage: React.FC<QualityCheckPageProps> = ({
               </div>
 
               <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
-                <span className="text-slate-400 block text-[10px]">Appearance</span>
-                <span className={`font-bold ${selectedBatch.appearance === 'Suspicious' ? 'text-rose-600' : 'text-emerald-700'}`}>
-                  {selectedBatch.appearance}
+                <span className="text-slate-400 block text-[10px]">
+                  Appearance ({isManualOverride ? 'Manual' : 'YOLOv8 AI'})
+                </span>
+                <span className={`font-bold flex items-center justify-between ${
+                  selectedBatch.aiSpoilageClass === 'Spoiled' || selectedBatch.appearance === 'Suspicious'
+                    ? 'text-rose-600'
+                    : selectedBatch.aiSpoilageClass === 'Slightly Spoiled'
+                    ? 'text-amber-600'
+                    : 'text-emerald-700'
+                }`}>
+                  <span>{selectedBatch.aiSpoilageClass || selectedBatch.appearance}</span>
+                  {selectedBatch.aiSpoilageConfidence && !isManualOverride && (
+                    <span className="text-[10px] font-mono font-normal text-slate-500">
+                      {selectedBatch.aiSpoilageConfidence}%
+                    </span>
+                  )}
                 </span>
               </div>
 

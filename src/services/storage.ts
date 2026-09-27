@@ -8,7 +8,8 @@ import {
   VirtualIoTSensorData,
   UserRole,
   FoodCategory,
-  QualityStatus
+  QualityStatus,
+  RescueInsightPayload
 } from '../types';
 import { 
   DEFAULT_SETTINGS, 
@@ -53,13 +54,24 @@ function safeSet<T>(key: string, value: T): void {
   }
 }
 
-// User Role & Auth Mock
+// Active session role synchronized with AuthContext (with LocalStorage fallback for offline mode)
+let activeAuthSessionRole: UserRole | null = null;
+
+export function setActiveAuthSessionRole(role: UserRole | null): void {
+  activeAuthSessionRole = role;
+}
+
+// User Role & Auth: Reads from AuthContext active session with localStorage offline fallback
 export function getUserRole(): UserRole {
+  if (activeAuthSessionRole) {
+    return activeAuthSessionRole;
+  }
   const role = localStorage.getItem(STORAGE_KEYS.USER_ROLE) as UserRole | null;
   return role || 'Kitchen Staff';
 }
 
 export function setUserRole(role: UserRole): void {
+  activeAuthSessionRole = role;
   localStorage.setItem(STORAGE_KEYS.USER_ROLE, role);
 }
 
@@ -431,15 +443,37 @@ export function evaluateFoodQuality(
     positives.push('Food packaging and seals remain intact');
   }
 
-  // Check 4: Human-entered visual or sensory concern (subtract 30)
-  if (batch.appearance === 'Suspicious') {
+  // Check 4: Visual inspection / YOLOv8 ONNX Spoilage Detection
+  if (batch.aiSpoilageClass) {
+    if (batch.aiSpoilageClass === 'Spoiled') {
+      score -= 30;
+      deductions.push({
+        id: 'appearance_spoilage',
+        name: 'AI Spoilage Detected (Spoiled)',
+        points: 30,
+        isViolated: true,
+        explanation: `YOLOv8 ONNX visual inspection classified batch as Spoiled (${batch.aiSpoilageConfidence ?? 90}% confidence). Critical microbial/oxidation spoilage indicators observed.`
+      });
+    } else if (batch.aiSpoilageClass === 'Slightly Spoiled') {
+      score -= 15;
+      deductions.push({
+        id: 'appearance_spoilage',
+        name: 'AI Spoilage Detected (Slightly Spoiled)',
+        points: 15,
+        isViolated: true,
+        explanation: `YOLOv8 ONNX visual inspection classified batch as Slightly Spoiled (${batch.aiSpoilageConfidence ?? 80}% confidence). Minor texture/color degradation identified.`
+      });
+    } else {
+      positives.push(`AI Visual Inspection (YOLOv8 ONNX): Fresh batch verified (${batch.aiSpoilageConfidence ?? 95}% confidence)`);
+    }
+  } else if (batch.appearance === 'Suspicious') {
     score -= 30;
     deductions.push({
       id: 'appearance',
       name: 'Visual or Sensory Concern',
       points: 30,
       isViolated: true,
-      explanation: 'Human-entered visual or sensory concern, such as discoloration, abnormal texture, or staff-reported odor concern.'
+      explanation: 'Manual inspection flag: visual or sensory concern, such as discoloration, abnormal texture, or odor concern.'
     });
   } else {
     positives.push('Normal food texture, appearance, and aroma reported');
@@ -651,5 +685,76 @@ export function calculateSustainabilityImpact(
     totalWastedKg,
     routeDistanceOptimizedKm: totalRouteDistance,
     avgForecastAccuracy: 97.4
+  };
+}
+
+/**
+ * Calculates current facility metrics required for AI Rescue Intelligence:
+ * {
+ *   activeBatches: number,        // batches with surplus
+ *   topBatchScore: number,        // highest quality score
+ *   topBatchKg: number,           // kg of top batch
+ *   bestNgoName: string,          // closest NGO name
+ *   bestNgoMatch: number,         // match percentage
+ *   deadlineMinutes: number,      // minutes until nearest deadline
+ *   todayRescuedKg: number        // already rescued today
+ * }
+ */
+export function getRescueInsightPayload(): RescueInsightPayload {
+  const batches = getBatches();
+  const ngos = getNGOs();
+
+  // Active batches with surplus remaining
+  const surplusBatches = batches.filter(b => b.remainingKg > 0);
+  const activeBatches = surplusBatches.length;
+
+  // Top batch by quality score (fallback 94)
+  const sortedBatches = [...surplusBatches].sort(
+    (a, b) => (b.qualityScore ?? 85) - (a.qualityScore ?? 85)
+  );
+  const topBatch = sortedBatches[0];
+  const topBatchScore = topBatch?.qualityScore ?? 94;
+  const topBatchKg = topBatch?.remainingKg ?? 14;
+
+  // Closest or best matching NGO partner
+  let bestNgoName = 'Robin Hood Army - Vijayawada';
+  let bestNgoMatch = 94;
+
+  if (topBatch && ngos.length > 0) {
+    const matched = matchNGOsForBatch(topBatch, ngos);
+    if (matched.length > 0) {
+      bestNgoName = matched[0].name;
+      bestNgoMatch = Math.round(matched[0].score);
+    }
+  } else if (ngos.length > 0) {
+    const sortedNgos = [...ngos].sort((a, b) => a.distanceKm - b.distanceKm);
+    bestNgoName = sortedNgos[0].name;
+    bestNgoMatch = 92;
+  }
+
+  // Minutes until nearest deadline
+  let deadlineMinutes = 150;
+  if (surplusBatches.length > 0) {
+    const nowMs = Date.now();
+    const diffs = surplusBatches.map(b => {
+      const ms = new Date(b.deadlineDateTime).getTime() - nowMs;
+      return Math.max(15, Math.round(ms / 60000));
+    });
+    deadlineMinutes = Math.min(...diffs);
+  }
+
+  // Already rescued today (kg)
+  const todayRescuedKg = batches
+    .filter(b => b.donationStatus === 'Delivered' || b.donationStatus === 'Collected')
+    .reduce((sum, b) => sum + (b.servedKg || 14), 0) || 14;
+
+  return {
+    activeBatches,
+    topBatchScore,
+    topBatchKg,
+    bestNgoName,
+    bestNgoMatch,
+    deadlineMinutes,
+    todayRescuedKg
   };
 }
