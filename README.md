@@ -15,6 +15,7 @@
 [![SIH 2026](https://img.shields.io/badge/SIH-2026-FF9933?style=flat&logo=target&logoColor=white)](https://www.sih.gov.in/)
 [![Hosting: Live](https://img.shields.io/badge/Live_Demo-Firebase_Hosting-0288D1?style=flat&logo=google-cloud&logoColor=white)](https://smartfood-rescue-ai-25f38.web.app)
 [![Zero Hardware Required](https://img.shields.io/badge/Hardware-Software_Simulation_Mode-10B981?style=flat&logo=cpu&logoColor=white)](#-virtual-iot-monitoring-simulator)
+[![Technical Documentation](https://img.shields.io/badge/SIH_2026-Technical_Report_SIH26234-blue?style=flat&logo=readme&logoColor=white)](docs/SIH_2026_TECHNICAL_DOCUMENTATION.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---

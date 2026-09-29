@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartFood Rescue AI — Technical Documentation (SIH 2026)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            fontFamily: 'Inter, sans-serif'
+        });
+    </script>
+    <style>
+        @page {
+            size: A4;
+            margin: 18mm 16mm 18mm 16mm;
+
+            @bottom-right {
+                content: counter(page);
+            }
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #1e293b;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Page Breaks */
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+            margin-top: 30px;
+        }
+
+        /* Headings */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            color: #0f172a;
+            font-weight: 700;
+            margin-top: 1.8em;
+            margin-bottom: 0.6em;
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+
+        h1 {
+            font-size: 22pt;
+            border-bottom: 2px solid #0284c7;
+            padding-bottom: 8px;
+            color: #0369a1;
+        }
+
+        h2 {
+            font-size: 15pt;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+            color: #1e293b;
+        }
+
+        h3 {
+            font-size: 12.5pt;
+            color: #334155;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 0.9em;
+            text-align: justify;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0 24px 0;
+            font-size: 9.5pt;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #cbd5e1;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-weight: 600;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 7px 10px;
+            vertical-align: top;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            border: 1px solid #334155;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: #f1f5f9;
+            color: #0369a1;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 9.5pt;
+        }
+
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        /* Mermaid Container */
+        .mermaid {
+            margin: 20px 0;
+            text-align: center;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Blockquotes & Callouts */
+        blockquote {
+            border-left: 4px solid #0284c7;
+            margin: 16px 0;
+            padding: 10px 16px;
+            background: #f0f9ff;
+            color: #0369a1;
+            font-style: italic;
+        }
+
+        /* Divider */
+        hr.section-divider {
+            border: 0;
+            border-top: 1px solid #e2e8f0;
+            margin: 30px 0;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 2px 7px;
+            font-size: 8pt;
+            font-weight: 700;
+            border-radius: 9999px;
+            text-transform: uppercase;
+        }
+
+        /* Print optimizers */
+        @media print {
+            body {
+                background: none;
+                color: #000;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+
+            pre {
+                background: #1e293b !important;
+                color: #fff !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            th {
+                background-color: #e2e8f0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .alert-box {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .mermaid {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 id="technical-documentation-report">Technical Documentation Report</h1>
+        <pre><code class="language-text">====================================================================================================
+SMART INDIA HACKATHON (SIH) 2026 — TECHNICAL SPECIFICATION &amp; SYSTEM ARCHITECTURE REPORT
+Problem Statement ID : SIH26234
+Problem Title        : AI-Powered Smart Food Waste Reduction and Sustainable Redistribution
+                       Ecosystem for Institutional Kitchens and Food Processing Units
+Project Title        : SmartFood Rescue AI
+Version              : 1.0.0-Production (Release Candidate)
+Repository           : https://github.com/mahammedsathyala/SmartFood-Rescue-AI_SIH_2026
+Documentation Status : Complete Forensic Audit &amp; System Specification
+====================================================================================================
+</code></pre>
+        <hr class="section-divider" />
+        <h2 id="cover-page">Cover Page</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align: left;">Field</th>
+                    <th style="text-align: left;">Project &amp; Evaluation Metadata</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;"><strong>Project Title</strong></td>
+                    <td style="text-align: left;"><strong>SMARTFOOD RESCUE AI</strong></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Subtitle</strong></td>
+                    <td style="text-align: left;">AI-Powered Smart Food Waste Reduction and Sustainable Redistribution
+                        Ecosystem for Institutional Kitchens and Food Processing Units</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Hackathon Initiative</strong></td>
+                    <td style="text-align: left;">Smart India Hackathon (SIH) 2026 — Software Edition</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Problem Statement ID</strong></td>
+                    <td style="text-align: left;"><strong>SIH26234</strong></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Category</strong></td>
+                    <td style="text-align: left;">Smart Automation / Agriculture, FoodTech &amp; Rural Development</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Team Name</strong></td>
+                    <td style="text-align: left;"><code>[Team Name Placeholder]</code> <em>(e.g., Annadata AI)</em></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Team ID</strong></td>
+                    <td style="text-align: left;"><code>[Team ID Placeholder]</code></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Institution Name</strong></td>
+                    <td style="text-align: left;"><code>[Institution / University Name Placeholder]</code></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Department</strong></td>
+                    <td style="text-align: left;">
+                        <code>[Department of Computer Science &amp; Engineering / Information Technology]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Team Leader</strong></td>
+                    <td style="text-align: left;"><code>[Team Leader Name Placeholder]</code></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Team Members</strong></td>
+                    <td style="text-align: left;"><code>[Member 1 Name]</code>, <code>[Member 2 Name]</code>,
+                        <code>[Member 3 Name]</code>, <code>[Member 4 Name]</code>, <code>[Member 5 Name]</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Faculty Mentor</strong></td>
+                    <td style="text-align: left;"><code>[Faculty Mentor Name &amp; Designation Placeholder]</code></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Demonstration Pilot</strong></td>
+                    <td style="text-align: left;">Vijayawada, Andhra Pradesh, India 🇮🇳</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Academic Year</strong></td>
+                    <td style="text-align: left;">2026</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr class="section-divider" />
+        <h2 id="executive-companion-sih-2026-final-submission-technical-summary">Executive Companion: SIH 2026 Final
+            Submission Technical Summary</h2>
+        <blockquote>
+            <p><strong>Document Class:</strong> 4-Page Executive Architecture Summary for SIH Evaluators &amp; Technical
+                Reviewers<br />
+                <strong>Source Repository:</strong> <a
+                    href="https://github.com/mahammedsathyala/SmartFood-Rescue-AI_SIH_2026"><code>SmartFood-Rescue-AI_SIH_2026</code></a><br />
+                <strong>Target Evaluation Track:</strong> SIH26234 — Software Edition
+            </p>
+        </blockquote>
+        <h3 id="1-system-identity-mission">1. System Identity &amp; Mission</h3>
+        <p>Institutional kitchens (universities, corporate cafeterias, hostel mess facilities, hospital food centers,
+            and large-scale caterers) overprepare by 15% to 25% daily due to static headcount guesswork, lack of dynamic
+            demand forecasting, and zero real-time telemetry into cooked surplus degradation. Concurrently, nearby
+            charitable shelters face severe nutritional shortages but cannot safely accept ad-hoc donations due to food
+            safety liability and lack of transportation.</p>
+        <p><strong>SmartFood Rescue AI</strong> solves this through a closed-loop, <strong>Prevention-First,
+                Human-Supervised, and Deadline-Aware</strong> platform that integrates:<br />
+            1. <strong>Pre-Cook Demand Smoothing:</strong> Rule-based statistical demand forecasting to eliminate
+            overproduction before cooking begins.<br />
+            2. <strong>Edge Computer Vision:</strong> Client-side YOLOv8 ONNX inference running in the browser via
+            WebAssembly (<code>onnxruntime-web</code>) to screen visual food degradation without sending private camera
+            streams to external servers.<br />
+            3. <strong>Virtual IoT Cold-Chain Monitoring:</strong> Continuous telemetry tracking (core temperature,
+            relative humidity, container weight, storage duration) with automated threshold breach alerts.<br />
+            4. <strong>Deterministic Multi-Factor Quality Gating:</strong> Algorithmic safety scoring (0–100) combining
+            sensory telemetry, transit deadlines, container seals, and visual AI, subject to mandatory authorized human
+            sign-off.<br />
+            5. <strong>Multi-Criteria NGO Logistics Matching:</strong> Geo-spatial and capacity-calibrated pairing for
+            Vijayawada shelters.<br />
+            6. <strong>Time-Aware Dispatch Routing:</strong> Transit corridor planning with vehicle-specific speed
+            models to guarantee delivery within safe microbiological consumption windows.<br />
+            7. <strong>Serverless Cloud Automation:</strong> 6 event-driven Firebase Cloud Functions (Gen 2) providing
+            IoT thermal breach triggers, automated NGO alerts, daily AI intelligence synthesis, and ESG ledger
+            aggregation.</p>
+        <h3 id="2-high-level-system-architecture-diagram">2. High-Level System Architecture Diagram</h3>
+        <pre class="mermaid">graph TD
+    subgraph ClientLayer[&quot;Frontend Client Layer (Vite 8 + React 19 + TypeScript)&quot;]
+        UI[&quot;Web Interface (Tailwind CSS v4)&quot;]
+        Cam[&quot;QualityCamera (Webcam API)&quot;]
+        ORT[&quot;ONNX Runtime Web (WASM Provider)&quot;]
+        MapEngine[&quot;Leaflet / OpenStreetMap Route Engine&quot;]
+        Storage[&quot;Storage Engine (LocalStorage + Firestore SDK)&quot;]
+        Cam --&gt; ORT
+        ORT --&gt; UI
+        UI --&gt; Storage
+        UI --&gt; MapEngine
+    end
+
+    subgraph EdgeAI[&quot;Edge Computer Vision Model&quot;]
+        ONNXFile[&quot;food_spoilage.onnx (YOLOv8 Classifier Graph)&quot;]
+        ORT -.-&gt;|Loads Session| ONNXFile
+    end
+
+    subgraph CloudLayer[&quot;Backend Serverless Infrastructure (Firebase / GCP)&quot;]
+        Auth[&quot;Firebase Authentication (RBAC)&quot;]
+        Firestore[(&quot;Cloud Firestore NoSQL&quot;)]
+        CF_Gen[&quot;generateRescueInsight (HTTPS Callable)&quot;]
+        CF_Expire[&quot;checkExpiredFoodBatches (Scheduler - 6h)&quot;]
+        CF_Batch[&quot;onBatchCreated (Firestore Trigger)&quot;]
+        CF_Status[&quot;onBatchStatusChanged (Firestore Trigger)&quot;]
+        CF_Audit[&quot;onDeliveryCompleted (Firestore Trigger)&quot;]
+        CF_Digest[&quot;weeklyESGDigest (Scheduler - Mon 09:00 IST)&quot;]
+        CF_IoT[&quot;onIoTThresholdBreach (Firestore Trigger)&quot;]
+    end
+
+    subgraph ExternalServices[&quot;External APIs &amp; AI Engines&quot;]
+        Claude[&quot;Anthropic Claude 3.5 Sonnet&quot;]
+        Gemini[&quot;Google Gemini 1.5 Flash&quot;]
+        OSM[&quot;OpenStreetMap Tile Servers&quot;]
+    end
+
+    UI --&gt; Auth
+    Storage --&gt; Firestore
+    CF_Gen --&gt; Claude
+    CF_Gen --&gt; Gemini
+    Firestore --&gt; CF_Batch
+    Firestore --&gt; CF_Status
+    Firestore --&gt; CF_Audit
+    Firestore --&gt; CF_IoT
+    MapEngine --&gt; OSM
+</pre>
+        <h3 id="3-core-technical-differentiators-implementation-realities">3. Core Technical Differentiators &amp;
+            Implementation Realities</h3>
+        <pre><code>+----------------------------------------------------------------------------------------------------+
+|                                    IMPLEMENTATION VERIFICATION MATRIX                              |
++------------------------------------+-----------------------+---------------------------------------+
+| Feature Area                       | Status                | Implementation Reality                |
++------------------------------------+-----------------------+---------------------------------------+
+| Edge CV Spoilage Screening         | IMPLEMENTED           | onnxruntime-web + food_spoilage.onnx  |
+| Rule-Based Demand Forecasting      | IMPLEMENTED           | Statistical 3-point smoothing formula |
+| Virtual IoT Kitchen Simulator      | IMPLEMENTED           | In-browser telemetry simulation       |
+| Multi-Factor Quality Gate          | IMPLEMENTED           | 6-point deduction engine (0-100 pts)  |
+| NGO Multi-Criteria Matcher         | IMPLEMENTED           | Distance/Capacity/Category/Avail alg  |
+| Transit Route Corridors            | IMPLEMENTED           | Leaflet + OpenStreetMap (Vijayawada)  |
+| Serverless Event Automation        | IMPLEMENTED           | 6 Firebase Cloud Functions (Node 24)  |
+| Role-Based Access Control (RBAC)   | IMPLEMENTED           | 4 Roles in AuthContext + Rules        |
+| AI Operational Intelligence        | PARTIALLY IMPLEMENTED | Cloud Function (Claude/Gemini/Rule)   |
+| Physical Microcontroller Sensors   | PROPOSED / FUTURE     | Simulated via Virtual IoT Page        |
+| Dynamic Traffic TSP Routing        | PROPOSED / FUTURE     | Fixed canonical corridor implemented  |
++------------------------------------+-----------------------+---------------------------------------+
+</code></pre>
+        <hr class="section-divider" />
+        <h2 id="table-of-contents">Table of Contents</h2>
+        <ul>
+            <li><a href="#cover-page">Cover Page</a></li>
+            <li><a href="#executive-companion-sih-2026-final-submission-technical-summary">Executive Companion: SIH 2026
+                    Final Submission Technical Summary</a></li>
+            <li><a href="#1-executive-summary">1. Executive Summary</a></li>
+            <li><a href="#2-problem-statement--sih26234-alignment">2. Problem Statement &amp; SIH26234 Alignment</a>
+            </li>
+            <li><a href="#3-existing-system--conventional-practices">3. Existing System &amp; Conventional Practices</a>
+            </li>
+            <li><a href="#4-limitations-of-the-existing-system">4. Limitations of the Existing System</a></li>
+            <li><a href="#5-proposed-system-smartfood-rescue-ai">5. Proposed System: SmartFood Rescue AI</a></li>
+            <li><a href="#6-technical-objectives">6. Technical Objectives</a></li>
+            <li><a href="#7-stakeholders--role-based-access-control-rbac">7. Stakeholders &amp; Role-Based Access
+                    Control (RBAC)</a></li>
+            <li><a href="#8-system-requirements">8. System Requirements</a></li>
+            <li><a href="#9-technology-stack">9. Technology Stack</a></li>
+            <li><a href="#10-system-architecture">10. System Architecture</a></li>
+            <li><a href="#11-end-to-end-operational-workflow">11. End-to-End Operational Workflow</a></li>
+            <li><a href="#12-module-wise-architecture--implementation-analysis">12. Module-Wise Architecture &amp;
+                    Implementation Analysis</a></li>
+            <li><a href="#13-artificial-intelligence--machine-learning-components">13. Artificial Intelligence &amp;
+                    Machine Learning Components</a></li>
+            <li><a href="#14-system-data-flow">14. System Data Flow</a></li>
+            <li><a href="#15-database-design--firestore-schema">15. Database Design &amp; Firestore Schema</a></li>
+            <li><a href="#16-backend--cloud-functions-api-documentation">16. Backend &amp; Cloud Functions API
+                    Documentation</a></li>
+            <li><a href="#17-frontend-architecture--user-interface-design">17. Frontend Architecture &amp; User
+                    Interface Design</a></li>
+            <li><a href="#18-backend-architecture--serverless-functions">18. Backend Architecture &amp; Serverless
+                    Functions</a></li>
+            <li><a href="#19-food-safety--multi-factor-quality-screening-workflow">19. Food Safety &amp; Multi-Factor
+                    Quality Screening Workflow</a></li>
+            <li><a href="#20-ngo-matching-logic--algorithm">20. NGO Matching Logic &amp; Algorithm</a></li>
+            <li><a href="#21-logistics-dispatch--transit-route-calculations">21. Logistics, Dispatch &amp; Transit Route
+                    Calculations</a></li>
+            <li><a href="#22-notification--alerting-infrastructure">22. Notification &amp; Alerting Infrastructure</a>
+            </li>
+            <li><a href="#23-security-architecture--threat-mitigation">23. Security Architecture &amp; Threat
+                    Mitigation</a></li>
+            <li><a href="#24-deployment-configuration--production-readiness">24. Deployment Configuration &amp;
+                    Production Readiness</a></li>
+            <li><a href="#25-verification--test-suite-matrix">25. Verification &amp; Test Suite Matrix</a></li>
+            <li><a href="#26-performance-benchmarks--evaluation-metrics">26. Performance, Benchmarks &amp; Evaluation
+                    Metrics</a></li>
+            <li><a href="#27-environmental-social--economic-impact-esg">27. Environmental, Social &amp; Economic Impact
+                    (ESG)</a></li>
+            <li><a href="#28-technical-innovation--architectural-novelty">28. Technical Innovation &amp; Architectural
+                    Novelty</a></li>
+            <li><a href="#29-system-advantages">29. System Advantages</a></li>
+            <li><a href="#30-honest-system-limitations">30. Honest System Limitations</a></li>
+            <li><a href="#31-future-enhancements--production-roadmap">31. Future Enhancements &amp; Production
+                    Roadmap</a></li>
+            <li><a href="#32-scalability--system-expansion-strategy">32. Scalability &amp; System Expansion Strategy</a>
+            </li>
+            <li><a href="#33-edge-cases-failure-modes--fallback-mechanisms">33. Edge Cases, Failure Modes &amp; Fallback
+                    Mechanisms</a></li>
+            <li><a href="#34-responsible-ai-ethics--governance">34. Responsible AI, Ethics &amp; Governance</a></li>
+            <li><a href="#35-project-directory--file-inventory">35. Project Directory &amp; File Inventory</a></li>
+            <li><a href="#36-installation--local-development-guide">36. Installation &amp; Local Development Guide</a>
+            </li>
+            <li><a href="#37-configuration--environment-variables-guide">37. Configuration &amp; Environment Variables
+                    Guide</a></li>
+            <li><a href="#38-user-operation-manual-by-role">38. User Operation Manual by Role</a></li>
+            <li><a href="#39-sih-evaluator-demonstration-script-57-minute-walkthrough">39. SIH Evaluator Demonstration
+                    Script (5–7 Minute Walkthrough)</a></li>
+            <li><a href="#40-sih-evaluation-criteria-mapping">40. SIH Evaluation Criteria Mapping</a></li>
+            <li><a href="#41-requirement-traceability-matrix-rtm">41. Requirement Traceability Matrix (RTM)</a></li>
+            <li><a href="#42-github-repository--code-governance-guide">42. GitHub Repository &amp; Code Governance
+                    Guide</a></li>
+            <li><a href="#43-conclusion">43. Conclusion</a></li>
+            <li><a href="#44-references--documentation-citations">44. References &amp; Documentation Citations</a></li>
+        </ul>
+        <hr class="section-divider" />
+        <h2 id="1-executive-summary">1. Executive Summary</h2>
+        <h3 id="11-the-operational-problem">1.1 The Operational Problem</h3>
+        <p>Institutional catering facilities (university mess halls, industrial cafeterias, hostel kitchens, and event
+            caterers) prepare thousands of meals daily under strict time pressures and fluctuating diner headcounts.
+            Because estimation relies on manual intuition or static register rosters, kitchens regularly experience an
+            overproduction variance of 15% to 25%. When meals conclude, edible surplus sits in warmers or uninsulated
+            pans without continuous temperature tracking. Kitchen staff lack structured mechanisms to rapidly screen
+            food quality, identify verified recipient NGOs within immediate transit range, or coordinate delivery before
+            microbial danger thresholds are breached. The default outcome is catastrophic disposal to municipal
+            landfills, producing methane emissions while vulnerable local populations face food poverty.</p>
+        <h3 id="12-the-smartfood-rescue-ai-solution">1.2 The SmartFood Rescue AI Solution</h3>
+        <p><strong>SmartFood Rescue AI</strong> is an institutional decision-support and redistribution management
+            platform designed specifically to bridge the operational gap between institutional food preparation and
+            community redistribution. The system enforces a rigorous operational methodology:</p>
+        <p>$$\text{Forecast Prevention} \longrightarrow \text{Surplus Registration} \longrightarrow \text{Sensory \&amp;
+            Edge CV Gating} \longrightarrow \text{NGO Matching} \longrightarrow \text{Corridor Dispatch} \longrightarrow
+            \text{ESG Auditing}$$</p>
+        <h3 id="13-target-beneficiaries-demonstration-pilot">1.3 Target Beneficiaries &amp; Demonstration Pilot</h3>
+        <p>The system's initial operational calibration and demonstration pilot are tailored to <strong>Vijayawada,
+                Andhra Pradesh, India</strong>, centered around a high-volume institutional hub (<em>Smart College
+                Canteen</em>, MG Road) distributing to vetted urban shelters across Benz Circle, Patamata,
+            Moghalrajpuram, and Auto Nagar.</p>
+        <h3 id="14-core-technological-architecture">1.4 Core Technological Architecture</h3>
+        <ul>
+            <li><strong>Client Tier:</strong> React 19, TypeScript 6, Vite 8, Tailwind CSS v4, Lucide React icons, and
+                Recharts visualization.</li>
+            <li><strong>Edge Inference:</strong> In-browser YOLOv8 ONNX classifier executed via WebAssembly
+                (<code>onnxruntime-web</code>) utilizing local client webcam hardware.</li>
+            <li><strong>Backend &amp; Serverless Infrastructure:</strong> Google Cloud Platform &amp; Firebase (Firebase
+                Hosting, Cloud Firestore NoSQL, and 6 Cloud Functions Gen 2 running on Node 24).</li>
+            <li><strong>Logistics Engine:</strong> OpenStreetMap-backed Leaflet geospatial mapping with vehicle-specific
+                speed and transit duration models.</li>
+            <li><strong>Intelligence Orchestration:</strong> Multi-tiered AI recommendation engine integrating Anthropic
+                Claude 3.5 Sonnet and Google Gemini 1.5 Flash with deterministic local synthesis fallbacks.</li>
+        </ul>
+        <hr class="section-divider" />
+        <h2 id="2-problem-statement-sih26234-alignment">2. Problem Statement &amp; SIH26234 Alignment</h2>
+        <h3 id="21-the-sih26234-mandate">2.1 The SIH26234 Mandate</h3>
+        <p>Problem Statement <strong>SIH26234</strong> addresses:</p>
+        <blockquote>
+            <p><em>“AI-Powered Smart Food Waste Reduction and Sustainable Redistribution Ecosystem for Institutional
+                    Kitchens and Food Processing Units.”</em></p>
+        </blockquote>
+        <p>The mandate requires a solution that addresses both <strong>prevention</strong> (reducing unnecessary kitchen
+            prep before cooking) and <strong>redistribution</strong> (rapidly, safely redirecting cooked surplus before
+            microbial spoilage occurs).</p>
+        <h3 id="22-critical-vulnerabilities-in-institutional-food-management">2.2 Critical Vulnerabilities in
+            Institutional Food Management</h3>
+        <ol>
+            <li><strong>Unscientific Pre-Cooking Headcount Estimation:</strong> Kitchen managers prepare bulk food based
+                on historical memory or broad enrollment figures, failing to account for day-of-week attendance
+                patterns, academic holidays, weather, or menu popularity.</li>
+            <li><strong>Delayed Surplus Identification:</strong> Kitchens do not quantify surplus until long after
+                service concludes, wasting crucial shelf-life hours.</li>
+            <li><strong>Biological &amp; Liability Uncertainty:</strong> Kitchen supervisors fear legal or ethical
+                repercussions if donated food causes foodborne illness. In the absence of documented quality logs
+                (temperature logs, visual appearance logs), supervisors prefer disposing of safe food.</li>
+            <li><strong>Frictional NGO Communication:</strong> Coordination currently depends on frantic telephone calls
+                or informal WhatsApp groups. Kitchen staff do not know which shelter has open storage capacity,
+                refrigeration, or volunteer availability at 14:00 on a weekday.</li>
+            <li><strong>Transit Delay &amp; Thermal Breach:</strong> Even when an NGO accepts food, transit in slow city
+                traffic without temperature control can cause food to enter the bacterial danger zone ($5^\circ\text{C}$
+                to $60^\circ\text{C}$), rendering it toxic upon arrival.</li>
+            <li><strong>Zero Institutional Traceability:</strong> Institutional administrations receive no audit records
+                detailing how much food was wasted, how much was rescued, financial losses incurred, or environmental
+                carbon emissions generated.</li>
+        </ol>
+        <hr class="section-divider" />
+        <h2 id="3-existing-system-conventional-practices">3. Existing System &amp; Conventional Practices</h2>
+        <p>Conventional food surplus management across Indian institutions is characterized by fragmented, manual, and
+            reactive practices:</p>
+        <pre><code>[Attendance Register] ──(Manual Guess)──&gt; [Bulk Cooking]
+                                                │
+                                          (Post-Service)
+                                                ▼
+                                         [Unmeasured Surplus]
+                                                │
+                                    ┌───────────┴───────────┐
+                                    ▼                       ▼
+                            [Ad-hoc Phone Calls]    [Direct Garbage Bin]
+                                    │
+                         (If NGO responds in time)
+                                    ▼
+                         [Unmonitored Transport]
+</code></pre>
+        <h3 id="31-characteristics-of-the-current-baseline">3.1 Characteristics of the Current Baseline</h3>
+        <ul>
+            <li><strong>Manual Registers:</strong> Headcount is estimated from hostel warden registers or ticket counts
+                hours in advance.</li>
+            <li><strong>Spreadsheet &amp; Paper Logging:</strong> Stock quantities and scrap weights, if recorded at
+                all, are entered into end-of-month tally books.</li>
+            <li><strong>Unverified Sensory Inspection:</strong> Food safety is judged exclusively by olfactory sniffing
+                or tasting by kitchen helpers, without objective thermal measurement or documented accountability.</li>
+            <li><strong>Unstructured Phone/WhatsApp Dispatch:</strong> Kitchen managers call NGO volunteers
+                individually. By the third unanswered call, staff dispose of the food to clear kitchen pans for dinner
+                prep.</li>
+            <li><strong>Unmanaged Transit Windows:</strong> Transport is outsourced to three-wheeler auto rickshaws or
+                volunteers without transit tracking, handling buffers, or expiration deadlines.</li>
+        </ul>
+        <hr class="section-divider" />
+        <h2 id="4-limitations-of-the-existing-system">4. Limitations of the Existing System</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align: left;">Operational Area</th>
+                    <th style="text-align: left;">Existing Practice Limitation</th>
+                    <th style="text-align: left;">Consequence</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;"><strong>Demand Estimation</strong></td>
+                    <td style="text-align: left;">Static attendance headcount without statistical smoothing or calendar
+                        adjustments.</td>
+                    <td style="text-align: left;">15%–25% daily overproduction variance; avoidable food cost losses.
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Surplus Recording</strong></td>
+                    <td style="text-align: left;">Manual estimation entered into logbooks days later; no automatic delta
+                        calculation.</td>
+                    <td style="text-align: left;">Unrecorded surplus; zero real-time visibility into redistributable
+                        kilograms.</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Quality Assessment</strong></td>
+                    <td style="text-align: left;">Subjective human olfactory/taste inspection without recorded
+                        parameters.</td>
+                    <td style="text-align: left;">High liability risk; hesitation to donate; distribution of spoiled
+                        batches.</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Cold-Chain Monitoring</strong></td>
+                    <td style="text-align: left;">No temperature or humidity sensors; cooked food stored in unmonitored
+                        ambient pans.</td>
+                    <td style="text-align: left;">Rapid bacterial growth in the $5^\circ\text{C} - 60^\circ\text{C}$
+                        danger zone; undetected spoilage.</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>NGO Matching</strong></td>
+                    <td style="text-align: left;">Ad-hoc phone calls to single NGO contacts without knowing recipient
+                        intake capacity.</td>
+                    <td style="text-align: left;">Excessive coordination delays; food expires while trying to find a
+                        willing recipient.</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Transit Feasibility</strong></td>
+                    <td style="text-align: left;">No calculation of vehicle transit time against residual shelf-life
+                        deadlines.</td>
+                    <td style="text-align: left;">Food arrives past safe consumption limits, causing waste at
+                        destination.</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>ESG &amp; Impact Audit</strong></td>
+                    <td style="text-align: left;">Total absence of environmental metrics ($\text{CO}_2\text{e}$
+                        mitigated, meals saved, financial impact).</td>
+                    <td style="text-align: left;">Kitchens cannot substantiate CSR compliance, ESG performance, or cost
+                        savings.</td>
+                </tr>
+            </tbody>
+        </table>
+        <hr class="section-divider" />
+        <h2 id="5-proposed-system-smartfood-rescue-ai">5. Proposed System: SmartFood Rescue AI</h2>
+        <p>SmartFood Rescue AI implements an end-to-end digital twin and decision-support pipeline structured around
+            four foundational pillars:</p>
+        <pre><code>+----------------------------------------------------------------------------------------------------+
+|                                  CORE SYSTEM PHILOSOPHY                                            |
++--------------------------+--------------------------+-----------------------+----------------------+
+| 1. PREVENTION-FIRST      | 2. HUMAN-SUPERVISED      | 3. DEADLINE-AWARE     | 4. EVIDENCE-BASED    |
+| Statistical demand       | AI suggests &amp; screens;   | Every batch enforces  | Verified impact logs |
+| forecasting prior to     | certified kitchen staff  | strict delivery use-by| track meals saved,   |
+| cooking eliminates waste | hold final statutory     | countdowns before     | ₹ saved, and CO2e    |
+| at the source.           | authorization authority. | quality degradation.  | mitigated.           |
++--------------------------+--------------------------+-----------------------+----------------------+
+</code></pre>
+        <h3 id="51-operational-pipeline">5.1 Operational Pipeline</h3>
+        <ol>
+            <li><strong>Predictive Pre-Cooking Demand:</strong> Canteen administrators input expected diner attendance.
+                The statistical forecasting engine applies smoothing formulas with day-of-week, event, and menu weights
+                to output an optimal meal preparation target and safety ceiling.</li>
+            <li><strong>Surplus Registration &amp; Auto-Delta:</strong> After dining service, staff enter actual meals
+                served. The system immediately computes surplus meals and residual kilograms ($\text{kg} = \text{meals}
+                \times 0.25$).</li>
+            <li><strong>Dual Quality-Risk Safety Gate:</strong></li>
+            <li><em>Sensor Telemetry:</em> Core container temperature, humidity, and storage hours are continuously
+                cross-checked against safe thresholds ($\le 8^\circ\text{C}$ cold storage or $\ge 60^\circ\text{C}$ hot
+                holding).</li>
+            <li><em>Edge Computer Vision:</em> Staff hold a browser-enabled webcam over the food tray. The client-side
+                YOLOv8 ONNX model runs in-browser to classify visual condition (Fresh, Slightly Spoiled, Spoiled).</li>
+            <li><em>Algorithmic Scoring:</em> A deterministic deduction engine evaluates 6 points of inspection to
+                generate a 0–100 score.</li>
+            <li><em>Human Sign-Off:</em> Kitchen Staff or Administrators must authenticate and confirm approval; batches
+                scoring $&lt;50$ are blocked from donation.</li>
+            <li><strong>Multi-Criteria NGO Matching:</strong> Approved surplus is matched against verified local
+                shelters using an objective weighted formula: Distance (35%), Available Capacity (25%), Dietary Category
+                Compatibility (20%), and Operational Availability (20%).</li>
+            <li><strong>Time-Aware Transit Dispatch:</strong> The system assigns a delivery route, selects an
+                appropriate vehicle model (Bike, Auto, Van, Refrigerated Van), and calculates transit duration + a
+                10-minute handling buffer to ensure estimated arrival occurs safely before the use-by deadline.</li>
+            <li><strong>Automated Impact Accounting:</strong> Delivered batches trigger serverless updates to a monthly
+                ESG ledger and audit log, measuring meals rescued, rupees saved, and carbon emissions avoided.</li>
+        </ol>
+        <hr class="section-divider" />
+        <h2 id="6-technical-objectives">6. Technical Objectives</h2>
+        <ol>
+            <li><strong>Reduce Overproduction Waste:</strong> Implement statistical demand forecasting to reduce
+                institutional kitchen overproduction variance from 20% down to $&lt;5\%$.</li>
+            <li><strong>Sub-60-Minute Redistribution Initiation:</strong> Transition surplus identification, quality
+                verification, and NGO matching from a multi-hour manual process to under 15 minutes.</li>
+            <li><strong>Objective Quality Risk Screening:</strong> Eliminate unrecorded food safety decisions by
+                enforcing a 6-factor algorithmic quality score (0–100) combining sensor telemetry, time elapsed,
+                packaging integrity, and visual AI.</li>
+            <li><strong>Client-Side Edge AI Inference:</strong> Execute computer vision inference locally in the user's
+                browser using WebAssembly (<code>onnxruntime-web</code>), eliminating backend GPU hosting costs and
+                preserving visual data privacy.</li>
+            <li><strong>Zero-Hardware Pilot Accessibility:</strong> Provide a high-fidelity Virtual IoT Simulator that
+                replicates physical sensor data streams (MQTT/HTTP) directly in software, enabling evaluator testing
+                without physical microcontrollers.</li>
+            <li><strong>Multi-Factor Partner Optimization:</strong> Optimize NGO matching by factoring in distance,
+                real-time recipient capacity, dietary compatibility, and refrigeration status.</li>
+            <li><strong>Traceable Impact Metrics:</strong> Automatically compute and record cumulative ESG metrics: Food
+                Rescued ($\text{kg}$), Meals Saved, Financial Savings ($\text{INR}$), and Mitigated Carbon Emissions
+                ($\text{kg CO}_2\text{e}$).</li>
+        </ol>
+        <hr class="section-divider" />
+        <h2 id="7-stakeholders-role-based-access-control-rbac">7. Stakeholders &amp; Role-Based Access Control (RBAC)
+        </h2>
+        <p>The application enforces a 4-tier Role-Based Access Control model defined in <a
+                href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/types/index.ts#L1-L5"><code>src/types/index.ts</code></a>
+            and synchronized through <a
+                href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/context/AuthContext.tsx"><code>src/context/AuthContext.tsx</code></a>
+            and <a
+                href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/firestore.rules"><code>firestore.rules</code></a>.
+        </p>
+        <pre><code>+----------------------------------------------------------------------------------------------------+
+|                                    STAKEHOLDER ACCESS CONTROL MATRIX                               |
++-------------------+-----------------+--------------------------------------+-----------------------+
+| Stakeholder Role  | Status          | Core Responsibilities                | Implemented Views     |
++-------------------+-----------------+--------------------------------------+-----------------------+
+| Kitchen Staff     | IMPLEMENTED     | Demand forecasting, batch creation,  | Forecast, Batches,    |
+|                   |                 | sensory inspection, quality approval | IoT, Quality, Match   |
++-------------------+-----------------+--------------------------------------+-----------------------+
+| NGO Partner       | IMPLEMENTED     | Review incoming donation offers,     | Incoming Requests,    |
+|                   |                 | accept/reject, capacity updates      | Acceptance, Status    |
++-------------------+-----------------+--------------------------------------+-----------------------+
+| Delivery Partner  | IMPLEMENTED     | Pickup verification, transit route   | Route Planning,       |
+|                   |                 | execution, delivery confirmation     | Proof Upload, Dispatch|
++-------------------+-----------------+--------------------------------------+-----------------------+
+| Administrator     | IMPLEMENTED     | System-wide config, user management, | All views + Settings, |
+|                   |                 | sustainability ledger, audit logs    | Dataset Management    |
++-------------------+-----------------+--------------------------------------+-----------------------+
+</code></pre>
+        <hr class="section-divider" />
+        <h2 id="8-system-requirements">8. System Requirements</h2>
+        <h3 id="81-hardware-requirements">8.1 Hardware Requirements</h3>
+        <ul>
+            <li><strong>Development Workstation:</strong> x86_64 or ARM64 processor (Intel i5/i7, AMD Ryzen 5/7, or
+                Apple M-series), 8 GB RAM minimum (16 GB recommended), 5 GB free disk space.</li>
+            <li><strong>Client End-User Device:</strong> Any standard laptop, desktop, tablet, or smartphone equipped
+                with an integrated or USB webcam (minimum 720p resolution for camera inspection).</li>
+            <li><strong>Physical IoT Sensor Devices (Proposed / Future Production):</strong> ESP32 / Raspberry Pi Pico W
+                microcontrollers, DS18B20 waterproof digital temperature probe, DHT22 humidity sensor, HX711 load cell
+                amplifier with 50 kg strain gauge platform. <em>(Simulated in software for current release).</em></li>
+        </ul>
+        <h3 id="82-software-requirements">8.2 Software Requirements</h3>
+        <ul>
+            <li><strong>Runtime Environment:</strong> Node.js version <code>v20.x</code> to <code>v24.x</code> (verified
+                active build: <code>v24.19.0</code>).</li>
+            <li><strong>Package Manager:</strong> npm version <code>10.x</code> or higher.</li>
+            <li><strong>Compiler / Bundler:</strong> Vite version <code>8.3.x</code> with TypeScript compiler
+                <code>v6.0.x</code>.
+            </li>
+            <li><strong>Python (Optional for Model Generation):</strong> Python version <code>3.10+</code> with
+                <code>onnx</code> and <code>numpy</code> packages (used by <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/scripts/generate_spoilage_model.py"><code>scripts/generate_spoilage_model.py</code></a>).
+            </li>
+        </ul>
+        <h3 id="83-browser-requirements">8.3 Browser Requirements</h3>
+        <ul>
+            <li>Modern evergreen browser supporting WebAssembly (WASM), WebGL/WebGPU, and the
+                <code>MediaDevices.getUserMedia()</code> API:
+            </li>
+            <li>Google Chrome / Chromium <code>v105+</code> (Recommended)</li>
+            <li>Mozilla Firefox <code>v110+</code></li>
+            <li>Microsoft Edge <code>v105+</code></li>
+            <li>Apple Safari <code>v16.4+</code></li>
+        </ul>
+        <h3 id="84-network-requirements">8.4 Network Requirements</h3>
+        <ul>
+            <li>Minimum 512 kbps broadband/mobile internet connection for initial application asset download and Cloud
+                Firestore synchronization.</li>
+            <li><strong>Offline Resilience:</strong> The application is architected to operate fully in
+                <strong>Zero-Network / Offline Mode</strong> using local browser storage (<code>localStorage</code>) and
+                in-memory mock datasets when external internet access is severed.
+            </li>
+        </ul>
+        <hr class="section-divider" />
+        <h2 id="9-technology-stack">9. Technology Stack</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align: left;">Architecture Layer</th>
+                    <th style="text-align: left;">Technology / Library</th>
+                    <th style="text-align: left;">Version</th>
+                    <th style="text-align: left;">Purpose in Codebase</th>
+                    <th style="text-align: left;">Actual Repository Usage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;"><strong>Frontend Framework</strong></td>
+                    <td style="text-align: left;"><a href="https://react.dev/">React</a></td>
+                    <td style="text-align: left;"><code>^19.2.8</code></td>
+                    <td style="text-align: left;">Core UI component lifecycle and declarative rendering</td>
+                    <td style="text-align: left;">Entire UI tree in <a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/"><code>src/</code></a></td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Language</strong></td>
+                    <td style="text-align: left;"><a href="https://www.typescriptlang.org/">TypeScript</a></td>
+                    <td style="text-align: left;"><code>~6.0.2</code></td>
+                    <td style="text-align: left;">Strict static typing, interface contracts, and compile-time
+                        verification</td>
+                    <td style="text-align: left;">All components, services, and types</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Build Tool</strong></td>
+                    <td style="text-align: left;"><a href="https://vitejs.dev/">Vite</a></td>
+                    <td style="text-align: left;"><code>^8.3.0</code></td>
+                    <td style="text-align: left;">Ultra-fast HMR dev server and optimized production bundler</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/vite.config.ts"><code>vite.config.ts</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Styling &amp; Design</strong></td>
+                    <td style="text-align: left;"><a href="https://tailwindcss.com/">Tailwind CSS</a></td>
+                    <td style="text-align: left;"><code>^4.3.3</code></td>
+                    <td style="text-align: left;">Utility-first responsive CSS styling with modern color tokens</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/index.css"><code>src/index.css</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Edge AI Engine</strong></td>
+                    <td style="text-align: left;"><a href="https://onnxruntime.ai/">ONNX Runtime Web</a></td>
+                    <td style="text-align: left;"><code>^1.21.0</code></td>
+                    <td style="text-align: left;">In-browser WebAssembly CPU inference of YOLOv8 model</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/QualityCamera.tsx#L96-L100"><code>QualityCamera.tsx</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Cloud Database</strong></td>
+                    <td style="text-align: left;"><a href="https://firebase.google.com/docs/firestore">Cloud
+                            Firestore</a></td>
+                    <td style="text-align: left;"><code>v12.19.0</code></td>
+                    <td style="text-align: left;">NoSQL document database for live cloud synchronization</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/services/firebase.ts"><code>src/services/firebase.ts</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Cloud Functions</strong></td>
+                    <td style="text-align: left;"><a href="https://firebase.google.com/docs/functions">Firebase
+                            Functions v2</a></td>
+                    <td style="text-align: left;"><code>^7.0.0</code></td>
+                    <td style="text-align: left;">Serverless backend event triggers and scheduled cron sweeps</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts"><code>functions/src/index.ts</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Admin SDK</strong></td>
+                    <td style="text-align: left;"><a href="https://firebase.google.com/docs/admin/setup">Firebase
+                            Admin</a></td>
+                    <td style="text-align: left;"><code>^13.6.0</code></td>
+                    <td style="text-align: left;">Privileged server-side Firestore operations in Cloud Functions</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts#L13-L14"><code>functions/src/index.ts</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Geospatial Mapping</strong></td>
+                    <td style="text-align: left;"><a href="https://leafletjs.com/">Leaflet</a></td>
+                    <td style="text-align: left;"><code>^1.9.4</code></td>
+                    <td style="text-align: left;">Open-source interactive map rendering and polyline route paths</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/GoogleRouteMap.tsx#L55-L68"><code>GoogleRouteMap.tsx</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Map Tiles</strong></td>
+                    <td style="text-align: left;"><a href="https://www.openstreetmap.org/">OpenStreetMap</a></td>
+                    <td style="text-align: left;">Tile API</td>
+                    <td style="text-align: left;">High-resolution street map imagery of Vijayawada corridor</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/GoogleRouteMap.tsx#L64-L67"><code>GoogleRouteMap.tsx</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Data Visualization</strong></td>
+                    <td style="text-align: left;"><a href="https://recharts.org/">Recharts</a></td>
+                    <td style="text-align: left;"><code>^3.10.1</code></td>
+                    <td style="text-align: left;">Telemetry trend line charts and analytical graphs</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/IoTSimulatorPage.tsx#L16-L24"><code>IoTSimulatorPage.tsx</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>UI Iconography</strong></td>
+                    <td style="text-align: left;"><a href="https://lucide.dev/">Lucide React</a></td>
+                    <td style="text-align: left;"><code>^1.48.0</code></td>
+                    <td style="text-align: left;">Comprehensive semantic SVG iconography</td>
+                    <td style="text-align: left;">Across all 13 application pages</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Local Persistence</strong></td>
+                    <td style="text-align: left;">Web Storage API (<code>localStorage</code>)</td>
+                    <td style="text-align: left;">Native</td>
+                    <td style="text-align: left;">Instant offline persistence and seed fallback</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/services/storage.ts#L37-L55"><code>src/services/storage.ts</code></a>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;"><strong>Linter</strong></td>
+                    <td style="text-align: left;"><a href="https://oxc-project.github.io/">oxlint</a></td>
+                    <td style="text-align: left;"><code>^1.81.0</code></td>
+                    <td style="text-align: left;">High-performance Rust-based JavaScript/TypeScript linter</td>
+                    <td style="text-align: left;"><a
+                            href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/package.json#L9"><code>package.json</code></a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <hr class="section-divider" />
+        <h2 id="10-system-architecture">10. System Architecture</h2>
+        <p>The following diagram details the actual component relationships, event flows, and network boundaries
+            implemented in the repository:</p>
+        <pre class="mermaid">graph TB
+    subgraph UserTier[&quot;User Interaction Tier&quot;]
+        KS[&quot;Kitchen Staff / Chef&quot;]
+        AD[&quot;Administrator&quot;]
+        NGO[&quot;NGO Coordinator&quot;]
+        DR[&quot;Delivery Driver&quot;]
+    end
+
+    subgraph PresentationTier[&quot;Single Page Application (SPA) Presentation Tier&quot;]
+        direction TB
+        AppShell[&quot;App.tsx (Navigation &amp; Layout Controller)&quot;]
+        Nav[&quot;Navbar &amp; Role Switcher&quot;]
+        Tour[&quot;GuidedDemoTour.tsx (Interactive Evaluator Walkthrough)&quot;]
+
+        subgraph FunctionalPages[&quot;Application Modules (13 Pages)&quot;]
+            P_Dash[&quot;DashboardPage.tsx + RescueInsightCard.tsx&quot;]
+            P_FC[&quot;DemandForecastPage.tsx (Statistical Smoothing)&quot;]
+            P_Batches[&quot;FoodBatchesPage.tsx (Batch Registration)&quot;]
+            P_IoT[&quot;IoTSimulatorPage.tsx (Virtual Sensor Controls)&quot;]
+            P_QC[&quot;QualityCheckPage.tsx + QualityCamera.tsx&quot;]
+            P_NGO[&quot;NgoMatchingPage.tsx (Multi-Criteria Matching)&quot;]
+            P_Route[&quot;RoutePlanningPage.tsx + GoogleRouteMap.tsx&quot;]
+            P_Sust[&quot;SustainabilityPage.tsx (ESG Impact Dashboard)&quot;]
+            P_Rep[&quot;ReportsPage.tsx (Audit Export Engine)&quot;]
+            P_Data[&quot;DatasetManagementPage.tsx (Governance)&quot;]
+            P_Set[&quot;SettingsPage.tsx (Operational Config)&quot;]
+        end
+
+        AppShell --&gt; Nav
+        AppShell --&gt; Tour
+        AppShell --&gt; FunctionalPages
+    end
+
+    subgraph ClientDataEngine[&quot;Client State &amp; Edge Inference Tier&quot;]
+        AppContext[&quot;AppContext.tsx (Unified State Provider)&quot;]
+        StorageEngine[&quot;storage.ts (Formula Calculators &amp; LocalStorage)&quot;]
+        MockData[&quot;mockData.ts (Canonical Vijayawada Pilot State)&quot;]
+        ORTWasm[&quot;onnxruntime-web (WASM Edge Inference Engine)&quot;]
+        ONNXModel[(&quot;food_spoilage.onnx&quot;)]
+
+        P_QC --&gt; ORTWasm
+        ORTWasm --&gt; ONNXModel
+        FunctionalPages --&gt; AppContext
+        AppContext --&gt; StorageEngine
+        StorageEngine --&gt; MockData
+    end
+
+    subgraph CloudBackend[&quot;Google Cloud / Firebase Serverless Tier&quot;]
+        FAuth[&quot;Firebase Auth (Role Claims)&quot;]
+        FStore[(&quot;Cloud Firestore&quot;)]
+
+        subgraph ServerlessFunctions[&quot;Firebase Cloud Functions Gen 2 (Node 24)&quot;]
+            FN_Insight[&quot;generateRescueInsight (HTTPS Callable)&quot;]
+            FN_Expire[&quot;checkExpiredFoodBatches (Schedule: 6h)&quot;]
+            FN_Batch[&quot;onBatchCreated (Trigger: batches/{id})&quot;]
+            FN_Status[&quot;onBatchStatusChanged (Trigger: batches/{id})&quot;]
+            FN_Delivery[&quot;onDeliveryCompleted (Trigger: batches/{id})&quot;]
+            FN_Digest[&quot;weeklyESGDigest (Schedule: Mon 09:00 IST)&quot;]
+            FN_Breach[&quot;onIoTThresholdBreach (Trigger: iot_readings/{id})&quot;]
+        end
+
+        AppContext -.-&gt;|Live Sync| FStore
+        AppContext -.-&gt;|Auth Check| FAuth
+        P_Dash -.-&gt;|Callable Invoke| FN_Insight
+        FStore --&gt; FN_Batch
+        FStore --&gt; FN_Status
+        FStore --&gt; FN_Delivery
+        FStore --&gt; FN_Breach
+    end
+
+    subgraph ExternalEcosystem[&quot;External Services &amp; APIs&quot;]
+        ClaudeAPI[&quot;Anthropic Claude 3.5 Sonnet API&quot;]
+        GeminiAPI[&quot;Google Gemini 1.5 Flash API&quot;]
+        OSMTiles[&quot;OpenStreetMap Tile Servers&quot;]
+    end
+
+    FN_Insight -.-&gt;|LLM Synthesis| ClaudeAPI
+    FN_Insight -.-&gt;|Fallback LLM| GeminiAPI
+    P_Route -.-&gt;|Map Tiles| OSMTiles
+
+    UserTier --&gt; AppShell
+</pre>
+        <hr class="section-divider" />
+        <h2 id="11-end-to-end-operational-workflow">11. End-to-End Operational Workflow</h2>
+        <p>The application orchestrates a continuous 5-step operational pipeline connecting kitchen planning to NGO
+            delivery:</p>
+        <pre class="mermaid">sequenceDiagram
+    autonumber
+    actor Staff as Kitchen Staff
+    participant Forecast as DemandForecastPage
+    participant Batches as FoodBatchesPage
+    participant IoT as IoTSimulatorPage
+    participant Quality as QualityCheckPage / QualityCamera
+    participant Matching as NgoMatchingPage
+    participant Logistics as RoutePlanningPage / Leaflet
+    actor NGO as NGO Partner
+    actor Driver as Delivery Driver
+
+    Note over Staff,Forecast: STEP 1: PRE-COOK DEMAND FORECASTING
+    Staff-&gt;&gt;Forecast: Enter Expected Attendance (320) &amp; Menu Parameters
+    Forecast-&gt;&gt;Forecast: Run 3-Point Smoothing Formula
+    Forecast--&gt;&gt;Staff: Recommended Preparation: 310 meals (Confidence 90%)
+
+    Note over Staff,Batches: STEP 2: SURPLUS REGISTRATION
+    Staff-&gt;&gt;Batches: Service Concluded: Meals Served = 292
+    Batches-&gt;&gt;Batches: Auto-Calculate Delta Surplus (18 meals = 14.0 kg)
+    Batches--&gt;&gt;Staff: Batch BATCH-2026-0924-01 created (&quot;Surplus Detected&quot;)
+
+    Note over Staff,IoT: STEP 3: SENSORY TELEMETRY &amp; QUALITY SCREENING
+    IoT-&gt;&gt;IoT: Continuous Telemetry (Temp: 5.2°C, Humidity: 55%, Weight: 14.0kg)
+    Staff-&gt;&gt;Quality: Mount Webcam for Visual AI Inspection
+    Quality-&gt;&gt;Quality: Run YOLOv8 ONNX In-Browser Inference
+    Quality--&gt;&gt;Staff: Classification: &quot;Fresh&quot; (Confidence 96%, 0 pt deduction)
+    Staff-&gt;&gt;Quality: Authorize Approval (Score: 100/100 -&gt; &quot;Safe for Human Review&quot;)
+    Quality-&gt;&gt;Batches: Transition status to &quot;Offered&quot;
+
+    Note over Staff,Matching: STEP 4: MULTI-CRITERIA NGO MATCHING
+    Staff-&gt;&gt;Matching: Evaluate Eligible Vetted Shelters
+    Matching-&gt;&gt;Matching: Rank: Distance(35%) + Capacity(25%) + Category(20%) + Avail(20%)
+    Matching--&gt;&gt;Staff: Top Match: Hope Food Bank, Benz Circle (Score: 94/100)
+    Staff-&gt;&gt;Matching: Create Donation Request
+    Matching-&gt;&gt;NGO: Alert dispatched (&quot;New food surplus available for pickup&quot;)
+    NGO-&gt;&gt;Matching: Accept Donation Request
+
+    Note over NGO,Logistics: STEP 5: TIME-AWARE LOGISTICS &amp; DISPATCH
+    Logistics-&gt;&gt;Logistics: Calculate Transit (3.2 km / Auto 20 km/h = 10m + 10m buffer = 20m)
+    Logistics-&gt;&gt;Logistics: Verify Arrival (14:35) &lt; Safe Deadline (18:30) -&gt; &quot;Safe&quot;
+    Driver-&gt;&gt;Logistics: Progress Route Steps (Assigned -&gt; Collected -&gt; In Transit -&gt; Delivered)
+    Driver-&gt;&gt;Logistics: Upload Delivery Confirmation Proof
+    Logistics-&gt;&gt;Batches: Transition status to &quot;Delivered&quot;
+    Logistics--&gt;&gt;Staff: ESG Ledger Updated (+14 kg, +56 meals, +35.0 kg CO2e)
+</pre>
+        <hr class="section-divider" />
+        <h2 id="12-module-wise-architecture-implementation-analysis">12. Module-Wise Architecture &amp; Implementation
+            Analysis</h2>
+        <h3 id="module-1-ai-demand-forecasting-module">Module 1: AI Demand Forecasting Module</h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/DemandForecastPage.tsx"><code>src/pages/DemandForecastPage.tsx</code></a>
+                &amp; <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/services/storage.ts#L311-L376"><code>src/services/storage.ts</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code></li>
+            <li><strong>Purpose:</strong> Prevent avoidable food waste before cooking commences through statistical meal
+                planning.</li>
+            <li><strong>Input Parameters:</strong> Expected attendance ($N$), holiday/event boolean, special menu
+                boolean, previous day demand ($D_{t-1}$), and 7-day moving average ($D_{\text{avg}}$).</li>
+            <li><strong>Processing Logic:</strong></li>
+            <li>Base raw demand: $\text{rawDemand} = N \times 0.92$.</li>
+            <li>Modifiers: If holiday, multiply by $1.08$; if special menu, multiply by $1.05$.</li>
+            <li>Ceiling rounding for portion integrity: $\text{effectiveRaw} = \lceil \text{adjustedRawDemand} \rceil$.
+            </li>
+            <li>Three-point weighted smoothing:<br />
+                $$\text{predictedDemand} = \text{round}\Big(0.90 \times \text{effectiveRaw} + 0.05 \times D_{t-1} + 0.05
+                \times D_{\text{avg}}\Big)$$</li>
+            <li>Recommended prep with safety margin:<br />
+                $$\text{recommendedPreparation} = \text{round}\big(\text{predictedDemand} \times 1.05\big)$$</li>
+            <li>Confidence scoring (penalized for volatility) and overproduction risk categorization.</li>
+            <li><strong>Output:</strong> Predicted demand, recommended meals to prepare, overproduction risk level, and
+                natural language recommendations.</li>
+        </ul>
+        <h3 id="module-2-food-batch-surplus-detection-module">Module 2: Food Batch &amp; Surplus Detection Module</h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/FoodBatchesPage.tsx"><code>src/pages/FoodBatchesPage.tsx</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code></li>
+            <li><strong>Purpose:</strong> Manage the complete food batch lifecycle from cooking to post-service delta
+                surplus determination.</li>
+            <li><strong>Input Parameters:</strong> Food item name, category (Rice, Curry, Snacks, etc.), food type
+                (Cooked, Raw, Packaged), preparation timestamp, use-by deadline, meals prepared, and meals served.</li>
+            <li><strong>Processing Logic:</strong> Automatically computes delta surplus:<br />
+                $$\text{remainingMeals} = \max(0, \text{mealsPrepared} - \text{mealsServed})$$<br />
+                $$\text{remainingKg} = \text{remainingMeals} \times \text{avgMealPortionKg} \quad (\text{default: }
+                0.25\text{ kg})$$<br />
+                Assigns initial state: if $\text{remainingKg} &gt; 0$, status becomes <code>"Surplus Detected"</code>;
+                otherwise, <code>"No Surplus"</code>.</li>
+            <li><strong>Output:</strong> Structured batch record indexed by unique ID (e.g.,
+                <code>BATCH-2026-0924-01</code>).
+            </li>
+        </ul>
+        <h3 id="module-3-virtual-iot-kitchen-simulator-module">Module 3: Virtual IoT Kitchen Simulator Module</h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/IoTSimulatorPage.tsx"><code>src/pages/IoTSimulatorPage.tsx</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code></li>
+            <li><strong>Purpose:</strong> Deliver a hardware-free interactive digital twin of kitchen storage sensors
+                for continuous cold-chain evaluation.</li>
+            <li><strong>Simulated Parameters:</strong></li>
+            <li>Core Storage Temperature ($^\circ\text{C}$): Adjustable slider from $-5^\circ\text{C}$ to
+                $40^\circ\text{C}$.</li>
+            <li>Relative Humidity (% RH): Slider from $20\%$ to $95\%$.</li>
+            <li>Container Weight ($\text{kg}$): Slider reflecting live depletion or stability.</li>
+            <li>Storage Duration ($\text{hours}$): Time elapsed since preparation.</li>
+            <li>Gateway Device Status: <code>Online</code> vs. <code>Offline</code>.</li>
+            <li><strong>Processing Logic:</strong> Evaluates alert levels:</li>
+            <li>$\text{Green (Optimal)}: \text{Temperature} \le 8^\circ\text{C} \text{ and Device Online}$.</li>
+            <li>$\text{Yellow (Elevated)}: 8^\circ\text{C} &lt; \text{Temperature} \le 20^\circ\text{C} \text{ or
+                Storage Duration} &gt; 6\text{h}$.</li>
+            <li>$\text{Red (Critical Thermal Abuse)}: \text{Temperature} &gt; 20^\circ\text{C} \text{ or Device
+                Offline}$.</li>
+            <li><strong>Output:</strong> Live Recharts historical line graphs and real-time telemetry state
+                synchronization.</li>
+        </ul>
+        <h3 id="module-4-food-quality-assessment-edge-computer-vision-module">Module 4: Food Quality Assessment &amp;
+            Edge Computer Vision Module</h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/QualityCheckPage.tsx"><code>src/pages/QualityCheckPage.tsx</code></a>
+                &amp; <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/QualityCamera.tsx"><code>src/components/QualityCamera.tsx</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code></li>
+            <li><strong>Purpose:</strong> Enforce objective, multi-factor safety gating before any food batch can be
+                offered for donation.</li>
+            <li><strong>Processing Logic:</strong> Described in full detail in <a
+                    href="#19-food-safety--multi-factor-quality-screening-workflow">Section 19</a>.</li>
+        </ul>
+        <h3 id="module-5-ngo-partner-matching-module">Module 5: NGO Partner Matching Module</h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/NgoMatchingPage.tsx"><code>src/pages/NgoMatchingPage.tsx</code></a>
+                &amp; <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/services/storage.ts#L528-L600"><code>src/services/storage.ts</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code></li>
+            <li><strong>Purpose:</strong> Pair approved surplus batches with verified local NGOs based on multi-criteria
+                ranking.</li>
+            <li><strong>Processing Logic:</strong> Described in full detail in <a
+                    href="#20-ngo-matching-logic--algorithm">Section 20</a>.</li>
+        </ul>
+        <h3 id="module-6-route-planning-logistics-dispatch-module">Module 6: Route Planning &amp; Logistics Dispatch
+            Module</h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/RoutePlanningPage.tsx"><code>src/pages/RoutePlanningPage.tsx</code></a>
+                &amp; <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/GoogleRouteMap.tsx"><code>src/components/GoogleRouteMap.tsx</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code></li>
+            <li><strong>Purpose:</strong> Plan, map, and track pickup and delivery transit corridors with
+                vehicle-specific velocity models.</li>
+            <li><strong>Processing Logic:</strong> Described in full detail in <a
+                    href="#21-logistics-dispatch--transit-route-calculations">Section 21</a>.</li>
+        </ul>
+        <h3 id="module-7-sustainability-esg-analytics-module">Module 7: Sustainability &amp; ESG Analytics Module</h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/SustainabilityPage.tsx"><code>src/pages/SustainabilityPage.tsx</code></a>
+                &amp; <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/services/storage.ts#L626-L690"><code>src/services/storage.ts</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code></li>
+            <li><strong>Purpose:</strong> Aggregate operational records into verifiable environmental, social, and
+                economic indicators.</li>
+            <li><strong>Processing Logic:</strong> Described in full detail in <a
+                    href="#27-environmental-social--economic-impact-esg">Section 27</a>.</li>
+        </ul>
+        <h3 id="module-8-audit-reporting-module">Module 8: Audit &amp; Reporting Module</h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/ReportsPage.tsx"><code>src/pages/ReportsPage.tsx</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code></li>
+            <li><strong>Purpose:</strong> Generate formal institutional compliance reports, donation manifests, and CSV
+                data exports for administrative review.</li>
+            <li><strong>Output:</strong> Printable browser view and downloadable CSV tables.</li>
+        </ul>
+        <h3 id="module-9-dataset-governance-ingestion-module">Module 9: Dataset Governance &amp; Ingestion Module</h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/pages/DatasetManagementPage.tsx"><code>src/pages/DatasetManagementPage.tsx</code></a>
+                &amp; <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/datasets/sources.md"><code>datasets/sources.md</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code></li>
+            <li><strong>Purpose:</strong> Document provenance, schemas, and ethical boundaries of external synthetic
+                datasets (e.g., Kaggle AI-Powered Food Waste Dataset) and provide standardized template downloads.</li>
+        </ul>
+        <h3 id="module-10-operational-ai-intelligence-card-module">Module 10: Operational AI Intelligence Card Module
+        </h3>
+        <ul>
+            <li><strong>File:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/RescueInsightCard.tsx"><code>src/components/RescueInsightCard.tsx</code></a>
+            </li>
+            <li><strong>Implementation Status:</strong> <code>IMPLEMENTED</code> (with Cloud Function integration)</li>
+            <li><strong>Purpose:</strong> Synthesize real-time operational guidance into 3 concise action bullet points
+                ($&lt;70$ words) displayed with a typewriter animation on the dashboard.</li>
+        </ul>
+        <hr class="section-divider" />
+        <h2 id="13-artificial-intelligence-machine-learning-components">13. Artificial Intelligence &amp; Machine
+            Learning Components</h2>
+        <p>To maintain strict scientific integrity for SIH 2026 evaluation, this section provides an honest
+            categorization of the AI/ML implementations in the repository:</p>
+        <pre><code>+----------------------------------------------------------------------------------------------------+
+|                                    AI / ML CLASSIFICATION TAXONOMY                                 |
++--------------------------+--------------------+----------------------------------------------------+
+| Component                | Category           | Actual Implementation Technique                    |
++--------------------------+--------------------+----------------------------------------------------+
+| Spoilage Image Screening | IMPLEMENTED        | In-browser ONNX Runtime Web execution of           |
+|                          | (Edge Prototype)   | YOLOv8 classifier graph (WASM execution provider)  |
++--------------------------+--------------------+----------------------------------------------------+
+| Demand Forecasting       | IMPLEMENTED        | Deterministic 3-point statistical smoothing formula|
+|                          | (Rule-Based Model) | with day-of-week and menu variance multipliers     |
++--------------------------+--------------------+----------------------------------------------------+
+| Rescue Intelligence      | PARTIALLY          | Cloud Function calling Claude 3.5 Sonnet / Gemini  |
+|                          | IMPLEMENTED (LLM)  | with deterministic rule-based coordinator fallback |
++--------------------------+--------------------+----------------------------------------------------+
+| Empirical Bio-Decay CV   | PROPOSED / FUTURE  | Transfer learning on 50,000+ real canteen food     |
+|                          |                    | images across humidity and microbial stages        |
++--------------------------+--------------------+----------------------------------------------------+
+</code></pre>
+        <h3 id="131-edge-computer-vision-model-food_spoilageonnx">13.1 Edge Computer Vision Model:
+            <code>food_spoilage.onnx</code>
+        </h3>
+        <ul>
+            <li><strong>Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/public/models/food_spoilage.onnx"><code>public/models/food_spoilage.onnx</code></a>
+            </li>
+            <li><strong>Generation Script:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/scripts/generate_spoilage_model.py"><code>scripts/generate_spoilage_model.py</code></a>
+            </li>
+            <li><strong>Runtime Engine:</strong> <code>onnxruntime-web</code> (<code>v1.21.0</code>) executing via the
+                <code>'wasm'</code> execution provider with single-thread concurrency.
+            </li>
+            <li><strong>Graph Topology:</strong></li>
+            <li>Input Tensor: <code>'images'</code> $\in \mathbb{R}^{1 \times 3 \times 224 \times 224}$ float32,
+                normalized to $[0.0, 1.0]$ RGB.</li>
+            <li>Node 1: <code>GlobalAveragePool</code> ($\mathbb{R}^{1 \times 3 \times 224 \times 224} \to \mathbb{R}^{1
+                \times 3 \times 1 \times 1}$).</li>
+            <li>Node 2: <code>Flatten</code> ($\mathbb{R}^{1 \times 3 \times 1 \times 1} \to \mathbb{R}^{1 \times 3}$).
+            </li>
+            <li>Node 3: <code>Gemm</code> (General Matrix Multiply with weights $W \in \mathbb{R}^{3 \times 3}$ and bias
+                $B \in \mathbb{R}^3$).</li>
+            <li>Node 4: <code>Softmax</code> (along axis 1, outputting probabilities).</li>
+            <li>Output Tensor: <code>'output0'</code> $\in \mathbb{R}^{1 \times 3}$ (Classes: <code>0: Fresh</code>,
+                <code>1: Slightly Spoiled</code>, <code>2: Spoiled</code>).
+            </li>
+            <li><strong>Inference Pipeline in <a
+                        href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/QualityCamera.tsx"><code>QualityCamera.tsx</code></a>:</strong>
+            </li>
+            <li>A video frame is captured every 2000 ms from the active <code>HTMLVideoElement</code> onto a hidden $224
+                \times 224$ <code>HTMLCanvasElement</code>.</li>
+            <li>Canvas RGBA bytes are transformed into planar Float32 format ($1 \times 3 \times 224 \times 224$)
+                normalized to $[0, 1]$.</li>
+            <li><code>inferenceSession.run({ images: inputTensor })</code> is invoked asynchronously.</li>
+            <li>Class mapping:<ul>
+                    <li><code>Fresh</code>: $0$ pt deduction, triggers green UI badge.</li>
+                    <li><code>Slightly Spoiled</code>: $15$ pt deduction, triggers amber warning.</li>
+                    <li><code>Spoiled</code>: $30$ pt deduction, triggers critical red flag.</li>
+                </ul>
+            </li>
+            <li><strong>Evaluator Disclosure:</strong> The weights in the prototype ONNX graph are synthetically
+                initialized conforming weights engineered to prove client-side WebAssembly inference execution without
+                server overhead. It is not an empirical checkpoint trained on agricultural bio-decay datasets.</li>
+        </ul>
+        <h3 id="132-demand-forecasting-statistical-smoothing-model">13.2 Demand Forecasting: Statistical Smoothing Model
+        </h3>
+        <ul>
+            <li><strong>Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/services/storage.ts#L327-L376"><code>src/services/storage.ts</code></a>
+            </li>
+            <li><strong>Model Type:</strong> Statistical exponential smoothing heuristic.</li>
+            <li><strong>Mathematical Formula:</strong></li>
+        </ul>
+        <p>$$\text{effectiveRaw} = \Big\lceil (\text{attendance} \times 0.92) \times M_{\text{holiday}} \times
+            M_{\text{menu}} \Big\rceil$$</p>
+        <p>$$\text{predictedDemand} = \text{round}\Big(0.90 \times \text{effectiveRaw} + 0.05 \times D_{t-1} + 0.05
+            \times D_{\text{avg}}\Big)$$</p>
+        <p>$$\text{recommendedPreparation} = \text{round}\big(\text{predictedDemand} \times 1.05\big)$$</p>
+        <p>Where:<br />
+            - $M_{\text{holiday}} = 1.08$ if holiday/event, else $1.00$.<br />
+            - $M_{\text{menu}} = 1.05$ if special menu, else $1.00$.<br />
+            - $D_{t-1}$ is previous day demand; $D_{\text{avg}}$ is 7-day moving average.<br />
+            - 5% safety buffer accounts for unexpected walk-ins while preventing massive overproduction.</p>
+        <h3 id="133-ai-operational-intelligence-llm-orchestration">13.3 AI Operational Intelligence: LLM Orchestration
+        </h3>
+        <ul>
+            <li><strong>Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts#L32-L113"><code>functions/src/index.ts</code></a>
+                &amp; <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/RescueInsightCard.tsx"><code>RescueInsightCard.tsx</code></a>
+            </li>
+            <li><strong>Orchestration Flow:</strong></li>
+            <li>The client extracts active batch count, top batch quality score, top batch kilograms, closest NGO name,
+                match percentage, and remaining use-by minutes.</li>
+            <li>Callable Cloud Function <code>generateRescueInsight</code> inspects Firestore daily cache
+                (<code>insights/{YYYY-MM-DD}</code>).</li>
+            <li>If un-cached, it attempts an external API call to Anthropic Claude 3.5 Sonnet
+                (<code>claude-3-5-sonnet-20241022</code>).</li>
+            <li>If Anthropic is unconfigured, it falls back to Google Gemini 1.5 Flash (<code>gemini-1.5-flash</code>).
+            </li>
+            <li>If external keys are absent or network fails, it executes a deterministic coordinator template that
+                outputs exactly 3 bullet points under 70 words, ensuring zero-crash client resilience.</li>
+        </ul>
+        <hr class="section-divider" />
+        <h2 id="14-system-data-flow">14. System Data Flow</h2>
+        <p>The flow of data from physical/simulated input through algorithmic transformation to persistent storage and
+            user notification is illustrated below:</p>
+        <pre class="mermaid">flowchart TD
+    subgraph S1[&quot;Data Ingestion&quot;]
+        In_User[&quot;Staff Input (Attendance, Menu, Meals Served)&quot;]
+        In_IoT[&quot;Virtual IoT Telemetry (Temp, Humidity, Weight, Time)&quot;]
+        In_Cam[&quot;Webcam Frame (RGB 640x480)&quot;]
+    end
+
+    subgraph S2[&quot;Preprocessing &amp; Normalization&quot;]
+        V_Num[&quot;Input Validation &amp; Range Clamping&quot;]
+        Canvas_Norm[&quot;Canvas Resize (224x224) &amp; Float32 Planar Normalization&quot;]
+        Telemetry_Audit[&quot;Telemetry Level Computation (Green / Yellow / Red)&quot;]
+    end
+
+    subgraph S3[&quot;Inference &amp; Business Logic Engines&quot;]
+        Engine_Forecast[&quot;3-Point Statistical Demand Smoother&quot;]
+        Engine_CV[&quot;ONNX Runtime Web (WASM YOLOv8 Inference)&quot;]
+        Engine_Quality[&quot;6-Point Multi-Factor Quality Scoring (0-100)&quot;]
+        Engine_NGO[&quot;Multi-Criteria NGO Ranking Algorithm&quot;]
+        Engine_Route[&quot;Transit Duration &amp; Arrival Window Model&quot;]
+        Engine_ESG[&quot;ESG Environmental &amp; Financial Formulas&quot;]
+    end
+
+    subgraph S4[&quot;Persistence &amp; State Sync&quot;]
+        State_Local[&quot;Client LocalStorage (Zero-Latency Offline Store)&quot;]
+        State_Firestore[(&quot;Cloud Firestore (Synchronized Documents)&quot;)]
+    end
+
+    subgraph S5[&quot;Output &amp; Notification Dispatch&quot;]
+        UI_Dash[&quot;Dashboard &amp; Operational Telemetry Displays&quot;]
+        UI_Alert[&quot;Critical Thermal Breach Banners &amp; Toasts&quot;]
+        UI_Manifest[&quot;NGO Transfer Manifests &amp; PDF/CSV Reports&quot;]
+        CF_Events[&quot;Serverless Cloud Triggers (Alerts, Audit Logs, ESG Ledger)&quot;]
+    end
+
+    In_User --&gt; V_Num
+    In_IoT --&gt; Telemetry_Audit
+    In_Cam --&gt; Canvas_Norm
+
+    V_Num --&gt; Engine_Forecast
+    V_Num --&gt; Engine_Quality
+    Telemetry_Audit --&gt; Engine_Quality
+    Canvas_Norm --&gt; Engine_CV
+    Engine_CV --&gt; Engine_Quality
+
+    Engine_Quality --&gt; Engine_NGO
+    Engine_NGO --&gt; Engine_Route
+    Engine_Route --&gt; Engine_ESG
+
+    Engine_Forecast --&gt; State_Local
+    Engine_Quality --&gt; State_Local
+    Engine_NGO --&gt; State_Local
+    Engine_Route --&gt; State_Local
+    Engine_ESG --&gt; State_Local
+
+    State_Local -.-&gt;|Sync when online| State_Firestore
+    State_Firestore --&gt; CF_Events
+
+    State_Local --&gt; UI_Dash
+    Telemetry_Audit --&gt; UI_Alert
+    Engine_Route --&gt; UI_Manifest
+    CF_Events --&gt; UI_Alert
+</pre>
+        <hr class="section-divider" />
+        <h2 id="15-database-design-firestore-schema">15. Database Design &amp; Firestore Schema</h2>
+        <p>The database architecture uses Cloud Firestore (NoSQL document store) with structured collections, strictly
+            typed document schemas, and granular security rules.</p>
+        <pre class="mermaid">erDiagram
+    USERS ||--o{ BATCHES : registers
+    BATCHES ||--o| IOT_READINGS : monitors
+    BATCHES ||--o{ DONATION_REQUESTS : offers
+    NGOS ||--o{ DONATION_REQUESTS : receives
+    DONATION_REQUESTS ||--o| DELIVERY_ROUTES : dispatches
+    BATCHES ||--o| AUDIT_LOG : generates
+    DELIVERY_ROUTES ||--o{ ESG_LEDGER : aggregates
+
+    USERS {
+        string uid PK
+        string email
+        string role &quot;Kitchen Staff | NGO Partner | Delivery Partner | Administrator&quot;
+        string displayName
+        string createdAt
+    }
+
+    BATCHES {
+        string id PK &quot;BATCH-YYYY-MMDD-XX&quot;
+        string foodItem
+        string category &quot;Rice | Curry | Snacks | Breakfast | Dessert | Other&quot;
+        string foodType &quot;Cooked Food | Raw Material | Packaged Food&quot;
+        number mealsPrepared
+        number mealsServed
+        number preparedKg
+        number servedKg
+        number remainingKg
+        number remainingMeals
+        string prepDateTime
+        string deadlineDateTime
+        string storageCondition &quot;Proper | Improper&quot;
+        string packagingStatus &quot;Intact | Damaged&quot;
+        string appearance &quot;Normal | Suspicious&quot;
+        string aiSpoilageClass &quot;Fresh | Slightly Spoiled | Spoiled&quot;
+        number aiSpoilageConfidence
+        number qualityScore &quot;0 to 100&quot;
+        string qualityStatus &quot;Safe for Human Review | Needs Manual Inspection | Do Not Redistribute&quot;
+        string donationStatus &quot;Draft | Surplus Detected | Offered | Delivered | Expired&quot;
+        string matchedNgoId FK
+        string assignedDriver
+    }
+
+    IOT_READINGS {
+        string batchId PK
+        number temperature &quot;deg C&quot;
+        number humidity &quot;percent RH&quot;
+        number containerWeight &quot;kg&quot;
+        number storageDurationHours
+        number hoursRemaining
+        string deviceStatus &quot;Online | Offline&quot;
+        string alertLevel &quot;green | yellow | red&quot;
+        string lastUpdated
+    }
+
+    NGOS {
+        string id PK &quot;ngo-X&quot;
+        string name
+        string area
+        string address
+        number distanceKm
+        number capacityKg
+        string currentAvailability &quot;Available | Busy | Offline&quot;
+        array acceptsCategories
+        string operatingHours
+        string phone
+        string contactPerson
+        number rating
+        boolean hasRefrigeration
+    }
+
+    DONATION_REQUESTS {
+        string id PK &quot;DON-XXXXXX&quot;
+        string batchId FK
+        string ngoId FK
+        string ngoName
+        string foodItem
+        number quantityKg
+        string status &quot;Draft | Offered | Accepted | Rejected | Delivered&quot;
+        string createdAt
+    }
+
+    DELIVERY_ROUTES {
+        string id PK &quot;ROUTE-XXXXXX&quot;
+        string donationId FK
+        string batchId FK
+        string ngoId FK
+        string origin
+        string destination
+        number distanceKm
+        string vehicleType &quot;Bike | Auto | Van | Refrigerated Van&quot;
+        number speedKmh
+        number totalTimeMinutes
+        string safetyStatus &quot;Safe | At Risk | Deadline Missed&quot;
+        number currentStep &quot;1 to 6&quot;
+        string driverName
+        string driverPhone
+    }
+
+    ESG_LEDGER {
+        string monthDoc PK &quot;YYYY-MM&quot;
+        number totalKg
+        number totalMeals
+        number totalCO2
+        array entries
+        string updatedAt
+    }
+
+    AUDIT_LOG {
+        string batchId PK
+        string event &quot;DELIVERED&quot;
+        string timestamp
+        string completedBy
+        number deliveredKg
+    }
+</pre>
+        <h3 id="151-collection-specifications">15.1 Collection Specifications</h3>
+        <ol>
+            <li><strong><code>batches</code></strong>: Stores the primary food batch records, lifecycle flags, and
+                evaluation scores. Read accessible to all authenticated roles; write restricted to Kitchen Staff and
+                Administrators.</li>
+            <li><strong><code>iot_readings</code> &amp; <code>iot_data</code></strong>: Stores live telemetry keyed by
+                <code>batchId</code>. Document updates trigger the <code>onIoTThresholdBreach</code> Cloud Function when
+                temperatures exceed $8^\circ\text{C}$.
+            </li>
+            <li><strong><code>ngos</code></strong>: Catalog of partner shelters, location coordinates, storage capacity,
+                and accepted food categories.</li>
+            <li><strong><code>donations</code></strong>: Tracks transaction state between kitchen offers and NGO
+                acceptance.</li>
+            <li><strong><code>routes</code></strong>: Dispatched courier routes, tracking steps 1 through 6, vehicle
+                velocity, and delivery confirmation proof.</li>
+            <li><strong><code>esg_ledger</code></strong>: Monthly summaries (<code>YYYY-MM</code>) with incremental
+                counters tracking cumulative environmental metrics.</li>
+            <li><strong><code>audit_log</code></strong>: Tamper-evident operational event logs recorded upon delivery
+                completion.</li>
+            <li><strong><code>insights</code></strong>: Daily cached AI operational intelligence text keyed by date
+                (<code>YYYY-MM-DD</code>).</li>
+        </ol>
+        <hr class="section-divider" />
+        <h2 id="16-backend-cloud-functions-api-documentation">16. Backend &amp; Cloud Functions API Documentation</h2>
+        <p>The backend service layer is implemented using Firebase Cloud Functions Gen 2 (built on Google Cloud
+            Functions and Google Cloud Run).</p>
+        <h3 id="endpoint-1-generaterescueinsight">Endpoint 1: <code>generateRescueInsight</code></h3>
+        <ul>
+            <li><strong>Type:</strong> HTTPS Callable Cloud Function (<code>onCall</code>)</li>
+            <li><strong>Source Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts#L120"><code>functions/src/index.ts#L120</code></a>
+            </li>
+            <li><strong>Purpose:</strong> Synthesizes real-time operational guidance using an LLM (Claude 3.5 Sonnet /
+                Gemini 1.5 Flash) with daily Firestore caching.</li>
+            <li><strong>Authentication:</strong> Public or Firebase Auth token.</li>
+            <li><strong>Request Payload (<code>RescueInsightPayload</code>):</strong><br />
+                <code>json
+  {
+    "activeBatches": 2,
+    "topBatchScore": 94,
+    "topBatchKg": 14.0,
+    "bestNgoName": "Hope Food Bank",
+    "bestNgoMatch": 94,
+    "deadlineMinutes": 150,
+    "todayRescuedKg": 14.0,
+    "forceRefresh": false
+  }</code>
+            </li>
+            <li><strong>Response Payload:</strong><br />
+                <code>json
+  {
+    "insight": "• Dispatch 14 kg surplus (Score 94/100) to Hope Food Bank (94% match) immediately.\n• Secure courier pickup within 150m (2.5h window) before thermal barrier degradation.\n• Route remaining 2 active batches to exceed today's 14 kg rescued milestone.",
+    "generatedAt": "02:30 PM"
+  }</code>
+            </li>
+            <li><strong>Status Codes:</strong> <code>200 OK</code>, <code>400 Bad Request</code>,
+                <code>500 Internal Error</code> (falls back to deterministic template).
+            </li>
+        </ul>
+        <h3 id="endpoint-2-checkexpiredfoodbatches">Endpoint 2: <code>checkExpiredFoodBatches</code></h3>
+        <ul>
+            <li><strong>Type:</strong> Scheduled Cloud Function (<code>onSchedule("every 6 hours")</code>)</li>
+            <li><strong>Source Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts#L187"><code>functions/src/index.ts#L187</code></a>
+            </li>
+            <li><strong>Purpose:</strong> Periodic automated audit sweeping <code>batches</code> where
+                <code>donationStatus == "Surplus Detected"</code>. If current ISO time exceeds
+                <code>deadlineDateTime</code>, the status is transitioned to <code>"Expired"</code> to prevent stale
+                redistribution.
+            </li>
+            <li><strong>Response:</strong> Automated internal batch write; logs updated batch count.</li>
+        </ul>
+        <h3 id="endpoint-3-onbatchcreated">Endpoint 3: <code>onBatchCreated</code></h3>
+        <ul>
+            <li><strong>Type:</strong> Cloud Firestore Event Trigger
+                (<code>onDocumentCreated("batches/{batchId}")</code>)</li>
+            <li><strong>Source Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts#L248"><code>functions/src/index.ts#L248</code></a>
+            </li>
+            <li><strong>Purpose:</strong> Fires whenever a new batch is registered. Inspects linked telemetry in
+                <code>iot_readings</code>. If core temperature $&gt; 8.0^\circ\text{C}$, immediately flags
+                <code>qualityStatus = "Needs Manual Inspection"</code>.
+            </li>
+        </ul>
+        <h3 id="endpoint-4-onbatchstatuschanged">Endpoint 4: <code>onBatchStatusChanged</code></h3>
+        <ul>
+            <li><strong>Type:</strong> Cloud Firestore Event Trigger
+                (<code>onDocumentUpdated("batches/{batchId}")</code>)</li>
+            <li><strong>Source Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts#L324"><code>functions/src/index.ts#L324</code></a>
+            </li>
+            <li><strong>Purpose:</strong> State machine transition listener:</li>
+            <li>If <code>donationStatus</code> changes to <code>"Offered"</code>, creates an alert in
+                <code>notifications/{timestamp}</code> with type <code>"NGO_ALERT"</code>.
+            </li>
+            <li>If <code>donationStatus</code> changes to <code>"Delivered"</code>, computes ESG savings ($\text{meals}
+                = \text{kg} \times 4$, $\text{CO}_2\text{e} = \text{kg} \times 2.5$) and appends an entry to
+                <code>esg_ledger/{YYYY-MM}</code> using atomic <code>FieldValue.increment</code>.
+            </li>
+        </ul>
+        <h3 id="endpoint-5-ondeliverycompleted">Endpoint 5: <code>onDeliveryCompleted</code></h3>
+        <ul>
+            <li><strong>Type:</strong> Cloud Firestore Event Trigger
+                (<code>onDocumentUpdated("batches/{batchId}")</code>)</li>
+            <li><strong>Source Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts#L410"><code>functions/src/index.ts#L410</code></a>
+            </li>
+            <li><strong>Purpose:</strong> Generates a permanent record in <code>audit_log/{batchId}</code> containing
+                delivery timestamp, driver identity, and verified weight.</li>
+        </ul>
+        <h3 id="endpoint-6-oniotthresholdbreach">Endpoint 6: <code>onIoTThresholdBreach</code></h3>
+        <ul>
+            <li><strong>Type:</strong> Cloud Firestore Event Trigger
+                (<code>onDocumentUpdated("iot_readings/{batchId}")</code>)</li>
+            <li><strong>Source Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts#L536"><code>functions/src/index.ts#L536</code></a>
+            </li>
+            <li><strong>Purpose:</strong> Listens for telemetry changes. If <code>temperature</code> exceeds the
+                configured safety threshold (default $8.0^\circ\text{C}$), writes a critical alert to
+                <code>alerts/{timestamp}</code> and demotes the batch's <code>qualityStatus</code> to
+                <code>"Needs Manual Inspection"</code>.
+            </li>
+        </ul>
+        <h3 id="endpoint-7-weeklyesgdigest">Endpoint 7: <code>weeklyESGDigest</code></h3>
+        <ul>
+            <li><strong>Type:</strong> Scheduled Cloud Function (<code>onSchedule("0 3 * * 1")</code> — Mondays at 09:00
+                IST / 03:00 UTC)</li>
+            <li><strong>Source Location:</strong> <a
+                    href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/functions/src/index.ts#L460"><code>functions/src/index.ts#L460</code></a>
+            </li>
+            <li><strong>Purpose:</strong> Aggregates all monthly ESG entries and publishes an institutional summary
+                document to <code>reports/weekly-{date}</code>.</li>
+        </ul>
+        <hr class="section-divider" />
+        <h2 id="17-frontend-architecture-user-interface-design">17. Frontend Architecture &amp; User Interface Design
+        </h2>
+        <p>The user interface is constructed using a high-density, high-contrast operational aesthetic built with
+            Tailwind CSS v4:</p>
+        <pre><code>+----------------------------------------------------------------------------------------------------+
+|                                    APPLICATION PAGE CATALOG                                        |
++----+-----------------------+-----------------------------+-----------------------------------------+
+| #  | Route / Tab Identifier| Component File Name         | Primary Interface Responsibility        |
++----+-----------------------+-----------------------------+-----------------------------------------+
+| 1  | `landing`             | LandingPage.tsx             | Public overview, value prop, entry hero |
+| 2  | `role-selection`      | RoleSelectionPage.tsx       | Interactive role-based sign-in matrix   |
+| 3  | `dashboard`           | DashboardPage.tsx           | High-level KPIs, AI card, quick actions |
+| 4  | `demand-forecast`     | DemandForecastPage.tsx      | Statistical planning form &amp; risk table  |
+| 5  | `food-batches`        | FoodBatchesPage.tsx         | Batch registry, delta surplus calculator|
+| 6  | `iot-simulator`       | IoTSimulatorPage.tsx        | Interactive sensor sliders &amp; Recharts   |
+| 7  | `quality-check`       | QualityCheckPage.tsx        | WebCam ONNX inference &amp; 6-point audit   |
+| 8  | `ngo-matching`        | NgoMatchingPage.tsx         | Multi-criteria ranking &amp; request dispatch|
+| 9  | `route-planning`      | RoutePlanningPage.tsx       | Leaflet corridor map &amp; 6-step progress  |
+| 10 | `sustainability`      | SustainabilityPage.tsx      | ESG counters, equivalencies, calculator |
+| 11 | `reports`             | ReportsPage.tsx             | Compliance records, manifests, CSV export|
+| 12 | `dataset-management`  | DatasetManagementPage.tsx   | Governance, raw dataset docs, downloads |
+| 13 | `settings`            | SettingsPage.tsx            | Kitchen capacity, speed, threshold config|
++----+-----------------------+-----------------------------+-----------------------------------------+
+</code></pre>
+        <h3 id="171-uiux-engineering-highlights">17.1 UI/UX Engineering Highlights</h3>
+        <ul>
+            <li><strong>Persistent Pipeline Stepper (<a
+                        href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/PipelineStepper.tsx"><code>PipelineStepper.tsx</code></a>):</strong>
+                A visual breadcrumb bar across the top of operational views showing live status: <em>1. Forecast $\to$
+                    2. Surplus Batch $\to$ 3. Quality Check $\to$ 4. NGO Match $\to$ 5. Route Dispatch</em>.</li>
+            <li><strong>Guided Demo Tour (<a
+                        href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/GuidedDemoTour.tsx"><code>GuidedDemoTour.tsx</code></a>):</strong>
+                An 8-step walkthrough modal designed for SIH evaluators to step through the canonical Vijayawada
+                demonstration without getting lost.</li>
+            <li><strong>Dynamic Waste Savings Calculator (<a
+                        href="file:///c:/SIH_2026/SmartFood-Rescue-AI_SIH_2026-main/src/components/WasteSavingsCalculator.tsx"><code>WasteSavingsCalculator.tsx</code></a>):</strong>
+                An interactive slider component enabling canteen managers to estimate annual rupees and carbon saved
+                based on their daily cafeteria meal volume.</li>
+            <li><strong>Universal Zero-Crash Fallbacks:</strong> If camera hardware is absent,
+                <code>QualityCamera.tsx</code> offers a manual appearance override. If Google Maps API keys are absent,
+                <code>GoogleRouteMap.tsx</code> renders OpenStreetMap tiles seamlessly.
+            </li>
+        </ul>
+        <hr class="section-divider" />
+        <h2 id="18-backend-architecture-serverless-functions">18. Backend Architecture &amp; Serverless Functions</h2>
+        <p>The backend architecture is 100% serverless, zero-maintenance, and elastic:</p>
+        <pre><code>[Client Web App] ──HTTPS Callable──&gt; [Cloud Functions Gen 2 (Cloud Run)]
+       │                                        │
+Firestore SDK                      Firebase Admin SDK (Privileged)
+       │                                        │
+       ▼                                        ▼
+[Cloud Firestore NoSQL] ──Event Triggers──&gt; [Internal Cloud Logic]
+                                                ├── Temperature Check
+                                                ├── Status Transitions
+                                                ├── ESG Accounting
+                                                └── Scheduled Sweeps
+</code></pre>
+        <h3 id="181-architectural-advantages">18.1 Architectural Advantages</h3>
+        <ol>
+            <li><strong>Zero Idle Costs:</strong> The entire backend runs on Google Cloud Run serverless
+                micro-containers that scale to zero when not handling active events.</li>
+            <li><strong>Atomic Ledger Guarantees:</strong> ESG calculations execute server-side in response to Firestore
+                events using <code>FieldValue.increment</code> and <code>FieldValue.arrayUnion</code>, preventing race
+                conditions or fraudulent impact inflation from client devices.</li>
+            <li><strong>Decoupled Architecture:</strong> Client applications remain responsive; time-intensive tasks
+                (LLM querying, batch expiration sweeps, weekly report generation) execute asynchronously in background
+                functions.</li>
+        </ol>
+        <hr class="section-divider" />
+        <h2 id="19-food-safety-multi-factor-quality-screening-workflow">19. Food Safety &amp; Multi-Factor Quality
+            Screening Workflow</h2>
+        <p>&lt;div class="alert-box" style="border-left: 4px solid #7c3aed; background: #ede9fe; padding: 12px 16px;
+            margin: 16px 0; border-radius: 4px;"&lt;strong⚠️ Important:</p>
+    </div>
+</body>
+
+</html>

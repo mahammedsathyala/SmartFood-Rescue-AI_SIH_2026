@@ -6,8 +6,16 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:all": "npm run build && npm --prefix functions run build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "login": "firebase login",
+    "deploy": "npm run build && firebase deploy --only hosting,firestore:rules,functions",
+    "deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "deploy:rules": "firebase deploy --only firestore:rules",
+    "deploy:functions": "npm --prefix functions run build && firebase deploy --only functions",
+    "deploy:all": "npm run build && firebase deploy",
+    "docs:pdf": "python scripts/build_pdf_documentation.py"
   },
   "dependencies": {
     "@types/leaflet": "^1.9.22",
@@ -26,6 +34,7 @@
     "@vitejs/plugin-react": "^6.1.1",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
+    "firebase-tools": "^15.32.0",
     "lucide-react": "^1.48.0",
     "oxlint": "^1.81.0",
     "recharts": "^3.10.1",
