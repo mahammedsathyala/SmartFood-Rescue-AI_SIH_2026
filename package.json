@@ -15,6 +15,7 @@
     "deploy:rules": "firebase deploy --only firestore:rules",
     "deploy:functions": "npm --prefix functions run build && firebase deploy --only functions",
     "deploy:all": "npm run build && firebase deploy",
+    "deploy:wizard": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
     "docs:pdf": "python scripts/build_pdf_documentation.py"
   },
   "dependencies": {
